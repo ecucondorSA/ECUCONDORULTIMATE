@@ -81,7 +81,7 @@ export class ExchangeRateService {
    */
   private async calculateRate(
     config: RateConfig, 
-    binancePrices: { [symbol: string]: any }
+    binancePrices: { [symbol: string]: { price: number } | null }
   ): Promise<ExchangeRate> {
     let basePrice: number
     let source: 'binance' | 'fixed' | 'calculated' = 'fixed'

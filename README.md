@@ -164,11 +164,157 @@ GET /api/health
 ```bash
 cd ecucondor-app
 npm run dev              # Iniciar servidor
-npm run test-api         # Probar todas las APIs
+npm run test-api         # Probar todas las APIs (¡ahora incluye límites y price locks!)
 npm run simulate         # Simular transacciones reales
 
 # APIs disponibles en: http://localhost:3000/api/
 ```
+
+---
+
+## 🛡️ Transaction Limits & Price Lock System (¡NUEVOS!)
+
+### **🚨 Sistema de Límites de Transacción**
+
+Para cumplir con regulaciones financieras y proteger a los usuarios, implementamos un robusto sistema de límites:
+
+#### **💰 Límites Configurados:**
+```
+💵 Mínimo por transacción: $5 USD
+💵 Máximo por transacción: $2,000 USD  
+📅 Límite mensual: $10,000 USD
+📊 Máximo diario: 20 transacciones
+```
+
+#### **📡 APIs de Límites:**
+
+```bash
+# Obtener estado de límites del usuario
+GET /api/users/{userId}/limits
+
+# Validar si puede hacer transacción
+POST /api/users/{userId}/limits
+Body: { "amount_usd": 500 }
+```
+
+#### **✅ Ejemplo de Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "limits": {
+      "monthly": {
+        "used": 1500.50,
+        "limit": 10000,
+        "remaining": 8499.50,
+        "percentage": 15.0
+      },
+      "daily_transactions": {
+        "used": 3,
+        "limit": 20,
+        "remaining": 17
+      },
+      "per_transaction": {
+        "min": 5,
+        "max": 2000
+      }
+    }
+  }
+}
+```
+
+### **🔒 Sistema de Price Lock (Bloqueo de Precios)**
+
+Los usuarios pueden **bloquear el precio** de una cotización por **15 minutos** para garantizar que recibirán exactamente lo cotizado inicialmente.
+
+#### **⚡ Características del Price Lock:**
+- ⏰ **Duración:** 15 minutos por precio bloqueado
+- 🎯 **Precisión:** Precio exacto garantizado
+- 🔐 **Seguridad:** Un precio lock por usuario/par
+- ✅ **Validación:** Monto, usuario y tipo de transacción
+
+#### **📡 APIs de Price Lock:**
+
+```bash
+# Crear cotización CON price lock
+GET /api/rates/USD-ARS/sell?amount=100&lock=true&user_id={userId}
+
+# Obtener estado de un price lock
+GET /api/price-locks/{lockId}
+
+# Obtener todos los price locks activos del usuario
+GET /api/users/{userId}/price-locks
+
+# Cancelar price lock
+DELETE /api/price-locks/{lockId}?user_id={userId}
+
+# Ejecutar transacción con price lock
+POST /api/transactions/execute
+```
+
+#### **✅ Ejemplo con Price Lock:**
+```json
+{
+  "success": true,
+  "data": {
+    "transaction": {
+      "base_amount": 100,
+      "target_amount": 135075,
+      "rate_used": 1350.75
+    },
+    "price_lock": {
+      "id": "lock_user123_1725134261000",
+      "expires_at": "2025-08-31T22:15:00Z",
+      "locked_rate": 1350.75,
+      "duration_minutes": 15
+    }
+  }
+}
+```
+
+### **⚙️ Sistema de Ejecución de Transacciones**
+
+Una vez validados los límites y creado el price lock, las transacciones se ejecutan de forma segura:
+
+#### **📡 API de Ejecución:**
+```bash
+POST /api/transactions/execute
+```
+
+#### **💾 Request Body:**
+```json
+{
+  "user_id": "user-123",
+  "pair": "USD-ARS", 
+  "amount": 100,
+  "transaction_type": "sell",
+  "price_lock_id": "lock_user123_1725134261000" // Opcional
+}
+```
+
+#### **✅ Flujo Completo de Transacción:**
+1. 📊 **Validar límites** del usuario
+2. 🔒 **Verificar price lock** (si existe)
+3. 💰 **Calcular transacción** con rate bloqueado
+4. 💾 **Crear registro** en base de datos
+5. ✅ **Marcar price lock** como usado
+6. 🚀 **Procesar pago** (integración futura)
+7. 📧 **Notificar usuario** (integración futura)
+
+### **🛢️ Base de Datos Requerida**
+
+Para usar estas funcionalidades, debes ejecutar el schema SQL:
+
+```bash
+# Ejecutar en Supabase SQL Editor
+cat database/schema.sql
+```
+
+#### **📋 Tablas Creadas:**
+- 🔄 **transactions** - Historial completo de transacciones
+- 🔒 **price_locks** - Precios bloqueados temporalmente  
+- ⚙️ **user_limits** - Límites personalizados por usuario
+- 🔐 **Políticas RLS** - Seguridad automática
 
 ---
 

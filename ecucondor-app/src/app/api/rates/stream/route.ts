@@ -19,7 +19,7 @@ function broadcastToClients(data: string) {
   for (const controller of activeConnections) {
     try {
       controller.enqueue(`data: ${data}\n\n`)
-    } catch (error) {
+    } catch (_error) {
       console.log('Client disconnected, removing from active connections')
       disconnectedControllers.push(controller)
     }
@@ -134,13 +134,13 @@ export async function GET(request: NextRequest) {
             active_connections: activeConnections.size
           })
           controller.enqueue(`data: ${heartbeat}\n\n`)
-        } catch (error) {
+        } catch (_error) {
           clearInterval(heartbeatInterval)
         }
       }, 15000)
       
       // Store cleanup function
-      ;(controller as any).cleanup = () => {
+      ;(controller as { cleanup?: () => void }).cleanup = () => {
         clearInterval(heartbeatInterval)
         activeConnections.delete(controller)
         stopGlobalUpdates()

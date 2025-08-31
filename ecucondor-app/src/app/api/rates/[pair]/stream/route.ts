@@ -21,7 +21,7 @@ function broadcastToPairClients(pair: string, data: string) {
   for (const controller of connections) {
     try {
       controller.enqueue(`data: ${data}\n\n`)
-    } catch (error) {
+    } catch (_error) {
       console.log(`Client disconnected from ${pair} stream`)
       disconnectedControllers.push(controller)
     }
@@ -101,9 +101,9 @@ function stopPairUpdates(pair: string) {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { pair: string } }
+  { params }: { params: Promise<{ pair: string }> }
 ) {
-  const { pair } = params
+  const { pair } = await params
   const pairUpper = pair.toUpperCase()
   
   console.log(`🔄 New SSE connection for ${pairUpper}`)
@@ -171,13 +171,13 @@ export async function GET(
             connections_for_pair: pairConnections.get(pairUpper)?.size || 0
           })
           controller.enqueue(`data: ${heartbeat}\n\n`)
-        } catch (error) {
+        } catch (_error) {
           clearInterval(heartbeatInterval)
         }
       }, 15000)
       
       // Store cleanup function
-      ;(controller as any).cleanup = () => {
+      ;(controller as { cleanup?: () => void }).cleanup = () => {
         clearInterval(heartbeatInterval)
         const connections = pairConnections.get(pairUpper)
         if (connections) {

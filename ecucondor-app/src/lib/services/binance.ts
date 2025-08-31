@@ -1,9 +1,6 @@
 import { BinancePrice } from '@/lib/types'
 
-interface BinanceApiResponse {
-  symbol: string
-  price: string
-}
+// Removed unused BinanceApiResponse interface
 
 interface BinanceOrderBook {
   symbol: string
@@ -49,8 +46,8 @@ export class BinanceService {
       }
 
       throw new Error('Both API and scraping failed')
-    } catch (error) {
-      console.error(`Failed to get price for ${symbol}:`, error)
+    } catch (_error) {
+      console.error(`Failed to get price for ${symbol}:`, _error)
       return null
     }
   }
@@ -86,7 +83,7 @@ export class BinanceService {
         price: averagePrice,
         timestamp: new Date().toISOString()
       }
-    } catch (error) {
+    } catch (_error) {
       console.log(`Binance API failed for ${symbol}, trying scraping...`)
       return null
     }
@@ -141,8 +138,8 @@ export class BinanceService {
         price,
         timestamp: new Date().toISOString()
       }
-    } catch (error) {
-      console.error(`Web scraping failed for ${symbol}:`, error)
+    } catch (_error) {
+      console.error(`Web scraping failed for ${symbol}:`, _error)
       return null
     }
   }

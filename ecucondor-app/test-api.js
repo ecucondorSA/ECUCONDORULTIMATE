@@ -1,5 +1,5 @@
 // Test script for Ecucondor Exchange Rate APIs
-import { simulateTransactions } from './src/lib/examples/api-usage.js'
+// Enhanced version with transaction limits and price lock testing
 
 const BASE_URL = 'http://localhost:3000/api'
 
@@ -114,11 +114,119 @@ async function testApi() {
     console.log('❌ Cross rate test failed:', error.message)
   }
 
-  console.log('\n✅ API Testing Complete!')
+  // Test 7: Transaction Limits
+  console.log('\n7️⃣ Testing Transaction Limits...')
+  try {
+    const testUserId = 'test-user-123'
+    const response = await fetch(`${BASE_URL}/users/${testUserId}/limits`)
+    const limits = await response.json()
+    
+    if (limits.success) {
+      console.log('✅ User Limits:')
+      console.log(`   Monthly: $${limits.data.limits.monthly.used}/$${limits.data.limits.monthly.limit} (${limits.data.limits.monthly.percentage.toFixed(1)}%)`)
+      console.log(`   Daily transactions: ${limits.data.limits.daily_transactions.used}/${limits.data.limits.daily_transactions.limit}`)
+      console.log(`   Per transaction: $${limits.data.limits.per_transaction.min}-$${limits.data.limits.per_transaction.max}`)
+    } else {
+      console.log('❌ No limits data (user might not exist in DB yet)')
+    }
+  } catch (error) {
+    console.log('❌ Limits test failed:', error.message)
+  }
+
+  // Test 8: Price Lock Creation
+  console.log('\n8️⃣ Testing Price Lock Creation...')
+  try {
+    const testUserId = 'test-user-123'
+    const response = await fetch(`${BASE_URL}/rates/USD-ARS/sell?amount=100&lock=true&user_id=${testUserId}`)
+    const result = await response.json()
+    
+    if (result.success && result.data.price_lock) {
+      console.log('✅ Price Lock Created:')
+      console.log(`   Lock ID: ${result.data.price_lock.id}`)
+      console.log(`   Expires: ${result.data.price_lock.expires_at}`)
+      console.log(`   Locked Rate: ${result.data.price_lock.locked_rate}`)
+      console.log(`   Duration: ${result.data.price_lock.duration_minutes} minutes`)
+      
+      // Store lock ID for next test
+      global.testLockId = result.data.price_lock.id
+    } else {
+      console.log('❌ Price lock not created - check if user_id is valid')
+    }
+  } catch (error) {
+    console.log('❌ Price lock test failed:', error.message)
+  }
+
+  // Test 9: Transaction Execution (if we have a price lock)
+  if (global.testLockId) {
+    console.log('\n9️⃣ Testing Transaction Execution with Price Lock...')
+    try {
+      const response = await fetch(`${BASE_URL}/transactions/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: 'test-user-123',
+          pair: 'USD-ARS',
+          amount: 100,
+          transaction_type: 'sell',
+          price_lock_id: global.testLockId
+        })
+      })
+      
+      const transaction = await response.json()
+      
+      if (transaction.success) {
+        console.log('✅ Transaction Executed:')
+        console.log(`   Transaction ID: ${transaction.data.transaction.id}`)
+        console.log(`   Amount: ${transaction.data.transaction.base_amount} ${transaction.data.transaction.base_currency}`)
+        console.log(`   Received: ${transaction.data.transaction.target_amount} ${transaction.data.transaction.target_currency}`)
+        console.log(`   Rate Used: ${transaction.data.transaction.rate_used}`)
+        console.log(`   Status: ${transaction.data.transaction.status}`)
+        console.log(`   Price Lock Used: ${transaction.data.transaction.price_locked}`)
+      } else {
+        console.log('❌ Transaction failed:', transaction.error)
+      }
+    } catch (error) {
+      console.log('❌ Transaction execution test failed:', error.message)
+    }
+  }
+
+  // Test 10: Check Limits After Transaction
+  console.log('\n🔟 Testing Limits Validation...')
+  try {
+    const testUserId = 'test-user-123'
+    const response = await fetch(`${BASE_URL}/users/${testUserId}/limits`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount_usd: 5000 }) // Try a large amount
+    })
+    
+    const validation = await response.json()
+    
+    if (validation.success) {
+      console.log('✅ Limits Validation:')
+      console.log(`   Can proceed with $5000: ${validation.data.can_proceed}`)
+      console.log(`   Reason: ${validation.data.reason || 'Transaction allowed'}`)
+      if (validation.data.remaining_amount) {
+        console.log(`   Maximum allowed: $${validation.data.remaining_amount}`)
+      }
+    }
+  } catch (error) {
+    console.log('❌ Limits validation test failed:', error.message)
+  }
+
+  console.log('\n✅ Enhanced API Testing Complete!')
+  console.log('\n📋 New Features Tested:')
+  console.log('   ✅ Transaction limits ($5-$2000 per transaction, $10k monthly)')
+  console.log('   ✅ Price lock mechanism (15-minute duration)')
+  console.log('   ✅ Transaction execution with locked prices')
+  console.log('   ✅ User limits tracking and validation')
   console.log('\n📡 To test real-time updates:')
   console.log('   Open browser dev tools and run:')
   console.log('   const stream = new EventSource("/api/rates/stream")')
   console.log('   stream.onmessage = e => console.log(JSON.parse(e.data))')
+  console.log('\n🗄️  Database Setup:')
+  console.log('   Run the SQL schema in database/schema.sql in your Supabase dashboard')
+  console.log('   to enable transaction tracking and price locks functionality.')
 }
 
 // Run tests

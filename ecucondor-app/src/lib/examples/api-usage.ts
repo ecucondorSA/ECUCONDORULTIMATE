@@ -1,4 +1,5 @@
 // Examples of how to use the Exchange Rate APIs
+import { ExchangeRate } from '@/lib/types'
 
 /**
  * Example 1: Get all current exchange rates
@@ -92,7 +93,7 @@ export async function calculateBuyTransaction(pair: string, amount: number) {
 /**
  * Example 5: Real-time rates using Server-Sent Events (SSE)
  */
-export function subscribeToAllRates(callback: (rates: any[]) => void) {
+export function subscribeToAllRates(callback: (rates: ExchangeRate[]) => void) {
   const eventSource = new EventSource('/api/rates/stream')
   
   eventSource.onopen = () => {
@@ -142,7 +143,7 @@ export function subscribeToAllRates(callback: (rates: any[]) => void) {
  */
 export function subscribeToSpecificRate(
   pair: string,
-  callback: (rate: any) => void
+  callback: (rate: ExchangeRate) => void
 ) {
   const eventSource = new EventSource(`/api/rates/${pair}/stream`)
   
@@ -298,4 +299,3 @@ export async function simulateTransactions() {
   
   return { sell100USD, buy150kARS }
 }
-`
