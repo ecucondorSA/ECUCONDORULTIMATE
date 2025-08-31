@@ -96,3 +96,40 @@ El esquema incluye:
 - Validación de contraseñas (mínimo 6 caracteres)
 - Confirmación por email para nuevos registros
 - Recuperación segura de contraseña por email
+
+## Configuración para Producción (Ecucondor.com)
+
+### Google Cloud Console (Configuración manual requerida):
+
+1. **Orígenes autorizados de JavaScript:**
+   - `https://ecucondor.com`
+   - `https://www.ecucondor.com`
+   - `https://qfregiogzspihbglvpqs.supabase.co` (mantener)
+   - `http://localhost:3000` (desarrollo)
+
+2. **URIs de redireccionamiento autorizados:**
+   - `https://qfregiogzspihbglvpqs.supabase.co/auth/v1/callback`
+   - `https://ecucondor.com/auth/callback`
+   - `https://www.ecucondor.com/auth/callback`
+
+### Supabase Dashboard (Configuración manual requerida):
+
+1. **Authentication → Settings:**
+   - **Site URL:** `https://ecucondor.com`
+   - **Redirect URLs:** 
+     - `https://ecucondor.com/*`
+     - `https://www.ecucondor.com/*`
+     - `http://localhost:3000/*` (desarrollo)
+
+2. **Authentication → Providers → Google:**
+   - **Client ID:** Ver archivo `production-config.md`
+   - **Client Secret:** Ver archivo `production-config.md`
+   - **Skip nonce checks:** ❌ Deshabilitado (recomendado)
+
+## Comandos disponibles
+
+```bash
+npm run test-auth    # Probar conexión con Supabase
+npm run demo        # Demo de autenticación
+npm run test-google # Verificar configuración de Google Auth
+```
