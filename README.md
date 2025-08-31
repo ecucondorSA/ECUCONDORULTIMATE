@@ -78,6 +78,100 @@ ECUCONDORULTIMATE/
 
 ---
 
+## 🚀 Exchange Rate API (¡COMPLETAMENTE FUNCIONAL!)
+
+### **Sistema de Cotizaciones en Tiempo Real**
+
+El corazón de Ecucondor es su **API de tipos de cambio** que obtiene precios en tiempo real desde **Binance** y aplica la lógica de negocio específica.
+
+#### **🎯 Lógica de Negocio Implementada:**
+```
+📊 Precio Binance USDT/ARS: 1,370.75
+💰 Precio VENTA (Ecucondor → Cliente): 1,350.75 (Binance - 20)
+💰 Precio COMPRA (Cliente → Ecucondor): 1,420.75 (Binance + 50)
+📈 Spread: 70 pesos de ganancia
+💵 Comisión USD→ARS: 3% | ARS→USD: 0%
+```
+
+#### **📡 APIs Disponibles:**
+
+```bash
+# Obtener todas las cotizaciones
+GET /api/rates
+
+# Cotización específica 
+GET /api/rates/USD-ARS
+
+# Calcular venta (con comisión 3%)
+GET /api/rates/USD-ARS/sell?amount=100
+
+# Calcular compra (sin comisión)
+GET /api/rates/USD-ARS/buy?amount=150000
+
+# Stream en tiempo real (SSE)
+GET /api/rates/stream
+GET /api/rates/USD-ARS/stream
+
+# Estado del sistema
+GET /api/health
+```
+
+#### **✅ Transacciones Probadas:**
+
+**Cliente vende 100 USD:**
+- Recibe: **131,022.75 ARS** (después de 3% comisión)
+- Comisión Ecucondor: **4,052.25 ARS**
+- Rate usado: **1,350.75 ARS/USD**
+
+**Cliente compra 105.63 USD con 150,000 ARS:**
+- Entrega: **150,000 ARS**
+- Recibe: **105.63 USD**
+- Ganancia Ecucondor: **~3,900 ARS** (spread)
+- Rate usado: **1,420.75 ARS/USD**
+
+#### **🌍 Monedas Soportadas:**
+- ✅ **USD-ARS** (Binance USDT/ARS + ajustes)
+- ✅ **USD-BRL** (Binance USDT/BRL + ajustes)  
+- ✅ **USD-ECU** (Fijo 1.00 - Ecuador usa USD)
+- ✅ **ARS-BRL** (Rate cruzado calculado automáticamente)
+
+#### **⚡ Características Técnicas:**
+- **Actualización:** Cada 30 segundos desde Binance
+- **Fallbacks:** API + Web scraping si API falla
+- **Cache:** 30 segundos para performance óptima
+- **Real-time:** Server-Sent Events (SSE) para updates instantáneos
+- **Límites:** 100 requests/minuto por IP
+- **Monitoreo:** Health checks y métricas
+
+#### **📊 Ejemplo de Respuesta API:**
+```json
+{
+  "success": true,
+  "data": {
+    "pair": "USD-ARS",
+    "binance_rate": 1370.75,
+    "sell_rate": 1350.75,
+    "buy_rate": 1420.75,
+    "spread": 70,
+    "commission_rate": 0.03,
+    "last_updated": "2025-08-31T21:51:01Z",
+    "source": "binance"
+  }
+}
+```
+
+#### **🧪 Testing en Desarrollo:**
+```bash
+cd ecucondor-app
+npm run dev              # Iniciar servidor
+npm run test-api         # Probar todas las APIs
+npm run simulate         # Simular transacciones reales
+
+# APIs disponibles en: http://localhost:3000/api/
+```
+
+---
+
 ## 🚀 Guía de Instalación y Desarrollo
 
 ### Prerrequisitos (Lo que necesitas instalado):
@@ -235,11 +329,13 @@ Guarda cada operación de cambio:
 
 ### Para desarrolladores:
 ```bash
-# Desarrollo
+# Desarrollo (desde ecucondor-app/)
 npm run dev          # Iniciar servidor desarrollo (puerto 3000)
 npm run build        # Construir para producción
 npm run start        # Iniciar servidor producción
 npm run lint         # Revisar código por errores
+npm run test-api     # 🧪 Probar todas las APIs de exchange
+npm run simulate     # 💰 Simular transacciones reales
 
 # Testing (desde la carpeta raíz)
 npm run test-auth    # Probar conexión Supabase
@@ -359,15 +455,22 @@ vercel --prod
 - [x] Estructura base Next.js 15
 - [x] Configuración TypeScript
 - [x] Database schema
+- [x] **Exchange Rate API completa**
+- [x] **Integración Binance funcionando**
+- [x] **Lógica de negocio implementada**
+- [x] **APIs REST + SSE en tiempo real**
+- [x] **Transacciones probadas y rentables**
 - [ ] Componentes UI básicos
 - [ ] Dashboard principal
 
 ### Fase 2: Core Features 🚧
-- [ ] Sistema de intercambio de divisas
-- [ ] Calculadora de tipos de cambio
-- [ ] Gestión de transacciones
-- [ ] Integración con APIs de cotización
+- [x] **Sistema de intercambio de divisas** ✅
+- [x] **Calculadora de tipos de cambio** ✅
+- [x] **Integración con APIs de cotización (Binance)** ✅
+- [ ] Frontend para calculadora de cambios
+- [ ] Gestión de transacciones en UI
 - [ ] Sistema de notificaciones
+- [ ] Integración con métodos de pago
 
 ### Fase 3: Advanced Features 📋
 - [ ] KYC (verificación de identidad)

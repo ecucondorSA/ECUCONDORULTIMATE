@@ -6,13 +6,18 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test-api": "node test-api.js",
+    "simulate": "node -e \"import('./src/lib/examples/api-usage.js').then(m => m.simulateTransactions())\""
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.56.1",
+    "@types/jsdom": "^21.1.7",
+    "cheerio": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "jsdom": "^26.1.0",
     "lucide-react": "^0.542.0",
     "next": "15.5.2",
     "react": "19.1.0",
