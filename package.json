@@ -1,0 +1,30 @@
+{
+  "name": "ecucondorultimate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test-auth": "node test-auth.js",
+    "demo": "node demo.js",
+    "test-google": "node test-google-auth.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ecucondorSA/ECUCONDORULTIMATE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ecucondorSA/ECUCONDORULTIMATE/issues"
+  },
+  "homepage": "https://github.com/ecucondorSA/ECUCONDORULTIMATE#readme",
+  "dependencies": {
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
+    "@supabase/supabase-js": "^2.56.1",
+    "dotenv": "^17.2.1"
+  }
+}
