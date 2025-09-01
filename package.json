@@ -5,10 +5,15 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "build": "cd ecucondor-app && npm install && npm run build",
+    "dev": "cd ecucondor-app && npm run dev", 
+    "start": "cd ecucondor-app && npm run start",
+    "lint": "cd ecucondor-app && npm run lint",
     "test": "echo \"Error: no test specified\" && exit 1",
     "test-auth": "node test-auth.js",
     "demo": "node demo.js",
-    "test-google": "node test-google-auth.js"
+    "test-google": "node test-google-auth.js",
+    "vercel-build": "cd ecucondor-app && npm install && npm run build"
   },
   "repository": {
     "type": "git",

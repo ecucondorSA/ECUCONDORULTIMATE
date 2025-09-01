@@ -1,7 +1,18 @@
 {
+  "buildCommand": "cd ecucondor-app && npm install && npm run build",
+  "devCommand": "cd ecucondor-app && npm run dev",
+  "installCommand": "cd ecucondor-app && npm install",
+  "outputDirectory": "ecucondor-app/.next",
+  "framework": "nextjs",
   "functions": {
     "ecucondor-app/src/app/api/**/*.ts": {
       "runtime": "nodejs20.x"
     }
+  },
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ecucondor-app/",
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "@next_public_supabase_url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next_public_supabase_anon_key",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key"
   }
 }

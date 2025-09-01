@@ -1,0 +1,11 @@
+# Ignore root level files that aren't needed for deployment
+node_modules
+.git
+*.md
+test-*.js
+demo.js
+
+# Only deploy the Next.js app
+!ecucondor-app/
+ecucondor-app/node_modules
+ecucondor-app/.next/cache
