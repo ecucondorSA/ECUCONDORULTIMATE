@@ -1,5 +1,5 @@
 // Currency types
-export type Currency = 'USD' | 'ARS' | 'BRL' | 'ECU'
+export type Currency = 'USD' | 'ARS' | 'BRL'
 
 // Exchange rate types
 export interface ExchangeRate {
@@ -7,7 +7,7 @@ export interface ExchangeRate {
   pair: string // 'USD-ARS', 'USD-BRL', etc.
   base_currency: Currency
   target_currency: Currency
-  binance_rate?: number // Rate from Binance (null for ECU)
+  binance_rate?: number // Rate from Binance
   sell_rate: number // Ecucondor sells base currency to client
   buy_rate: number // Ecucondor buys base currency from client
   spread: number // buy_rate - sell_rate

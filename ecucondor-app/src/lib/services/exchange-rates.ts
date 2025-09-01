@@ -24,14 +24,6 @@ export class ExchangeRateService {
       commission_sell: 0.02,   // 2% commission USD->BRL
       commission_buy: 0        // 0% commission BRL->USD
     },
-    {
-      pair: 'USD-ECU',
-      // No source_symbol - Ecuador uses USD officially
-      sell_adjustment: 0,
-      buy_adjustment: 0,
-      commission_sell: 0.01,   // 1% commission USD->ECU
-      commission_buy: 0        // 0% commission ECU->USD  
-    }
   ]
 
   static getInstance(): ExchangeRateService {

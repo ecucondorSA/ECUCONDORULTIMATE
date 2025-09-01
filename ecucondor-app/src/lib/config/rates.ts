@@ -23,31 +23,23 @@ export const RATE_CONFIG = {
       commission_sell: 0.02,  // 2% commission
       commission_buy: 0
     },
-    'USD-ECU': {
-      sell: 0,        // Ecuador uses USD officially
-      buy: 0,
-      commission_sell: 0.01,  // 1% commission
-      commission_buy: 0
-    }
   },
   
   // Binance symbols mapping
   BINANCE_SYMBOLS: {
     'USD-ARS': 'USDTARS',
     'USD-BRL': 'USDTBRL'
-    // USD-ECU is fixed at 1.00
   },
   
   // Supported currency pairs
   SUPPORTED_PAIRS: [
-    'USD-ARS', 'USD-BRL', 'USD-ECU',
+    'USD-ARS', 'USD-BRL',
     'ARS-BRL', // Calculated cross rate
     // Add more as needed
   ],
   
   // Default values
   DEFAULTS: {
-    USD_ECU_RATE: 1.00,  // Ecuador uses USD
     MAX_TRANSACTION_AMOUNT: 1000000,
     MIN_TRANSACTION_AMOUNT: 1
   }
@@ -99,12 +91,4 @@ export const CURRENCY_INFO = {
     decimal_places: 2,
     countries: ['Brazil']
   },
-  ECU: {
-    name: 'Ecuadorian Dollar',
-    symbol: '$',
-    code: 'ECU',
-    decimal_places: 2,
-    countries: ['Ecuador'],
-    note: 'Ecuador officially uses USD'
-  }
 } as const

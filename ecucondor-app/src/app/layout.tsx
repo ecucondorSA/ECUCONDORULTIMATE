@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import "../styles/ecucondor-theme.css";
+import { AuthProvider } from "@/context/AuthContext";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -24,7 +25,9 @@ export default function RootLayout({
       <body
         className={`${outfit.variable} font-outfit antialiased bg-ecucondor-primary text-ecucondor-primary`}
       >
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

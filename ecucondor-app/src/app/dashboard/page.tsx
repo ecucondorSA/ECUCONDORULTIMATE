@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import Link from 'next/link';
 
 // Dashboard stats component
 const DashboardStats = () => {
@@ -247,6 +249,7 @@ const RecentTransactions = () => {
 
 // Main dashboard page
 export default function DashboardPage() {
+  const { user, loading } = useAuth();
   const [rates, setRates] = useState<{
     pair: string;
     buy_rate: number;
@@ -274,14 +277,57 @@ export default function DashboardPage() {
     }
   };
 
+  const getUserName = () => {
+    if (user?.user_metadata?.firstName) {
+      return user.user_metadata.firstName;
+    }
+    if (user?.email) {
+      return user.email.split('@')[0];
+    }
+    return 'Usuario';
+  };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Buenos días';
+    if (hour < 18) return 'Buenas tardes';
+    return 'Buenas noches';
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-ecucondor-primary">
+        <div className="text-center">
+          <div className="ecucondor-pulse w-16 h-16 bg-ecucondor-yellow rounded-full mx-auto mb-4"></div>
+          <p className="text-ecucondor-muted">Cargando dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-ecucondor-primary">Dashboard</h1>
-        <p className="text-ecucondor-muted">
-          Bienvenido a tu panel de control de Ecucondor
-        </p>
+      {/* Personalized Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-ecucondor-primary">
+            {getGreeting()}, <span className="text-neon-gold">{getUserName()}</span>
+          </h1>
+          <p className="text-ecucondor-muted">
+            Bienvenido a tu panel de control de Ecucondor
+          </p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <Link
+            href="/calculator"
+            className="btn-ecucondor-primary px-6 py-3 rounded-lg font-medium flex items-center space-x-2 transition-all"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 0v6m0-6l-6 6" />
+            </svg>
+            <span>Realizar Transacción</span>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -303,12 +349,12 @@ export default function DashboardPage() {
           Acciones Rápidas
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="btn-ecucondor-primary p-4 rounded-lg text-center">
+          <Link href="/calculator" className="btn-ecucondor-primary p-4 rounded-lg text-center block hover:no-underline">
             <svg className="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 0v6m0-6l-6 6" />
             </svg>
-            Nueva Transacción
-          </button>
+            Realizar Transacción
+          </Link>
           <button className="btn-ecucondor-secondary p-4 rounded-lg text-center">
             <svg className="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />

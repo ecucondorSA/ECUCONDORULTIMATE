@@ -49,9 +49,9 @@ export function createErrorResponse(
 // Validate currency pair format
 export function validateCurrencyPair(pair: string): boolean {
   const validPairs = [
-    'USD-ARS', 'USD-BRL', 'USD-ECU',
-    'ARS-BRL', 'ARS-ECU', 'BRL-ECU',
-    'ARS-USD', 'BRL-USD', 'ECU-USD'
+    'USD-ARS', 'USD-BRL',
+    'ARS-BRL',
+    'ARS-USD', 'BRL-USD'
   ]
   
   return validPairs.includes(pair.toUpperCase())
@@ -101,10 +101,6 @@ export function formatCurrency(
       style: 'currency',
       currency: 'BRL'
     }),
-    ECU: new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD' // Ecuador uses USD
-    })
   }
 
   const formatter = formatters[currency.toUpperCase()]
