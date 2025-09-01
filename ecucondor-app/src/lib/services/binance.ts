@@ -1,10 +1,5 @@
 import { BinancePrice } from '@/lib/types'
 
-interface BinanceApiResponse {
-  symbol: string
-  price: string
-}
-
 interface BinanceOrderBook {
   symbol: string
   bids: [string, string][] // [price, quantity]
@@ -87,7 +82,7 @@ export class BinanceService {
         timestamp: new Date().toISOString()
       }
     } catch (error) {
-      console.log(`Binance API failed for ${symbol}, trying scraping...`)
+      console.error(`Binance API failed for ${symbol}, trying scraping...`, error)
       return null
     }
   }

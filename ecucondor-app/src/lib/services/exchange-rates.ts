@@ -1,4 +1,4 @@
-import { ExchangeRate, RateConfig, Currency } from '@/lib/types'
+import { ExchangeRate, RateConfig, Currency, BinancePrice } from '@/lib/types'
 import { BinanceService } from './binance'
 
 export class ExchangeRateService {
@@ -80,8 +80,8 @@ export class ExchangeRateService {
    * Calculate rate for a specific pair
    */
   private async calculateRate(
-    config: RateConfig, 
-    binancePrices: { [symbol: string]: any }
+    config: RateConfig,
+    binancePrices: Record<string, BinancePrice | null>
   ): Promise<ExchangeRate> {
     let basePrice: number
     let source: 'binance' | 'fixed' | 'calculated' = 'fixed'
