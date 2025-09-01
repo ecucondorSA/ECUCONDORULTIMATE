@@ -26,10 +26,10 @@ async function ensureRatesUpdated(): Promise<void> {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { pair: string } }
+  { params }: { params: Promise<{ pair: string }> }
 ) {
+  const { pair } = await params
   try {
-    const { pair } = params
     const searchParams = request.nextUrl.searchParams
     const type = searchParams.get('type') as 'buy' | 'sell' | null
     const amount = searchParams.get('amount')
@@ -105,7 +105,7 @@ export async function GET(
     })
 
   } catch (error) {
-    console.error(`❌ Error in /api/rates/${params.pair}:`, error)
+    console.error(`❌ Error in /api/rates/${pair}:`, error)
     
     return NextResponse.json(
       { 

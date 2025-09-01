@@ -105,9 +105,9 @@ function stopPairUpdates(pair: string) {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { pair: string } }
+  { params }: { params: Promise<{ pair: string }> }
 ) {
-  const { pair } = params
+  const { pair } = await params
   const pairUpper = pair.toUpperCase()
   
   console.log(`🔄 New SSE connection for ${pairUpper}`)

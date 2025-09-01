@@ -13,10 +13,10 @@ function getExchangeService(): ExchangeRateService {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { pair: string } }
+  { params }: { params: Promise<{ pair: string }> }
 ) {
+  const { pair } = await params
   try {
-    const { pair } = params
     const searchParams = request.nextUrl.searchParams
     const amount = searchParams.get('amount')
 
@@ -88,7 +88,7 @@ export async function GET(
     return createSuccessResponse(data)
 
   } catch (error) {
-    console.error(`❌ Error in /api/rates/${params.pair}/buy:`, error)
+    console.error(`❌ Error in /api/rates/${pair}/buy:`, error)
     
     return createErrorResponse(
       'Failed to get buy rate',

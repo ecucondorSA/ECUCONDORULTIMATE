@@ -1,5 +1,4 @@
 // Test script for Ecucondor Exchange Rate APIs
-import { simulateTransactions } from './src/lib/examples/api-usage.js'
 
 const BASE_URL = 'http://localhost:3000/api'
 
