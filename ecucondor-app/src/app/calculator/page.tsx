@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { logger } from '@/lib/utils/logger';
+import { COMPANY_CONFIG } from '@/lib/config/company';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -36,22 +37,21 @@ const COMMISSION_RATES = {
   standard: 0.0,   // 0% para otros pares
 };
 
-// Datos bancarios para instrucciones de pago
-const PAYMENT_INFO = {
+// Datos bancarios para instrucciones de pago - ahora desde configuración
+const PAYMENT_DATA = {
   ecucondor: {
-    company: 'Ecucondor SAS',
-    ruc: '1391937000OO-1',
-    bank: 'Produbanco',
-    accountType: 'Cuenta Corriente',
-    // En una app real, estos datos estarían en variables de entorno
+    company: COMPANY_CONFIG.name,
+    ruc: COMPANY_CONFIG.ruc,
+    bank: COMPANY_CONFIG.bank,
+    accountType: COMPANY_CONFIG.bankAccountType,
   },
   mercadopago: {
     alias: 'ecucondor.mp',
-    // En una app real, estos datos estarían en variables de entorno
+    // TODO: Mover a variables de entorno si se necesita
   }
 };
 
-const WHATSAPP_NUMBER = '+5491166599559';
+const WHATSAPP_NUMBER = COMPANY_CONFIG.whatsapp;
 
 export default function CalculatorPage() {
   const { user, loading: authLoading } = useAuth();
@@ -331,7 +331,7 @@ export default function CalculatorPage() {
         // - Cliente da ARS (recibe USD) → Transferencia a Produbanco
         // - Cliente da USD (recibe ARS) → Transferencia a Produbanco también
         method: 'transferencia bancaria',
-        account: `${PAYMENT_INFO.ecucondor.company}\nRUC: ${PAYMENT_INFO.ecucondor.ruc}\n${PAYMENT_INFO.ecucondor.bank} - ${PAYMENT_INFO.ecucondor.accountType}\n\n🏦 Número de cuenta: [Solicitar a Ecucondor]\n💳 Tipo: ${PAYMENT_INFO.ecucondor.accountType}`
+        account: `${PAYMENT_DATA.ecucondor.company}\nRUC: ${PAYMENT_DATA.ecucondor.ruc}\n${PAYMENT_DATA.ecucondor.bank} - ${PAYMENT_DATA.ecucondor.accountType}\n\n🏦 Número de cuenta: [Solicitar a Ecucondor]\n💳 Tipo: ${PAYMENT_DATA.ecucondor.accountType}`
       },
       receive: {
         currency: isReceivingDollars ? 'USD' : 'ARS',
@@ -375,7 +375,7 @@ Soy ${userName} y les escribo para hacer un cambio con ustedes 🎉
 
 📄 *Comprobante digital adjunto:* 📋
 • 🆔 ID de transacción: ${transactionId}
-• 📧 También enviado a ecucondor@gmail.com para sus registros
+• 📧 También enviado a ${COMPANY_CONFIG.email} para sus registros
 • 🔒 Documento seguro con todos los detalles`;
     }
 
@@ -538,19 +538,19 @@ Que tengan un día increíble 🌈✨`;
       doc.setFont('helvetica', 'bold');
       doc.text('Beneficiario:', 25, yPos);
       doc.setFont('helvetica', 'normal');
-      doc.text('Ecucondor SAS', 80, yPos);
+      doc.text(COMPANY_CONFIG.name, 80, yPos);
       
       yPos += 8;
       doc.setFont('helvetica', 'bold');
       doc.text('RUC:', 25, yPos);
       doc.setFont('helvetica', 'normal');
-      doc.text('1391937000OO-1', 80, yPos);
+      doc.text(COMPANY_CONFIG.ruc, 80, yPos);
       
       yPos += 8;
       doc.setFont('helvetica', 'bold');
       doc.text('Banco:', 25, yPos);
       doc.setFont('helvetica', 'normal');
-      doc.text('Produbanco - Cuenta Corriente', 80, yPos);
+      doc.text(COMPANY_CONFIG.bankFullName, 80, yPos);
       
       yPos += 8;
       doc.setFont('helvetica', 'bold');
@@ -565,7 +565,7 @@ Que tengan un día increíble 🌈✨`;
       
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.text('✓ Este comprobante ha sido enviado automáticamente a ecucondor@gmail.com', 25, yPos + 8);
+      doc.text(`✓ Este comprobante ha sido enviado automáticamente a ${COMPANY_CONFIG.email}`, 25, yPos + 8);
       doc.text('⏱ Tiempo estimado de procesamiento: 5 minutos - 1 hora', 25, yPos + 16);
       
       // Información de contacto en el pie
@@ -573,7 +573,7 @@ Que tengan un día increíble 🌈✨`;
       doc.rect(0, 285, 210, 12, 'F');
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(9);
-      doc.text('WhatsApp: +54 9 11 6659-9559 | Email: ecucondor@gmail.com | Web: ecucondor.com', 25, 292);
+      doc.text(`WhatsApp: ${COMPANY_CONFIG.whatsappDisplay} | Email: ${COMPANY_CONFIG.email} | Web: ${COMPANY_CONFIG.domain}`, 25, 292);
       
       logger.info('PDF generado exitosamente');
       return { doc, transactionId };
@@ -592,7 +592,7 @@ Que tengan un día increíble 🌈✨`;
       
       // En una implementación real, esto se enviaría a una API
       const emailData = {
-        to: 'ecucondor@gmail.com',
+        to: COMPANY_CONFIG.email,
         subject: `Nuevo comprobante de transacción - ${pdfData.transactionId}`,
         body: `
           Se ha generado un nuevo comprobante de transacción.
