@@ -1,15 +1,111 @@
+export interface ExchangeRate {
+  id: string;
+  from: string;
+  to: string;
+  rate: number;
+  lastUpdate: string;
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  location: string;
+  country: string;
+  comment: string;
+  initial: string;
+}
+
+export interface Feature {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+}
+
+export const exchangeRates: ExchangeRate[] = [
+  {
+    id: 'usd-ars',
+    from: 'USD',
+    to: 'ARS',
+    rate: 1341.72,
+    lastUpdate: '31 de agosto a las 22:08'
+  },
+  {
+    id: 'usd-brl',
+    from: 'USD',
+    to: 'BRL',
+    rate: 5.46,
+    lastUpdate: '31 de agosto a las 22:08'
+  },
+  {
+    id: 'ars-brl',
+    from: 'ARS',
+    to: 'BRL',
+    rate: 0.0041,
+    lastUpdate: '31 de agosto a las 22:08'
+  }
+];
+
+export const features: Feature[] = [
+  {
+    id: 'security',
+    icon: '🔒',
+    title: 'Máxima Seguridad',
+    description: 'Protegemos tus transacciones con tecnología de punta.'
+  },
+  {
+    id: 'speed',
+    icon: '⚡',
+    title: 'Rapidez Inigualable',
+    description: 'Procesos optimizados para transacciones instantáneas.'
+  },
+  {
+    id: 'rates',
+    icon: '📈',
+    title: 'Tasas Competitivas',
+    description: 'Las mejores tasas del mercado, siempre actualizadas.'
+  }
+];
+
+export const testimonials: Testimonial[] = [
+  {
+    id: 'maria',
+    name: 'Maria G.',
+    location: 'Buenos Aires',
+    country: 'Argentina',
+    comment: 'ECUCONDOR me ha simplificado la vida. Cambio divisas de forma rápida y segura, ¡y siempre con las mejores tasas!',
+    initial: 'M'
+  },
+  {
+    id: 'joao',
+    name: 'João S.',
+    location: 'São Paulo',
+    country: 'Brasil',
+    comment: 'Excelente serviço. Rápido, confiável e com um atendimento ao cliente impecável. Recomendo!',
+    initial: 'J'
+  },
+  {
+    id: 'carlos',
+    name: 'Carlos M.',
+    location: 'Cuenca',
+    country: 'Ecuador',
+    comment: 'Como extranjero, necesito un servicio de cambio de divisas confiable. ECUCONDOR cumple con creces.',
+    initial: 'C'
+  }
+];
+
+// Interfaces para productos financieros
 export interface FinancialRate {
   id: string;
   name: string;
   rate: number;
-  type: 'deposit' | 'credit' | 'investment';
+  description?: string;
   minAmount?: number;
   maxAmount?: number;
   term?: string;
-  description?: string;
 }
 
-export interface FinancialProduct {
+export interface InvestmentProduct {
   id: string;
   name: string;
   description: string;
@@ -18,155 +114,169 @@ export interface FinancialProduct {
   documents: string[];
 }
 
-export const depositRates: FinancialRate[] = [
-  {
-    id: 'cuenta-ahorro',
-    name: 'Cuenta de Ahorro',
-    rate: 4.50,
-    type: 'deposit',
-    minAmount: 100,
-    description: 'Cuenta de ahorro con acceso inmediato a tu dinero'
-  },
-  {
-    id: 'cdt-30-dias',
-    name: 'CDT 30 días',
-    rate: 6.25,
-    type: 'deposit',
-    minAmount: 1000,
-    term: '30 días',
-    description: 'Certificado de Depósito a Término por 30 días'
-  },
-  {
-    id: 'cdt-90-dias',
-    name: 'CDT 90 días',
-    rate: 7.50,
-    type: 'deposit',
-    minAmount: 1000,
-    term: '90 días',
-    description: 'Certificado de Depósito a Término por 90 días'
-  },
-  {
-    id: 'cdt-180-dias',
-    name: 'CDT 180 días',
-    rate: 8.75,
-    type: 'deposit',
-    minAmount: 1000,
-    term: '180 días',
-    description: 'Certificado de Depósito a Término por 180 días'
-  },
-  {
-    id: 'cdt-365-dias',
-    name: 'CDT 365 días',
-    rate: 9.50,
-    type: 'deposit',
-    minAmount: 1000,
-    term: '365 días',
-    description: 'Certificado de Depósito a Término por 365 días'
-  }
-];
-
-export const creditRates: FinancialRate[] = [
-  {
-    id: 'credito-consumo',
-    name: 'Crédito de Consumo',
-    rate: 18.50,
-    type: 'credit',
-    minAmount: 5000,
-    maxAmount: 50000,
-    term: 'Hasta 60 meses',
-    description: 'Préstamo personal para necesidades inmediatas'
-  },
-  {
-    id: 'credito-hipotecario',
-    name: 'Crédito Hipotecario',
-    rate: 12.75,
-    type: 'credit',
-    minAmount: 25000,
-    maxAmount: 200000,
-    term: 'Hasta 20 años',
-    description: 'Financiamiento para la compra de vivienda'
-  },
-  {
-    id: 'credito-vehicular',
-    name: 'Crédito Vehicular',
-    rate: 15.25,
-    type: 'credit',
-    minAmount: 10000,
-    maxAmount: 100000,
-    term: 'Hasta 84 meses',
-    description: 'Financiamiento para la compra de vehículos'
-  },
-  {
-    id: 'credito-empresarial',
-    name: 'Crédito Empresarial',
-    rate: 16.80,
-    type: 'credit',
-    minAmount: 50000,
-    maxAmount: 500000,
-    term: 'Hasta 10 años',
-    description: 'Financiamiento para empresas y emprendimientos'
-  }
-];
-
-export const investmentProducts: FinancialProduct[] = [
-  {
-    id: 'fondo-inversion',
-    name: 'Fondo de Inversión Colectiva',
-    description: 'Invierte en una cartera diversificada de instrumentos financieros',
-    features: [
-      'Diversificación automática',
-      'Gestión profesional',
-      'Liquidez diaria',
-      'Rendimientos históricos superiores al mercado'
-    ],
-    requirements: [
-      'Monto mínimo: $5,000',
-      'Edad mínima: 18 años',
-      'Documentos de identidad vigentes'
-    ],
-    documents: [
-      'Cédula de identidad',
-      'Comprobante de ingresos',
-      'Declaración de renta (si aplica)'
-    ]
-  },
-  {
-    id: 'seguro-vida',
-    name: 'Seguro de Vida',
-    description: 'Protege el futuro financiero de tu familia',
-    features: [
-      'Cobertura por muerte natural y accidental',
-      'Indemnización por invalidez total',
-      'Beneficios adicionales por hospitalización',
-      'Flexibilidad en el pago de primas'
-    ],
-    requirements: [
-      'Edad: 18-65 años',
-      'Estado de salud favorable',
-      'Sin antecedentes médicos graves'
-    ],
-    documents: [
-      'Cédula de identidad',
-      'Examen médico completo',
-      'Historial médico'
-    ]
-  }
-];
-
+// Datos de la empresa
 export const companyInfo = {
-  name: 'EcuCondor',
-  slogan: 'Tu aliado financiero de confianza',
-  description: 'Somos una institución financiera comprometida con el desarrollo económico de Ecuador, ofreciendo productos y servicios de calidad que se adaptan a las necesidades de nuestros clientes.',
+  name: 'ECUCONDOR ULTIMATE',
+  slogan: 'Tu Puente Financiero Global',
+  description: 'La plataforma más segura para tus transacciones internacionales entre Argentina, Brasil y Ecuador',
   contact: {
-    phone: '+593 2 234 5678',
-    email: 'info@ecucondor.com',
-    address: 'Av. Amazonas N45-123, Quito, Ecuador',
-    hours: 'Lunes a Viernes: 8:00 AM - 6:00 PM'
+    phone: '+54 (911) 6659-9559',
+    email: 'Ecucondor@gmail.com',
+    address: 'Av. Principal 123, Cuenca, Ecuador',
+    hours: 'Lunes a Viernes: 9:00 AM - 6:00 PM'
   },
   socialMedia: {
     facebook: 'https://facebook.com/ecucondor',
     twitter: 'https://twitter.com/ecucondor',
-    instagram: 'https://instagram.com/ecucondor',
-    linkedin: 'https://linkedin.com/company/ecucondor'
+    instagram: 'https://instagram.com/ecucondor'
   }
 };
+
+// Tasas de depósito
+export const depositRates: FinancialRate[] = [
+  {
+    id: 'cuenta-ahorro',
+    name: 'Cuenta de Ahorro',
+    rate: 2.5,
+    description: 'Ahorra con seguridad y obtén rendimientos atractivos',
+    minAmount: 100,
+    maxAmount: 50000,
+    term: 'Sin plazo fijo'
+  },
+  {
+    id: 'cd-30-dias',
+    name: 'Certificado de Depósito 30 días',
+    rate: 3.2,
+    description: 'Inversión segura a corto plazo',
+    minAmount: 500,
+    maxAmount: 100000,
+    term: '30 días'
+  },
+  {
+    id: 'cd-90-dias',
+    name: 'Certificado de Depósito 90 días',
+    rate: 4.1,
+    description: 'Mayor rentabilidad con plazo medio',
+    minAmount: 1000,
+    maxAmount: 200000,
+    term: '90 días'
+  },
+  {
+    id: 'cd-180-dias',
+    name: 'Certificado de Depósito 180 días',
+    rate: 5.3,
+    description: 'Excelente opción para inversión a mediano plazo',
+    minAmount: 2000,
+    maxAmount: 500000,
+    term: '180 días'
+  },
+  {
+    id: 'cd-365-dias',
+    name: 'Certificado de Depósito 365 días',
+    rate: 6.8,
+    description: 'Máxima rentabilidad para inversión a largo plazo',
+    minAmount: 5000,
+    maxAmount: 1000000,
+    term: '365 días'
+  }
+];
+
+// Tasas de crédito
+export const creditRates: FinancialRate[] = [
+  {
+    id: 'credito-personal',
+    name: 'Crédito Personal',
+    rate: 12.5,
+    description: 'Para tus necesidades personales y proyectos',
+    minAmount: 1000,
+    maxAmount: 25000,
+    term: 'Hasta 36 meses'
+  },
+  {
+    id: 'credito-vehiculo',
+    name: 'Crédito Vehículo',
+    rate: 9.8,
+    description: 'Financia tu vehículo nuevo o usado',
+    minAmount: 5000,
+    maxAmount: 80000,
+    term: 'Hasta 60 meses'
+  },
+  {
+    id: 'credito-vivienda',
+    name: 'Crédito Vivienda',
+    rate: 7.2,
+    description: 'Haz realidad el sueño de tu casa propia',
+    minAmount: 15000,
+    maxAmount: 200000,
+    term: 'Hasta 240 meses'
+  },
+  {
+    id: 'credito-empresarial',
+    name: 'Crédito Empresarial',
+    rate: 10.5,
+    description: 'Impulsa el crecimiento de tu empresa',
+    minAmount: 10000,
+    maxAmount: 500000,
+    term: 'Hasta 120 meses'
+  },
+  {
+    id: 'credito-educativo',
+    name: 'Crédito Educativo',
+    rate: 8.9,
+    description: 'Invierte en tu futuro y el de tu familia',
+    minAmount: 2000,
+    maxAmount: 50000,
+    term: 'Hasta 84 meses'
+  }
+];
+
+// Productos de inversión
+export const investmentProducts: InvestmentProduct[] = [
+  {
+    id: 'fondo-mutuo',
+    name: 'Fondo Mutuo Conservador',
+    description: 'Inversión de bajo riesgo con rendimientos estables y predecibles',
+    features: [
+      'Diversificación automática',
+      'Liquidez diaria',
+      'Gestión profesional',
+      'Riesgo controlado'
+    ],
+    requirements: [
+      'Monto mínimo: $1,000',
+      'Documento de identidad',
+      'Comprobante de ingresos',
+      'Firma de contrato'
+    ],
+    documents: [
+      'Cédula de identidad',
+      'Comprobante de ingresos',
+      'Referencias bancarias',
+      'Formulario de solicitud'
+    ]
+  },
+  {
+    id: 'fondo-agresivo',
+    name: 'Fondo Mutuo Agresivo',
+    description: 'Para inversionistas con mayor tolerancia al riesgo y búsqueda de mayores rendimientos',
+    features: [
+      'Alto potencial de crecimiento',
+      'Diversificación internacional',
+      'Gestión activa',
+      'Acceso a mercados globales'
+    ],
+    requirements: [
+      'Monto mínimo: $5,000',
+      'Perfil de riesgo alto',
+      'Experiencia en inversiones',
+      'Patrimonio mínimo: $50,000'
+    ],
+    documents: [
+      'Cédula de identidad',
+      'Comprobante de patrimonio',
+      'Declaración de renta',
+      'Formulario de perfil de riesgo',
+      'Contrato de inversión'
+    ]
+  }
+];
