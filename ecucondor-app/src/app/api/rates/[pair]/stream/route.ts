@@ -21,7 +21,7 @@ function broadcastToPairClients(pair: string, data: string) {
   for (const controller of connections) {
     try {
       controller.enqueue(`data: ${data}\n\n`)
-    } catch (_error) {
+    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
       console.log(`Client disconnected from ${pair} stream`)
       disconnectedControllers.push(controller)
     }
@@ -171,7 +171,7 @@ export async function GET(
             connections_for_pair: pairConnections.get(pairUpper)?.size || 0
           })
           controller.enqueue(`data: ${heartbeat}\n\n`)
-        } catch (_error) {
+        } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
           clearInterval(heartbeatInterval)
         }
       }, 15000)

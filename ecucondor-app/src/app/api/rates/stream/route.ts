@@ -19,7 +19,7 @@ function broadcastToClients(data: string) {
   for (const controller of activeConnections) {
     try {
       controller.enqueue(`data: ${data}\n\n`)
-    } catch (_error) {
+    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
       console.log('Client disconnected, removing from active connections')
       disconnectedControllers.push(controller)
     }
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
             active_connections: activeConnections.size
           })
           controller.enqueue(`data: ${heartbeat}\n\n`)
-        } catch (_error) {
+        } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
           clearInterval(heartbeatInterval)
         }
       }, 15000)

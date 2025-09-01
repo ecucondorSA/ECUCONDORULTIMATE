@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "ecucondor-app/src/app/api/**/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  }
+}

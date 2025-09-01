@@ -83,7 +83,7 @@ export class BinanceService {
         price: averagePrice,
         timestamp: new Date().toISOString()
       }
-    } catch (_error) {
+    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
       console.log(`Binance API failed for ${symbol}, trying scraping...`)
       return null
     }
