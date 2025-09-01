@@ -4,6 +4,10 @@ import { ExchangeRateService } from '@/lib/services/exchange-rates'
 let exchangeService: ExchangeRateService | null = null
 const pairConnections = new Map<string, Set<ReadableStreamDefaultController>>()
 
+interface ControllerWithCleanup extends ReadableStreamDefaultController {
+  cleanup?: () => void
+}
+
 function getExchangeService(): ExchangeRateService {
   if (!exchangeService) {
     exchangeService = ExchangeRateService.getInstance()
@@ -21,7 +25,7 @@ function broadcastToPairClients(pair: string, data: string) {
   for (const controller of connections) {
     try {
       controller.enqueue(`data: ${data}\n\n`)
-    } catch (error) {
+    } catch {
       console.log(`Client disconnected from ${pair} stream`)
       disconnectedControllers.push(controller)
     }
@@ -43,31 +47,31 @@ async function updatePairAndBroadcast(pair: string) {
   try {
     const service = getExchangeService()
     await service.updateRates()
-    
+
     const rate = service.getRate(pair)
     if (!rate) return
-    
+
     const message = JSON.stringify({
       type: 'rate_update',
       pair,
       data: rate,
       timestamp: new Date().toISOString()
     })
-    
+
     broadcastToPairClients(pair, message)
-    
+
     const connectionCount = pairConnections.get(pair)?.size || 0
     console.log(`📡 Broadcasted ${pair} rate to ${connectionCount} clients`)
   } catch (error) {
     console.error(`❌ Error updating ${pair} rate:`, error)
-    
+
     const errorMessage = JSON.stringify({
       type: 'error',
       pair,
       error: `Failed to update ${pair} rate`,
       timestamp: new Date().toISOString()
     })
-    
+
     broadcastToPairClients(pair, errorMessage)
   }
 }
@@ -163,21 +167,22 @@ export async function GET(
       
       // Heartbeat for this specific connection
       const heartbeatInterval = setInterval(() => {
-        try {
-          const heartbeat = JSON.stringify({
-            type: 'heartbeat',
-            pair: pairUpper,
-            timestamp: new Date().toISOString(),
-            connections_for_pair: pairConnections.get(pairUpper)?.size || 0
-          })
-          controller.enqueue(`data: ${heartbeat}\n\n`)
-        } catch (error) {
-          clearInterval(heartbeatInterval)
-        }
-      }, 15000)
+    try {
+      const heartbeat = JSON.stringify({
+        type: 'heartbeat',
+        pair: pairUpper,
+        timestamp: new Date().toISOString(),
+        connections_for_pair: pairConnections.get(pairUpper)?.size || 0
+      })
+      controller.enqueue(`data: ${heartbeat}\n\n`)
+    } catch {
+      clearInterval(heartbeatInterval)
+    }
+  }, 15000)
       
       // Store cleanup function
-      ;(controller as any).cleanup = () => {
+      const ctrl = controller as ControllerWithCleanup
+      ctrl.cleanup = () => {
         clearInterval(heartbeatInterval)
         const connections = pairConnections.get(pairUpper)
         if (connections) {

@@ -5,6 +5,10 @@ import { ExchangeRateService } from '@/lib/services/exchange-rates'
 let exchangeService: ExchangeRateService | null = null
 const activeConnections = new Set<ReadableStreamDefaultController>()
 
+interface ControllerWithCleanup extends ReadableStreamDefaultController {
+  cleanup?: () => void
+}
+
 function getExchangeService(): ExchangeRateService {
   if (!exchangeService) {
     exchangeService = ExchangeRateService.getInstance()
@@ -15,11 +19,11 @@ function getExchangeService(): ExchangeRateService {
 // Broadcast to all connected clients
 function broadcastToClients(data: string) {
   const disconnectedControllers: ReadableStreamDefaultController[] = []
-  
+
   for (const controller of activeConnections) {
     try {
       controller.enqueue(`data: ${data}\n\n`)
-    } catch (error) {
+    } catch {
       console.log('Client disconnected, removing from active connections')
       disconnectedControllers.push(controller)
     }
@@ -49,8 +53,7 @@ async function updateAndBroadcast() {
     console.log(`📡 Broadcasted rates to ${activeConnections.size} clients`)
   } catch (error) {
     console.error('❌ Error updating rates for broadcast:', error)
-    
-    // Broadcast error to clients
+
     const errorMessage = JSON.stringify({
       type: 'error',
       error: 'Failed to update rates',
@@ -128,19 +131,20 @@ export async function GET(request: NextRequest) {
       // Send heartbeat every 15 seconds
       const heartbeatInterval = setInterval(() => {
         try {
-          const heartbeat = JSON.stringify({
-            type: 'heartbeat',
-            timestamp: new Date().toISOString(),
-            active_connections: activeConnections.size
-          })
-          controller.enqueue(`data: ${heartbeat}\n\n`)
-        } catch (error) {
-          clearInterval(heartbeatInterval)
-        }
-      }, 15000)
+      const heartbeat = JSON.stringify({
+        type: 'heartbeat',
+        timestamp: new Date().toISOString(),
+        active_connections: activeConnections.size
+      })
+      controller.enqueue(`data: ${heartbeat}\n\n`)
+    } catch {
+      clearInterval(heartbeatInterval)
+    }
+  }, 15000)
       
       // Store cleanup function
-      ;(controller as any).cleanup = () => {
+      const ctrl = controller as ControllerWithCleanup
+      ctrl.cleanup = () => {
         clearInterval(heartbeatInterval)
         activeConnections.delete(controller)
         stopGlobalUpdates()

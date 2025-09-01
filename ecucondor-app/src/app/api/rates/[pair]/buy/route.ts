@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ExchangeRateService } from '@/lib/services/exchange-rates'
+import { createErrorResponse, createSuccessResponse } from '@/lib/utils/api'
 
 let exchangeService: ExchangeRateService | null = null
 
@@ -20,10 +21,7 @@ export async function GET(
     const amount = searchParams.get('amount')
 
     if (!pair) {
-      return NextResponse.json(
-        { error: 'Currency pair is required' },
-        { status: 400 }
-      )
+      return createErrorResponse('Currency pair is required', 400)
     }
 
     const service = getExchangeService()
@@ -33,41 +31,53 @@ export async function GET(
     const rate = service.getRate(pairUpper)
 
     if (!rate) {
-      return NextResponse.json(
-        { error: `Exchange rate for ${pairUpper} not found` },
-        { status: 404 }
+      return createErrorResponse(
+        `Exchange rate for ${pairUpper} not found`,
+        404
       )
     }
 
-    // Return buy-specific information
-    const response: any = {
-      success: true,
-      data: {
-        pair: pairUpper,
-        type: 'buy',
-        rate: rate.buy_rate,
-        commission_rate: 0, // No commission for buy operations
-        spread: rate.spread,
-        last_updated: rate.last_updated
-      },
-      timestamp: new Date().toISOString()
+    interface BuyTransaction {
+      base_amount: number
+      target_amount: number
+      rate_used: number
+      commission: number
+      total_cost: number
+      requested_amount: number
+      description: string
+    }
+
+    interface BuyRateData {
+      pair: string
+      type: 'buy'
+      rate: number
+      commission_rate: number
+      spread: number
+      last_updated: string
+      transaction?: BuyTransaction
+    }
+
+    const data: BuyRateData = {
+      pair: pairUpper,
+      type: 'buy',
+      rate: rate.buy_rate,
+      commission_rate: 0,
+      spread: rate.spread,
+      last_updated: rate.last_updated
     }
 
     // If amount provided, calculate transaction
     if (amount) {
       const amountNum = parseFloat(amount)
       
-      if (isNaN(amountNum) || amountNum <= 0) {
-        return NextResponse.json(
-          { error: 'Invalid amount provided' },
-          { status: 400 }
-        )
-      }
+        if (isNaN(amountNum) || amountNum <= 0) {
+          return createErrorResponse('Invalid amount provided', 400)
+        }
 
       const transaction = service.calculateTransaction(pairUpper, amountNum, 'buy')
-      
+
       if (transaction) {
-        response.data.transaction = {
+        data.transaction = {
           ...transaction,
           requested_amount: amountNum,
           description: `Buy ${transaction.base_amount} ${rate.base_currency} for ${transaction.target_amount} ${rate.target_currency}`
@@ -75,18 +85,15 @@ export async function GET(
       }
     }
 
-    return NextResponse.json(response)
+    return createSuccessResponse(data)
 
   } catch (error) {
     console.error(`❌ Error in /api/rates/${params.pair}/buy:`, error)
     
-    return NextResponse.json(
-      { 
-        success: false,
-        error: 'Failed to get buy rate',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
+    return createErrorResponse(
+      'Failed to get buy rate',
+      500,
+      error instanceof Error ? error.message : 'Unknown error'
     )
   }
 }

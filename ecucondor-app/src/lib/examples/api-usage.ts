@@ -92,7 +92,7 @@ export async function calculateBuyTransaction(pair: string, amount: number) {
 /**
  * Example 5: Real-time rates using Server-Sent Events (SSE)
  */
-export function subscribeToAllRates(callback: (rates: any[]) => void) {
+export function subscribeToAllRates(callback: (rates: unknown[]) => void) {
   const eventSource = new EventSource('/api/rates/stream')
   
   eventSource.onopen = () => {
@@ -142,7 +142,7 @@ export function subscribeToAllRates(callback: (rates: any[]) => void) {
  */
 export function subscribeToSpecificRate(
   pair: string,
-  callback: (rate: any) => void
+  callback: (rate: unknown) => void
 ) {
   const eventSource = new EventSource(`/api/rates/${pair}/stream`)
   
@@ -295,7 +295,6 @@ export async function simulateTransactions() {
   // Simulation 2: Client with 150,000 ARS needs dollars  
   console.log('\n💰 Simulation 2: Client buys USD with 150,000 ARS')
   const buy150kARS = await calculateBuyTransaction('USD-ARS', 150000)
-  
+
   return { sell100USD, buy150kARS }
 }
-`

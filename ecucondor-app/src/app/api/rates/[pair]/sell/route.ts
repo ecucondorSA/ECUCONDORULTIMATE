@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ExchangeRateService } from '@/lib/services/exchange-rates'
+import { createErrorResponse, createSuccessResponse } from '@/lib/utils/api'
 
 let exchangeService: ExchangeRateService | null = null
 
@@ -20,10 +21,7 @@ export async function GET(
     const amount = searchParams.get('amount')
 
     if (!pair) {
-      return NextResponse.json(
-        { error: 'Currency pair is required' },
-        { status: 400 }
-      )
+      return createErrorResponse('Currency pair is required', 400)
     }
 
     const service = getExchangeService()
@@ -33,64 +31,74 @@ export async function GET(
     const rate = service.getRate(pairUpper)
 
     if (!rate) {
-      return NextResponse.json(
-        { error: `Exchange rate for ${pairUpper} not found` },
-        { status: 404 }
+      return createErrorResponse(
+        `Exchange rate for ${pairUpper} not found`,
+        404
       )
     }
 
-    // Return sell-specific information
-    const response: any = {
-      success: true,
-      data: {
-        pair: pairUpper,
-        type: 'sell',
-        rate: rate.sell_rate,
-        commission_rate: rate.commission_rate,
-        spread: rate.spread,
-        last_updated: rate.last_updated,
-        commission_info: {
-          rate: rate.commission_rate,
-          percentage: `${(rate.commission_rate * 100)}%`
-        }
-      },
-      timestamp: new Date().toISOString()
+    interface SellTransaction {
+      base_amount: number
+      target_amount: number
+      rate_used: number
+      commission: number
+      total_cost: number
+      requested_amount: number
+      description: string
+    }
+
+    interface SellRateData {
+      pair: string
+      type: 'sell'
+      rate: number
+      commission_rate: number
+      spread: number
+      last_updated: string
+      commission_info: { rate: number; percentage: string }
+      transaction?: SellTransaction
+    }
+
+    const data: SellRateData = {
+      pair: pairUpper,
+      type: 'sell',
+      rate: rate.sell_rate,
+      commission_rate: rate.commission_rate,
+      spread: rate.spread,
+      last_updated: rate.last_updated,
+      commission_info: {
+        rate: rate.commission_rate,
+        percentage: `${rate.commission_rate * 100}%`
+      }
     }
 
     // If amount provided, calculate transaction
     if (amount) {
       const amountNum = parseFloat(amount)
       
-      if (isNaN(amountNum) || amountNum <= 0) {
-        return NextResponse.json(
-          { error: 'Invalid amount provided' },
-          { status: 400 }
-        )
-      }
+        if (isNaN(amountNum) || amountNum <= 0) {
+          return createErrorResponse('Invalid amount provided', 400)
+        }
 
       const transaction = service.calculateTransaction(pairUpper, amountNum, 'sell')
-      
+
       if (transaction) {
-        response.data.transaction = {
+        data.transaction = {
           ...transaction,
           requested_amount: amountNum,
-          description: `Sell ${transaction.base_amount} ${rate.base_currency} for ${transaction.target_amount} ${rate.target_currency} (after ${(rate.commission_rate * 100)}% commission)`
+          description: `Sell ${transaction.base_amount} ${rate.base_currency} for ${transaction.target_amount} ${rate.target_currency} (after ${rate.commission_rate * 100}% commission)`
         }
       }
     }
 
-    return NextResponse.json(response)
+    return createSuccessResponse(data)
 
   } catch (error) {
     console.error(`❌ Error in /api/rates/${params.pair}/sell:`, error)
     
-    return NextResponse.json(
-      { 
-        success: false,
-        error: 'Failed to get sell rate',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
+    return createErrorResponse(
+      'Failed to get sell rate',
+      500,
+      error instanceof Error ? error.message : 'Unknown error'
     )
   }
 }
