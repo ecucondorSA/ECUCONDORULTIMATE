@@ -1,5 +1,6 @@
 import { ExchangeRate, RateConfig, Currency } from '@/lib/types'
 import { BinanceService } from './binance'
+import { logger } from '@/lib/utils/logger'
 
 export class ExchangeRateService {
   private static instance: ExchangeRateService
@@ -41,7 +42,7 @@ export class ExchangeRateService {
    * Update all exchange rates from sources
    */
   async updateRates(): Promise<Map<string, ExchangeRate>> {
-    console.log('🔄 Updating exchange rates...')
+    logger.info('Updating exchange rates...')
     
     // Get all Binance symbols we need
     const binanceSymbols = this.rateConfigs
@@ -56,9 +57,9 @@ export class ExchangeRateService {
       try {
         const rate = await this.calculateRate(config, binancePrices)
         this.rates.set(config.pair, rate)
-        console.log(`✅ Updated ${config.pair}: sell=${rate.sell_rate}, buy=${rate.buy_rate}`)
+        logger.info(`Updated ${config.pair}`, { sell: rate.sell_rate, buy: rate.buy_rate })
       } catch (error) {
-        console.error(`❌ Failed to calculate rate for ${config.pair}:`, error)
+        logger.error(`Failed to calculate rate for ${config.pair}`, error)
       }
     }
 
@@ -140,7 +141,7 @@ export class ExchangeRateService {
       }
 
       this.rates.set('ARS-BRL', arsBrlRate)
-      console.log(`✅ Calculated cross rate ARS-BRL: ${arsBrlSell}`)
+      logger.info('Calculated cross rate ARS-BRL', { rate: arsBrlSell })
     }
   }
 

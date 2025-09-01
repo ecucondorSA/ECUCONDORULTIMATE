@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { logger } from '@/lib/utils/logger';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -83,7 +84,7 @@ export default function CalculatorPage() {
         setLastUpdate(new Date());
       }
     } catch (error) {
-      console.error('Error fetching rates:', error);
+      logger.error('Error fetching rates', error);
     }
   };
 
@@ -138,8 +139,7 @@ export default function CalculatorPage() {
     
     const numAmount = parseFloat(cleanedAmount);
     
-    // Debug logging
-    console.log('🔍 PARSING DEBUG:', {
+    logger.debug('PARSING DEBUG', {
       input_original: amount,
       input_limpio: cleanedAmount,
       numero_parseado: numAmount,
@@ -170,7 +170,7 @@ export default function CalculatorPage() {
       const netConverted = grossConverted - commissionAmount;
       
       // Debug log
-      console.log('🧮 Cálculo Send→Receive:', {
+      logger.debug('Cálculo Send→Receive', {
         tipo: transactionType,
         par: selectedPair,
         envio: numAmount,
@@ -197,7 +197,7 @@ export default function CalculatorPage() {
       }
       
       // Debug log
-      console.log('🧮 Cálculo Receive→Send:', {
+      logger.debug('Cálculo Receive→Send', {
         tipo: transactionType,
         par: selectedPair,
         recibir: targetReceive,
@@ -251,7 +251,7 @@ export default function CalculatorPage() {
     const receive = parseFloat(receiveCleaned);
     
     // Debug logging para resumen
-    console.log('🧾 RESUMEN DEBUG:', {
+    logger.debug('RESUMEN DEBUG', {
       sendAmount_original: sendAmount,
       sendAmount_limpio: sendCleaned,
       send_parseado: send,
@@ -392,10 +392,10 @@ Que tengan un día increíble 🌈✨`;
 
   // Generar PDF del comprobante con import dinámico
   const generatePDFReceipt = async (details: TransactionDetails | null) => {
-    console.log('🔍 generatePDFReceipt iniciado:', { details: !!details, user: !!user });
+    logger.debug('generatePDFReceipt iniciado', { details: !!details, user: !!user });
     
     if (!details) {
-      console.log('❌ No details:', { details });
+      logger.warn('No details provided for PDF generation', { details });
       return null;
     }
     
@@ -405,67 +405,181 @@ Que tengan un día increíble 🌈✨`;
     try {
       // Import dinámico de jsPDF solo en el cliente
       if (typeof window === 'undefined') {
-        console.log('❌ No window (SSR)');
+        logger.debug('No window (SSR) - skipping PDF generation');
         return null;
       }
       
-      console.log('📦 Importando jsPDF...');
+      logger.debug('Importando jsPDF...');
       const { jsPDF } = await import('jspdf');
-      console.log('✅ jsPDF importado exitosamente');
+      logger.debug('jsPDF importado exitosamente');
       
       const doc = new jsPDF();
-      console.log('✅ Documento PDF creado');
+      logger.debug('Documento PDF creado');
       
       const paymentInstr = getPaymentInstructions(details);
       const currentDate = new Date().toLocaleString('es-AR');
       const transactionId = `ECU-${Date.now()}`;
       
-      console.log('📋 Datos preparados:', { paymentInstr, transactionId });
+      logger.debug('Datos preparados', { paymentInstr: !!paymentInstr, transactionId });
       
-      // Header
-      doc.setFontSize(20);
+      // Configurar colores
+      const primaryColor = [52, 152, 219]; // Azul
+      const accentColor = [231, 76, 60]; // Rojo
+      const darkColor = [44, 62, 80]; // Azul oscuro
+      
+      // Header con diseño profesional
+      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.rect(0, 0, 210, 50, 'F'); // Rectángulo de fondo azul
+      
+      // Logo/Título principal
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
       doc.setFont('helvetica', 'bold');
-      doc.text('ECUCONDOR', 20, 30);
-      doc.text('Comprobante de Transacción', 20, 45);
+      doc.text('🦅 ECUCONDOR', 20, 25);
       
-      // Transaction info
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
-      doc.text(`ID: ${transactionId}`, 20, 65);
-      doc.text(`Fecha: ${currentDate}`, 20, 75);
-      doc.text(`Cliente: ${clientEmail}`, 20, 85);
+      doc.text('Tu aliado en cambio de divisas | Confianza y velocidad', 20, 35);
       
-      // Transaction details
+      // Línea decorativa
+      doc.setDrawColor(accentColor[0], accentColor[1], accentColor[2]);
+      doc.setLineWidth(2);
+      doc.line(20, 40, 190, 40);
+      
+      // Resetear color de texto
+      doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+      
+      // Título del documento
+      doc.setFillColor(240, 240, 240);
+      doc.rect(20, 55, 170, 15, 'F');
+      doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
-      doc.text('Detalles:', 20, 105);
+      doc.text('COMPROBANTE DE TRANSACCIÓN', 25, 65);
+      
+      // Información de transacción en tabla
+      doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
-      doc.text(`Operación: ${details.type === 'buy' ? 'Comprar ' + details.pair.split('-')[1] : 'Comprar USD'}`, 20, 115);
-      doc.text(`Envías: ${paymentInstr?.send.currency} ${formatNumber(details.sendAmount)}`, 20, 125);
-      doc.text(`Recibes: ${paymentInstr?.receive.currency} ${formatNumber(details.receiveAmount)}`, 20, 135);
-      doc.text(`Tasa: ${currentRate}`, 20, 145);
+      
+      // ID y fecha
+      doc.setFillColor(248, 249, 250);
+      doc.rect(20, 75, 170, 25, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.text('No. Transacción:', 25, 85);
+      doc.setFont('helvetica', 'normal');
+      doc.text(transactionId, 80, 85);
+      
+      doc.setFont('helvetica', 'bold');
+      doc.text('Fecha y Hora:', 25, 95);
+      doc.setFont('helvetica', 'normal');
+      doc.text(currentDate, 80, 95);
+      
+      // Detalles de la operación
+      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.rect(20, 105, 170, 8, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DETALLES DE LA OPERACIÓN', 25, 110);
+      
+      // Resetear color
+      doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+      
+      // Tabla de detalles
+      doc.setFillColor(248, 249, 250);
+      doc.rect(20, 115, 170, 50, 'F');
+      
+      let yPos = 125;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Tipo de Operación:', 25, yPos);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`${details.type === 'buy' ? 'Compra de ' + details.pair.split('-')[1] : 'Compra de USD'}`, 80, yPos);
+      
+      yPos += 10;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Monto a Enviar:', 25, yPos);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`${paymentInstr?.send.currency} ${formatNumber(details.sendAmount)}`, 80, yPos);
+      
+      yPos += 10;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Monto a Recibir:', 25, yPos);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`${paymentInstr?.receive.currency} ${formatNumber(details.receiveAmount)}`, 80, yPos);
+      
+      yPos += 10;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Tasa de Cambio:', 25, yPos);
+      doc.setFont('helvetica', 'normal');
+      doc.text(currentRate, 80, yPos);
+      
       if (details.commission > 0) {
-        doc.text(`Comisión: ${details.commission}% (${formatNumber(details.commissionAmount)})`, 20, 155);
+        yPos += 10;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Comisión:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${details.commission}% (${formatNumber(details.commissionAmount)})`, 80, yPos);
       }
       
-      // Payment instructions
+      // Instrucciones de pago
+      yPos += 20;
+      doc.setFillColor(accentColor[0], accentColor[1], accentColor[2]);
+      doc.rect(20, yPos, 170, 8, 'F');
+      doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
-      doc.text('Instrucciones de Pago:', 20, 175);
+      doc.text('INSTRUCCIONES DE PAGO', 25, yPos + 5);
+      
+      // Resetear color
+      doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+      yPos += 15;
+      
+      doc.setFillColor(248, 249, 250);
+      doc.rect(20, yPos, 170, 40, 'F');
+      
+      yPos += 10;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Beneficiario:', 25, yPos);
       doc.setFont('helvetica', 'normal');
-      doc.text(`Método: ${paymentInstr?.send.method}`, 20, 185);
-      doc.text('Ecucondor SAS', 20, 195);
-      doc.text('RUC: 1391937000OO-1', 20, 205);
-      doc.text('Produbanco - Cuenta Corriente', 20, 215);
+      doc.text('Ecucondor SAS', 80, yPos);
       
-      // Footer
+      yPos += 8;
+      doc.setFont('helvetica', 'bold');
+      doc.text('RUC:', 25, yPos);
+      doc.setFont('helvetica', 'normal');
+      doc.text('1391937000OO-1', 80, yPos);
+      
+      yPos += 8;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Banco:', 25, yPos);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Produbanco - Cuenta Corriente', 80, yPos);
+      
+      yPos += 8;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Método de Pago:', 25, yPos);
+      doc.setFont('helvetica', 'normal');
+      doc.text(paymentInstr?.send.method || 'Transferencia Bancaria', 80, yPos);
+      
+      // Footer profesional
+      yPos += 25;
+      doc.setFillColor(240, 240, 240);
+      doc.rect(20, yPos, 170, 25, 'F');
+      
       doc.setFontSize(10);
-      doc.text('Enviado automáticamente a Ecucondor', 20, 250);
-      doc.text('Tiempo estimado: 5 min - 1 hora', 20, 260);
+      doc.setFont('helvetica', 'normal');
+      doc.text('✓ Este comprobante ha sido enviado automáticamente a ecucondor@gmail.com', 25, yPos + 8);
+      doc.text('⏱ Tiempo estimado de procesamiento: 5 minutos - 1 hora', 25, yPos + 16);
       
-      console.log('✅ PDF generado exitosamente');
+      // Información de contacto en el pie
+      doc.setFillColor(darkColor[0], darkColor[1], darkColor[2]);
+      doc.rect(0, 285, 210, 12, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(9);
+      doc.text('WhatsApp: +54 9 11 6659-9559 | Email: ecucondor@gmail.com | Web: ecucondor.com', 25, 292);
+      
+      logger.info('PDF generado exitosamente');
       return { doc, transactionId };
     } catch (error) {
-      console.error('❌ Error generando PDF:', error);
-      console.error('Stack trace:', error.stack);
+      logger.error('Error generando PDF', error);
+      logger.error('Stack trace', error.stack);
       return null;
     }
   };
@@ -496,7 +610,7 @@ Que tengan un día increíble 🌈✨`;
       };
 
       // Simular envío (en producción sería una llamada a API)
-      console.log('📧 PDF enviado automáticamente a Ecucondor:', emailData);
+      logger.info('PDF enviado automáticamente a Ecucondor');
       
       // TODO: Implementar API real de envío de email
       // await fetch('/api/send-receipt', {
@@ -506,46 +620,46 @@ Que tengan un día increíble 🌈✨`;
       
       return true;
     } catch (error) {
-      console.error('Error enviando PDF a Ecucondor:', error);
+      logger.error('Error enviando PDF a Ecucondor', error);
       return false;
     }
   };
 
   // Descargar PDF y enviarlo a Ecucondor
   const handleDownloadPDF = async () => {
-    console.log('🚀 handleDownloadPDF iniciado');
-    console.log('📋 transactionDetails:', transactionDetails);
+    logger.debug('handleDownloadPDF iniciado');
+    logger.debug('transactionDetails', !!transactionDetails);
     
     try {
       setLoading(true);
-      console.log('⏳ Loading activado');
+      logger.debug('Loading activado');
       
       const pdfData = await generatePDFReceipt(transactionDetails);
-      console.log('📄 generatePDFReceipt resultado:', pdfData);
+      logger.debug('generatePDFReceipt resultado', !!pdfData);
       
       if (pdfData) {
-        console.log('✅ PDF generado, procediendo a descargar...');
+        logger.debug('PDF generado, procediendo a descargar...');
         // Descargar para el usuario
         pdfData.doc.save(`Comprobante_Ecucondor_${pdfData.transactionId}.pdf`);
-        console.log('💾 Archivo descargado');
+        logger.info('Archivo descargado');
         
         // Enviar automáticamente a Ecucondor
-        console.log('📧 Enviando a Ecucondor...');
+        logger.debug('Enviando a Ecucondor...');
         await sendPDFToEcucondor(pdfData);
-        console.log('📧 Enviado a Ecucondor');
+        logger.info('Enviado a Ecucondor');
         
         alert('✅ Comprobante descargado y enviado automáticamente a Ecucondor');
       } else {
-        console.log('❌ pdfData es null/undefined');
+        logger.warn('pdfData es null/undefined');
         alert('❌ Error generando el comprobante PDF. Intenta nuevamente.');
       }
     } catch (error) {
-      console.error('❌ Error en handleDownloadPDF:', error);
-      console.error('Stack:', error.stack);
+      logger.error('Error en handleDownloadPDF', error);
+      logger.error('Stack', error.stack);
       alert('❌ Error procesando el comprobante. Verifica tu conexión.');
     } finally {
       setLoading(false);
-      console.log('⏳ Loading desactivado');
+      logger.debug('Loading desactivado');
     }
   };
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ExchangeRateService } from '@/lib/services/exchange-rates'
 import { TransactionLimitsService } from '@/lib/services/transaction-limits'
 import { PriceLockService } from '@/lib/services/price-lock'
+import { logger } from '@/lib/utils/logger'
 
 let exchangeService: ExchangeRateService | null = null
 let limitsService: TransactionLimitsService | null = null
@@ -188,7 +189,7 @@ export async function GET(
             }
             
           } catch (lockError) {
-            console.error('Failed to create price lock:', lockError)
+            logger.error('Failed to create price lock', lockError)
             response.data.price_lock_error = 'Failed to create price lock'
           }
         }
@@ -198,7 +199,7 @@ export async function GET(
     return NextResponse.json(response)
 
   } catch (error) {
-    console.error(`❌ Error in /api/rates/${pair}/buy:`, error)
+    logger.error(`Error in /api/rates/${pair}/buy`, error)
     
     return NextResponse.json(
       { 
