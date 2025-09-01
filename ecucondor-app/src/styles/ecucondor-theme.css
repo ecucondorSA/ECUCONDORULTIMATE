@@ -1,0 +1,307 @@
+/* Ecucondor Custom Theme - Dark + Yellow */
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-*: initial;
+  --font-outfit: Outfit, sans-serif;
+
+  /* Ecucondor Brand Colors - Dark + Metallic Gold Theme */
+  --color-ecucondor-yellow-50: #fffef9;
+  --color-ecucondor-yellow-100: #fffbeb;
+  --color-ecucondor-yellow-200: #fff4c4;
+  --color-ecucondor-yellow-300: #ffe066;
+  --color-ecucondor-yellow-400: #ffd700;  /* Brilliant Gold */
+  --color-ecucondor-yellow-500: #ffb800;  /* Primary Metallic Gold */
+  --color-ecucondor-yellow-600: #e6a600;
+  --color-ecucondor-yellow-700: #cc9400;
+  --color-ecucondor-yellow-800: #b38200;
+  --color-ecucondor-yellow-900: #997000;
+
+  /* Dark Background Colors */
+  --color-dark-bg-primary: #0f0f0f;      /* Main background */
+  --color-dark-bg-secondary: #1a1a1a;    /* Cards, panels */
+  --color-dark-bg-tertiary: #262626;     /* Elevated elements */
+  --color-dark-bg-hover: #333333;        /* Hover states */
+
+  /* Text Colors for Dark Theme */
+  --color-dark-text-primary: #ffffff;    /* Main text */
+  --color-dark-text-secondary: #e5e5e5;  /* Secondary text */
+  --color-dark-text-muted: #a3a3a3;      /* Muted text */
+  --color-dark-text-disabled: #737373;   /* Disabled text */
+
+  /* Sidebar & Navigation */
+  --color-sidebar-bg: #0f0f0f;
+  --color-sidebar-item-hover: #262626;
+  --color-sidebar-text: #e5e5e5;
+  --color-sidebar-text-active: #ffb800;  /* Metallic Gold for active items */
+
+  /* Cards & Components */
+  --color-card-bg: #1a1a1a;
+  --color-card-border: #333333;
+  --color-card-shadow: rgba(0, 0, 0, 0.3);
+
+  /* Buttons */
+  --color-btn-primary-bg: #ffb800;       /* Metallic Gold primary button */
+  --color-btn-primary-hover: #e6a600;
+  --color-btn-primary-text: #000000;     /* Black text on yellow */
+  
+  --color-btn-secondary-bg: #262626;
+  --color-btn-secondary-hover: #333333;
+  --color-btn-secondary-text: #e5e5e5;
+
+  /* Status Colors (adapted for dark theme) */
+  --color-success: #10b981;
+  --color-success-bg: #064e3b;
+  --color-warning: #ffb800;              /* Our metallic gold brand color */
+  --color-warning-bg: #451a03;
+  --color-error: #ef4444;
+  --color-error-bg: #7f1d1d;
+  --color-info: #3b82f6;
+  --color-info-bg: #1e3a8a;
+
+  /* Chart Colors for Financial Data */
+  --color-chart-profit: #10b981;         /* Green for profits */
+  --color-chart-loss: #ef4444;           /* Red for losses */
+  --color-chart-neutral: #ffb800;        /* Metallic Gold for neutral */
+  --color-chart-grid: #333333;
+  --color-chart-text: #a3a3a3;
+
+  /* Exchange Rate Colors */
+  --color-buy-rate: #10b981;             /* Green for buy rates */
+  --color-sell-rate: #ef4444;            /* Red for sell rates */
+  --color-spread: #ffb800;               /* Metallic Gold for spread */
+
+  /* Borders & Dividers */
+  --color-border-primary: #333333;
+  --color-border-secondary: #262626;
+  --color-divider: #404040;
+}
+
+/* Apply dark theme by default */
+html {
+  background-color: var(--color-dark-bg-primary);
+  color: var(--color-dark-text-primary);
+}
+
+/* Custom utility classes for Ecucondor with Neon Effects */
+.bg-ecucondor-primary { background-color: var(--color-dark-bg-primary); }
+.bg-ecucondor-secondary { background-color: var(--color-dark-bg-secondary); }
+.bg-ecucondor-tertiary { background-color: var(--color-dark-bg-tertiary); }
+
+.text-ecucondor-primary { color: var(--color-dark-text-primary); }
+.text-ecucondor-secondary { color: var(--color-dark-text-secondary); }
+.text-ecucondor-muted { color: var(--color-dark-text-muted); }
+
+.text-ecucondor-yellow { 
+  color: var(--color-ecucondor-yellow-500);
+  text-shadow: 0 0 10px rgba(255, 184, 0, 0.5);
+}
+.bg-ecucondor-yellow { 
+  background-color: var(--color-ecucondor-yellow-500);
+  box-shadow: 0 0 15px rgba(255, 184, 0, 0.3);
+}
+.border-ecucondor-yellow { 
+  border-color: var(--color-ecucondor-yellow-500);
+  box-shadow: 0 0 10px rgba(255, 184, 0, 0.2);
+}
+
+.text-ecucondor-buy { color: var(--color-buy-rate); }
+.text-ecucondor-sell { color: var(--color-sell-rate); }
+.text-ecucondor-spread { color: var(--color-spread); }
+
+/* Card styling with Neon Glow */
+.ecucondor-card {
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  box-shadow: 
+    0 4px 6px var(--color-card-shadow),
+    0 0 20px rgba(255, 184, 0, 0.1),
+    inset 0 1px 0 rgba(255, 184, 0, 0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.ecucondor-card:hover {
+  border-color: rgba(255, 184, 0, 0.3);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(255, 184, 0, 0.2),
+    inset 0 1px 0 rgba(255, 184, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Button styling with Neon Effects */
+.btn-ecucondor-primary {
+  background: linear-gradient(135deg, #ffb800 0%, #ffd700 50%, #ffb800 100%);
+  box-shadow: 
+    0 0 10px rgba(255, 184, 0, 0.5),
+    0 0 20px rgba(255, 184, 0, 0.3),
+    0 0 30px rgba(255, 184, 0, 0.2),
+    0 4px 15px rgba(255, 184, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  color: var(--color-btn-primary-text);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ecucondor-primary:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.btn-ecucondor-primary:hover:before {
+  left: 100%;
+}
+
+.btn-ecucondor-primary:hover {
+  background: linear-gradient(135deg, #e6a600 0%, #ffb800 50%, #e6a600 100%);
+  box-shadow: 
+    0 0 15px rgba(255, 184, 0, 0.8),
+    0 0 30px rgba(255, 184, 0, 0.6),
+    0 0 45px rgba(255, 184, 0, 0.4),
+    0 6px 20px rgba(255, 184, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-ecucondor-secondary {
+  background-color: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+  border: 1px solid var(--color-border-primary);
+  transition: all 0.2s ease;
+}
+
+.btn-ecucondor-secondary:hover {
+  background-color: var(--color-btn-secondary-hover);
+}
+
+/* Sidebar styling */
+.ecucondor-sidebar {
+  background-color: var(--color-sidebar-bg);
+  border-right: 1px solid var(--color-border-primary);
+}
+
+.ecucondor-sidebar-item {
+  color: var(--color-sidebar-text);
+  transition: all 0.2s ease;
+}
+
+.ecucondor-sidebar-item:hover {
+  background-color: var(--color-sidebar-item-hover);
+  color: var(--color-ecucondor-yellow-500);
+}
+
+.ecucondor-sidebar-item.active {
+  background-color: var(--color-sidebar-item-hover);
+  color: var(--color-sidebar-text-active);
+  border-right: 3px solid var(--color-ecucondor-yellow-500);
+}
+
+/* Financial data table styling */
+.ecucondor-table {
+  background-color: var(--color-card-bg);
+}
+
+.ecucondor-table th {
+  background-color: var(--color-dark-bg-tertiary);
+  color: var(--color-dark-text-secondary);
+  font-weight: 600;
+}
+
+.ecucondor-table td {
+  border-bottom: 1px solid var(--color-border-secondary);
+}
+
+.ecucondor-table tr:hover {
+  background-color: var(--color-dark-bg-hover);
+}
+
+/* Rate display components */
+.rate-buy {
+  color: var(--color-buy-rate);
+  font-weight: 600;
+}
+
+.rate-sell {
+  color: var(--color-sell-rate);
+  font-weight: 600;
+}
+
+.rate-spread {
+  color: var(--color-spread);
+  font-weight: 600;
+}
+
+/* Status indicators */
+.status-success { color: var(--color-success); }
+.status-warning { color: var(--color-warning); }
+.status-error { color: var(--color-error); }
+.status-info { color: var(--color-info); }
+
+/* Loading animations with Neon Pulse */
+.ecucondor-pulse {
+  animation: neonPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .7;
+  }
+}
+
+@keyframes neonPulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(255, 184, 0, 0.3);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 30px rgba(255, 184, 0, 0.6);
+  }
+}
+
+/* Neon Glow Animation for Text */
+@keyframes neonGlow {
+  0%, 100% {
+    text-shadow: 
+      0 0 5px rgba(255, 184, 0, 0.5),
+      0 0 10px rgba(255, 184, 0, 0.3),
+      0 0 15px rgba(255, 184, 0, 0.2);
+  }
+  50% {
+    text-shadow: 
+      0 0 10px rgba(255, 184, 0, 0.8),
+      0 0 20px rgba(255, 184, 0, 0.6),
+      0 0 30px rgba(255, 184, 0, 0.4);
+  }
+}
+
+/* Neon Text Class */
+.text-neon-gold {
+  color: var(--color-ecucondor-yellow-500);
+  animation: neonGlow 2s ease-in-out infinite alternate;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .ecucondor-sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .ecucondor-sidebar.open {
+    transform: translateX(0);
+  }
+}
