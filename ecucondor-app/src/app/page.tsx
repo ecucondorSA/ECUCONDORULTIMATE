@@ -11,6 +11,7 @@ import ContactForm from '@/components/common/ContactForm';
 import WhatsAppWidget from '@/components/common/WhatsAppWidget';
 import ErrorBoundary, { DataErrorBoundary, FormErrorBoundary } from '@/components/common/ErrorBoundary';
 import { LazySection } from '@/components/common/LazyWrapper';
+import { financialServiceSchema, faqSchema } from '@/data/seoData';
 
 export default function Home() {
   const organizationSchema = {
@@ -97,6 +98,8 @@ export default function Home() {
 
   return (
     <>
+      <JsonLd data={financialServiceSchema} />
+      <JsonLd data={faqSchema} />
       <JsonLd data={organizationSchema} />
       <div className="min-h-screen bg-black text-white font-sans">
         {/* Navigation */}
