@@ -76,7 +76,7 @@ export default function PaymentInstructions({ details }: PaymentInstructionsProp
             Debes enviar <strong className="text-red-400">{paymentInstructions.send.currency} {formatNumber(paymentInstructions.send.amount)}</strong> por <strong>{paymentInstructions.send.method}</strong>:
           </p>
           <div className="bg-ecucondor-secondary rounded p-3 font-mono text-xs">
-            <div className="whitespace-pre-line text-ecucondor-primary">
+            <div className="whitespace-pre-line text-white">
               {paymentInstructions.send.account}
             </div>
           </div>

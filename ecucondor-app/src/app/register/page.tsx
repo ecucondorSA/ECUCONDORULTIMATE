@@ -164,7 +164,7 @@ export default function RegisterPage() {
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-ecucondor-secondary mb-2">
+                <label htmlFor="firstName" className="block text-sm font-medium text-white mb-2">
                   Nombre
                 </label>
                 <input
@@ -174,12 +174,12 @@ export default function RegisterPage() {
                   value={formData.firstName}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-ecucondor-primary placeholder-ecucondor-muted"
+                  className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-white placeholder-ecucondor-muted"
                   placeholder="Juan"
                 />
               </div>
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-ecucondor-secondary mb-2">
+                <label htmlFor="lastName" className="block text-sm font-medium text-white mb-2">
                   Apellido
                 </label>
                 <input
@@ -189,14 +189,14 @@ export default function RegisterPage() {
                   value={formData.lastName}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-ecucondor-primary placeholder-ecucondor-muted"
+                  className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-white placeholder-ecucondor-muted"
                   placeholder="Pérez"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-ecucondor-secondary mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
                 Correo electrónico
               </label>
               <input
@@ -206,13 +206,13 @@ export default function RegisterPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-ecucondor-primary placeholder-ecucondor-muted"
+                className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-white placeholder-ecucondor-muted"
                 placeholder="tu@email.com"
               />
             </div>
 
             <div>
-              <label htmlFor="country" className="block text-sm font-medium text-ecucondor-secondary mb-2">
+              <label htmlFor="country" className="block text-sm font-medium text-white mb-2">
                 País
               </label>
               <select
@@ -221,7 +221,7 @@ export default function RegisterPage() {
                 value={formData.country}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-ecucondor-primary"
+                className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-white"
               >
                 <option value="">Selecciona tu país</option>
                 <option value="AR">Argentina</option>
@@ -231,7 +231,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-ecucondor-secondary mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
                 Contraseña
               </label>
               <input
@@ -242,13 +242,13 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 required
                 minLength={8}
-                className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-ecucondor-primary placeholder-ecucondor-muted"
+                className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-white placeholder-ecucondor-muted"
                 placeholder="Mínimo 8 caracteres"
               />
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-ecucondor-secondary mb-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-white mb-2">
                 Confirmar contraseña
               </label>
               <input
@@ -258,7 +258,7 @@ export default function RegisterPage() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-ecucondor-primary placeholder-ecucondor-muted"
+                className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-white placeholder-ecucondor-muted"
                 placeholder="Repite tu contraseña"
               />
             </div>

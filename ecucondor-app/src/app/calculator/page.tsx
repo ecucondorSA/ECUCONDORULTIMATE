@@ -120,7 +120,7 @@ export default function CalculatorPage() {
       <div className="min-h-screen flex items-center justify-center bg-ecucondor-primary">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-ecucondor-yellow"></div>
-          <p className="mt-4 text-ecucondor-secondary">Cargando...</p>
+          <p className="mt-4 text-white">Cargando...</p>
         </div>
       </div>
     );
@@ -131,7 +131,7 @@ export default function CalculatorPage() {
       <div className="min-h-screen flex items-center justify-center bg-ecucondor-primary">
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-6xl mb-4">🔐</div>
-          <h2 className="text-2xl font-bold text-ecucondor-secondary mb-4">
+          <h2 className="text-2xl font-bold text-white mb-4">
             Acceso Requerido
           </h2>
           <p className="text-ecucondor-muted mb-6">
@@ -164,7 +164,7 @@ export default function CalculatorPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-ecucondor-secondary mb-2">
+            <h1 className="text-3xl font-bold text-white mb-2">
               💱 Calculadora de Cambio
             </h1>
             <p className="text-ecucondor-muted">
@@ -187,7 +187,7 @@ export default function CalculatorPage() {
         <div className="bg-ecucondor-secondary rounded-lg p-6 shadow-lg">
           {/* Currency Pair Selection */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-ecucondor-secondary mb-3">
+            <label className="block text-sm font-medium text-white mb-3">
               Par de Divisas
             </label>
             <div className="grid grid-cols-3 gap-3">
@@ -198,7 +198,7 @@ export default function CalculatorPage() {
                   className={`p-3 rounded-lg text-center transition-all ${
                     selectedPair === pair
                       ? 'bg-blue-500/20 border-2 border-blue-500 text-blue-400'
-                      : 'bg-ecucondor-tertiary border-2 border-ecucondor-tertiary text-ecucondor-secondary hover:border-blue-500/50'
+                      : 'bg-ecucondor-tertiary border-2 border-ecucondor-tertiary text-white hover:border-blue-500/50'
                   }`}
                 >
                   <div className="text-sm font-medium">{pair}</div>
@@ -212,7 +212,7 @@ export default function CalculatorPage() {
 
           {/* Transaction Type */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-ecucondor-secondary mb-3">
+            <label className="block text-sm font-medium text-white mb-3">
               Tipo de Operación
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -221,7 +221,7 @@ export default function CalculatorPage() {
                 className={`p-4 rounded-lg text-center transition-all ${
                   transactionType === 'sell'
                     ? 'bg-green-500/20 border-2 border-green-500 text-green-400'
-                    : 'bg-ecucondor-tertiary border-2 border-ecucondor-tertiary text-ecucondor-secondary hover:border-green-500/50'
+                    : 'bg-ecucondor-tertiary border-2 border-ecucondor-tertiary text-white hover:border-green-500/50'
                 }`}
               >
                 <div className="text-sm">Vender USD</div>
@@ -237,7 +237,7 @@ export default function CalculatorPage() {
                 className={`p-4 rounded-lg text-center transition-all ${
                   transactionType === 'buy'
                     ? 'bg-blue-500/20 border-2 border-blue-500 text-blue-400'
-                    : 'bg-ecucondor-tertiary border-2 border-ecucondor-tertiary text-ecucondor-secondary hover:border-blue-500/50'
+                    : 'bg-ecucondor-tertiary border-2 border-ecucondor-tertiary text-white hover:border-blue-500/50'
                 }`}
               >
                 <div className="text-sm">Comprar USD</div>
@@ -254,11 +254,11 @@ export default function CalculatorPage() {
           {/* Amount Input */}
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-sm font-medium text-ecucondor-secondary mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Envías
               </label>
               <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-xl">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-xl pointer-events-none opacity-30">
                   {transactionType === 'sell' 
                     ? CURRENCY_FLAGS[currencies.from]
                     : CURRENCY_FLAGS[currencies.to]
@@ -269,17 +269,18 @@ export default function CalculatorPage() {
                   value={sendAmount}
                   onChange={(e) => setSendAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full pl-12 pr-4 py-4 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent text-xl font-semibold text-ecucondor-primary placeholder-ecucondor-muted"
+                  className="w-full pl-12 pr-4 py-4 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent text-xl font-semibold placeholder-ecucondor-muted"
+                  style={{ color: '#ffffff' }}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-ecucondor-secondary mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Recibes
               </label>
               <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-xl">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-xl pointer-events-none opacity-30">
                   {transactionType === 'sell' 
                     ? CURRENCY_FLAGS[currencies.to]
                     : CURRENCY_FLAGS[currencies.from]
@@ -290,7 +291,8 @@ export default function CalculatorPage() {
                   value={receiveAmount}
                   onChange={(e) => setReceiveAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full pl-12 pr-4 py-4 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent text-xl font-semibold text-ecucondor-primary placeholder-ecucondor-muted"
+                  className="w-full pl-12 pr-4 py-4 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent text-xl font-semibold placeholder-ecucondor-muted"
+                  style={{ color: '#ffffff' }}
                 />
               </div>
             </div>
@@ -303,7 +305,7 @@ export default function CalculatorPage() {
                 <span className="text-ecucondor-muted">
                   Tasa {transactionType === 'sell' ? 'venta' : 'compra'}:
                 </span>
-                <span className="font-semibold text-ecucondor-secondary">
+                <span className="font-semibold text-white">
                   {formatNumber(transactionType === 'sell' ? selectedRate.sell_rate : selectedRate.buy_rate)}
                 </span>
               </div>

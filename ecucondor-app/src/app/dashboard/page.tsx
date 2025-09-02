@@ -50,7 +50,7 @@ const DashboardStats = () => {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-ecucondor-muted">Transacciones Totales</p>
-            <p className="text-2xl font-bold text-ecucondor-primary">{stats.totalTransactions}</p>
+            <p className="text-2xl font-bold text-white">{stats.totalTransactions}</p>
           </div>
           <div className="p-3 bg-ecucondor-tertiary rounded-full">
             <svg className="w-6 h-6 text-ecucondor-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,7 +65,7 @@ const DashboardStats = () => {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-ecucondor-muted">Volumen Mensual</p>
-            <p className="text-2xl font-bold text-ecucondor-primary">${stats.monthlyVolume.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-white">${stats.monthlyVolume.toLocaleString()}</p>
           </div>
           <div className="p-3 bg-ecucondor-tertiary rounded-full">
             <svg className="w-6 h-6 text-ecucondor-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +80,7 @@ const DashboardStats = () => {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-ecucondor-muted">Price Locks Activos</p>
-            <p className="text-2xl font-bold text-ecucondor-primary">{stats.activePriceLocks}</p>
+            <p className="text-2xl font-bold text-white">{stats.activePriceLocks}</p>
           </div>
           <div className="p-3 bg-ecucondor-tertiary rounded-full">
             <svg className="w-6 h-6 text-ecucondor-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +95,7 @@ const DashboardStats = () => {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-ecucondor-muted">Límite Disponible</p>
-            <p className="text-2xl font-bold text-ecucondor-primary">${stats.availableLimit.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-white">${stats.availableLimit.toLocaleString()}</p>
           </div>
           <div className="p-3 bg-ecucondor-tertiary rounded-full">
             <svg className="w-6 h-6 text-ecucondor-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,14 +117,14 @@ const ExchangeRatesTable = ({ rates }: { rates: {
 }[] }) => {
   return (
     <div className="ecucondor-card p-6">
-      <h3 className="text-xl font-bold text-ecucondor-primary mb-6">
+      <h3 className="text-xl font-bold text-white mb-6">
         💱 Tipos de Cambio en Tiempo Real
       </h3>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {rates.map((rate) => (
           <div key={rate.pair} className="bg-gradient-to-r from-ecucondor-yellow/10 to-ecucondor-yellow/5 border border-ecucondor-yellow/20 rounded-xl p-6 hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-bold text-ecucondor-primary">{rate.pair}</h4>
+              <h4 className="text-lg font-bold text-white">{rate.pair}</h4>
               <span className="text-xs text-ecucondor-muted bg-ecucondor-tertiary/30 px-2 py-1 rounded-full">
                 {new Date(rate.last_updated).toLocaleTimeString('es-AR', {
                   hour: '2-digit',
@@ -200,7 +200,7 @@ const RecentTransactions = () => {
 
   return (
     <div className="ecucondor-card p-6">
-      <h3 className="text-lg font-semibold text-ecucondor-primary mb-4">
+      <h3 className="text-lg font-semibold text-white mb-4">
         Transacciones Recientes
       </h3>
       
@@ -212,7 +212,7 @@ const RecentTransactions = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
-          <h4 className="text-lg font-medium text-ecucondor-primary mb-2">
+          <h4 className="text-lg font-medium text-white mb-2">
             Sin transacciones aún
           </h4>
           <p className="text-ecucondor-muted mb-6 max-w-md mx-auto">
@@ -240,14 +240,14 @@ const RecentTransactions = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="font-medium text-ecucondor-primary">{tx.pair}</p>
+                  <p className="font-medium text-white">{tx.pair}</p>
                   <p className="text-sm text-ecucondor-muted">
                     {tx.type === 'buy' ? 'Compra' : 'Venta'} • {tx.date.toLocaleDateString('es-AR')}
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-medium text-ecucondor-primary">
+                <p className="font-medium text-white">
                   {tx.amount.toLocaleString('es-AR')}
                 </p>
                 <p className={`text-sm font-medium ${getStatusColor(tx.status)}`}>
@@ -405,7 +405,7 @@ export default function DashboardPage() {
       {/* Personalized Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-ecucondor-primary">
+          <h1 className="text-3xl font-bold text-white">
             {greeting}, <span className="text-neon-gold">{getUserName()}</span>
           </h1>
           <p className="text-ecucondor-muted">
@@ -440,7 +440,7 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <div className="ecucondor-card p-6">
-        <h3 className="text-lg font-semibold text-ecucondor-primary mb-4">
+        <h3 className="text-lg font-semibold text-white mb-4">
           Acciones Rápidas
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -476,10 +476,10 @@ export default function DashboardPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="ecucondor-card p-6 max-w-md w-full">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-ecucondor-primary">Bloquear Precio</h3>
+              <h3 className="text-lg font-bold text-white">Bloquear Precio</h3>
               <button 
                 onClick={() => setShowPriceLock(false)}
-                className="text-ecucondor-muted hover:text-ecucondor-primary"
+                className="text-ecucondor-muted hover:text-white"
               >
                 ×
               </button>
@@ -489,7 +489,7 @@ export default function DashboardPage() {
                 Bloquea una tasa de cambio favorable por un tiempo determinado para asegurar tu transacción.
               </p>
               <div className="bg-ecucondor-yellow/10 border border-ecucondor-yellow/20 rounded-lg p-4">
-                <p className="text-sm text-ecucondor-primary">
+                <p className="text-sm text-white">
                   🚧 <strong>Próximamente disponible</strong>
                 </p>
                 <p className="text-xs text-ecucondor-muted mt-1">
@@ -521,10 +521,10 @@ export default function DashboardPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="ecucondor-card p-6 max-w-md w-full">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-ecucondor-primary">Límites de Transacción</h3>
+              <h3 className="text-lg font-bold text-white">Límites de Transacción</h3>
               <button 
                 onClick={() => setShowLimits(false)}
-                className="text-ecucondor-muted hover:text-ecucondor-primary"
+                className="text-ecucondor-muted hover:text-white"
               >
                 ×
               </button>
@@ -533,11 +533,11 @@ export default function DashboardPage() {
               <div className="grid gap-3">
                 <div className="flex justify-between items-center py-2 border-b border-ecucondor-tertiary">
                   <span className="text-sm text-ecucondor-muted">Límite diario</span>
-                  <span className="font-medium text-ecucondor-primary">$10,000 USD</span>
+                  <span className="font-medium text-white">$10,000 USD</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-ecucondor-tertiary">
                   <span className="text-sm text-ecucondor-muted">Límite mensual</span>
-                  <span className="font-medium text-ecucondor-primary">$50,000 USD</span>
+                  <span className="font-medium text-white">$50,000 USD</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-ecucondor-tertiary">
                   <span className="text-sm text-ecucondor-muted">Utilizado este mes</span>
@@ -545,7 +545,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-sm text-ecucondor-muted">Disponible</span>
-                  <span className="font-bold text-ecucondor-primary text-lg">$50,000 USD</span>
+                  <span className="font-bold text-white text-lg">$50,000 USD</span>
                 </div>
               </div>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">

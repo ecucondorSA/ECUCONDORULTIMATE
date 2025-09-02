@@ -21,8 +21,53 @@ export default function AuthCallbackPage() {
         console.log('URL params:', Object.fromEntries(urlParams));
         console.log('Hash params:', Object.fromEntries(hashParams));
 
-        // Handle the auth callback
-        const { data, error } = await supabase.auth.getSession();
+        // Handle the auth callback with proper flow detection
+        let data, error;
+        
+        // Check if we have a hash fragment with access_token (implicit/hash flow)
+        if (window.location.hash && window.location.hash.includes('access_token')) {
+          console.log('📱 Detected hash fragment flow - processing token from URL hash...');
+          
+          // Parse the hash fragment manually
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          const accessToken = hashParams.get('access_token');
+          const refreshToken = hashParams.get('refresh_token');
+          
+          if (accessToken) {
+            // Set the session using the tokens from hash
+            const result = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || '',
+            });
+            data = result.data;
+            error = result.error;
+            
+            // Clean the URL hash after processing
+            if (!error && data.session) {
+              window.history.replaceState(null, '', window.location.pathname);
+            }
+          } else {
+            throw new Error('No access token found in URL hash');
+          }
+          
+        } else if (urlParams.has('code')) {
+          // PKCE code flow
+          console.log('🔐 Detected PKCE code flow - exchanging code for session...');
+          const result = await supabase.auth.exchangeCodeForSession(window.location.href);
+          data = result.data;
+          error = result.error;
+          
+        } else {
+          // Fallback - check for existing session
+          console.log('🔄 No auth parameters detected - checking existing session...');
+          const result = await supabase.auth.getSession();
+          data = result.data;
+          error = result.error;
+          
+          if (!data.session) {
+            throw new Error('No authentication data found in callback');
+          }
+        }
         
         if (error) {
           console.error('❌ Auth callback error:', error);

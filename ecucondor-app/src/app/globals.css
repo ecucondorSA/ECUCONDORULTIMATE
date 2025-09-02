@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ffffff;
   
-  /* EcuCondor Theme Colors */
-  --ecucondor-primary: #1a1a1a;
-  --ecucondor-secondary: #f5f5f5;
+  /* EcuCondor Dark Theme Colors */
+  --ecucondor-primary: #0a0a0a;
+  --ecucondor-secondary: #1a1a1a;
   --ecucondor-tertiary: #2a2a2a;
   --ecucondor-yellow: #f1c40f;
   --ecucondor-yellow-600: #d4ac0d;
-  --ecucondor-muted: #888888;
+  --ecucondor-muted: #a0a0a0;
   --ecucondor-buy: #10b981;
   --ecucondor-sell: #ef4444;
   --neon-gold: #ffd700;
@@ -36,8 +36,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: var(--ecucondor-primary);
-    --foreground: var(--ecucondor-secondary);
+    --background: #0a0a0a;
+    --foreground: #ffffff;
   }
 }
 
@@ -49,7 +49,7 @@ body {
 
 /* EcuCondor Custom Components */
 .ecucondor-card {
-  @apply bg-ecucondor-secondary border border-ecucondor-tertiary shadow-sm rounded-lg;
+  @apply bg-ecucondor-secondary border border-ecucondor-tertiary shadow-lg rounded-lg;
 }
 
 .ecucondor-table {
@@ -65,7 +65,7 @@ body {
 }
 
 .ecucondor-table tbody td {
-  @apply px-4 py-4 whitespace-nowrap text-sm text-ecucondor-primary;
+  @apply px-4 py-4 whitespace-nowrap text-sm text-white;
 }
 
 .btn-ecucondor-primary {
@@ -73,7 +73,7 @@ body {
 }
 
 .btn-ecucondor-secondary {
-  @apply bg-ecucondor-tertiary hover:bg-ecucondor-tertiary/80 text-ecucondor-secondary border border-ecucondor-tertiary font-medium transition-colors duration-200;
+  @apply bg-ecucondor-tertiary hover:bg-ecucondor-tertiary/80 text-white border border-ecucondor-tertiary font-medium transition-colors duration-200;
 }
 
 .rate-buy {
@@ -153,6 +153,20 @@ body {
 
 .animate-scale-in {
   animation: scaleIn 0.6s ease-out;
+}
+
+/* Global input text color fix for dark theme */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+  color: #ffffff !important;
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder {
+  color: #a0a0a0 !important;
 }
 
 /* Responsive improvements */

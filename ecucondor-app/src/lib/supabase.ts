@@ -40,11 +40,14 @@ export const authService = {
 
     // Get the correct redirect URL based on environment
     const getRedirectUrl = () => {
-      // In production, use the app URL from environment variables
-      if (process.env.NODE_ENV === 'production') {
-        return `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback` || `${window.location.origin}/auth/callback`;
+      // Always check the actual hostname instead of NODE_ENV
+      const hostname = window.location.hostname;
+      
+      if (hostname === 'ecucondor.com' || hostname.includes('vercel.app')) {
+        return 'https://ecucondor.com/auth/callback';
       }
-      // In development, use localhost
+      
+      // For localhost or other development environments
       return `${window.location.origin}/auth/callback`;
     };
 
@@ -55,6 +58,10 @@ export const authService = {
       provider: 'google',
       options: {
         redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        }
       },
     });
     return { data, error };
@@ -70,11 +77,14 @@ export const authService = {
   async resetPassword(email: string) {
     // Get the correct redirect URL based on environment
     const getRedirectUrl = () => {
-      // In production, use the app URL from environment variables
-      if (process.env.NODE_ENV === 'production') {
-        return `${process.env.NEXT_PUBLIC_APP_URL}/reset-password` || `${window.location.origin}/reset-password`;
+      // Always check the actual hostname instead of NODE_ENV
+      const hostname = window.location.hostname;
+      
+      if (hostname === 'ecucondor.com' || hostname.includes('vercel.app')) {
+        return 'https://ecucondor.com/reset-password';
       }
-      // In development, use localhost
+      
+      // For localhost or other development environments
       return `${window.location.origin}/reset-password`;
     };
 

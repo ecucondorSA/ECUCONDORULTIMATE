@@ -31,7 +31,7 @@ function TransactionSummary({
       <div className="bg-ecucondor-primary rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-ecucondor-secondary mb-2">
+            <h2 className="text-2xl font-bold text-white mb-2">
               🎉 ¡Resumen de Transacción!
             </h2>
             <p className="text-ecucondor-muted">

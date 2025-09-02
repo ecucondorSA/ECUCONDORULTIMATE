@@ -136,7 +136,7 @@ export default function LoginPage() {
           {/* Login Form */}
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-ecucondor-secondary mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
                 Correo electrónico
               </label>
               <input
@@ -145,13 +145,13 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-ecucondor-primary placeholder-ecucondor-muted"
+                className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-white placeholder-ecucondor-muted"
                 placeholder="tu@email.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-ecucondor-secondary mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
                 Contraseña
               </label>
               <input
@@ -160,7 +160,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-ecucondor-primary placeholder-ecucondor-muted"
+                className="w-full px-4 py-3 bg-ecucondor-secondary border border-ecucondor-tertiary rounded-lg focus:ring-2 focus:ring-ecucondor-yellow focus:border-transparent transition-colors text-white placeholder-ecucondor-muted"
                 placeholder="••••••••"
               />
             </div>
