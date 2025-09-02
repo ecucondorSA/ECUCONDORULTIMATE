@@ -55,20 +55,25 @@ export default function LoginPage() {
         setError(error.message);
         setIsLoading(false);
       } else if (data.user && data.session) {
-        // Wait for auth context to update before redirecting
+        console.log('✅ Login successful, setting up redirect...');
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnToParam = urlParams.get('returnTo') || '/dashboard';
+        
+        // Decode URL-encoded parameters (fix for %2Fdashboard -> /dashboard)
+        const returnTo = decodeURIComponent(returnToParam);
+        
+        console.log('🔄 Login successful, redirecting to:', returnTo);
+        console.log('🔍 Original param:', returnToParam);
+        console.log('🍪 Cookies before redirect:', document.cookie);
+        
+        // Wait longer for cookies to be set properly
         setTimeout(() => {
-          const urlParams = new URLSearchParams(window.location.search);
-          const returnToParam = urlParams.get('returnTo') || '/dashboard';
+          console.log('🍪 Cookies after timeout:', document.cookie);
+          console.log('🚀 Performing redirect...');
           
-          // Decode URL-encoded parameters (fix for %2Fdashboard -> /dashboard)
-          const returnTo = decodeURIComponent(returnToParam);
-          
-          console.log('🔄 Login successful, redirecting to:', returnTo);
-          console.log('🔍 Original param:', returnToParam);
-          
-          // Force hard navigation to ensure middleware sees the auth state
-          window.location.href = returnTo;
-        }, 1000);
+          // Force a full page reload to ensure middleware sees the auth state
+          window.location.replace(returnTo);
+        }, 2000); // Increased timeout
       }
     } catch {
       setError('Error de conexión. Intenta nuevamente.');
