@@ -27,6 +27,15 @@ export const metadata: Metadata = {
     template: "%s | EcuCondor"
   },
   description: "Plataforma FinTech líder para intercambio seguro de divisas entre USD, ARS y BRL. Tasas competitivas, transacciones rápidas y confianza garantizada en Ecuador, Argentina y Brasil.",
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png', sizes: '32x32' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
   keywords: [
     'intercambio divisas',
     'cambio moneda',

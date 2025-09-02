@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" width="120" height="100">
+  <defs>
+    <linearGradient id="aveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1E3A8A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0F172A;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Cóndor más detallado -->
+  <g transform="translate(40,45)">
+    <!-- Cuerpo principal -->
+    <ellipse cx="0" cy="8" rx="12" ry="20" fill="url(#aveGradient)" />
+    
+    <!-- Cabeza más definida -->
+    <ellipse cx="0" cy="-12" rx="8" ry="9" fill="url(#aveGradient)" />
+    
+    <!-- Pico más prominente -->
+    <path d="M 0,-20 L -4,-16 L -1,-14 L 0,-16 Z" fill="url(#goldAccent)" />
+    
+    <!-- Alas más majestuosas -->
+    <path d="M -12,5 Q -35,-8 -45,8 Q -40,18 -35,15 Q -25,12 -12,12 Z" fill="url(#aveGradient)" opacity="0.9" />
+    <path d="M 12,5 Q 35,-8 45,8 Q 40,18 35,15 Q 25,12 12,12 Z" fill="url(#aveGradient)" opacity="0.9" />
+    
+    <!-- Detalles de plumas en las alas -->
+    <path d="M -25,8 Q -30,5 -35,10 Q -30,12 -25,10" fill="url(#goldAccent)" opacity="0.6" />
+    <path d="M 25,8 Q 30,5 35,10 Q 30,12 25,10" fill="url(#goldAccent)" opacity="0.6" />
+    
+    <!-- Cola más elaborada -->
+    <path d="M -6,28 Q 0,35 6,28 Q 4,22 2,20 L -2,20 Q -4,22 -6,28 Z" fill="url(#aveGradient)" />
+    <path d="M -3,22 Q 0,26 3,22" stroke="url(#goldAccent)" stroke-width="1" fill="none" />
+    
+    <!-- Ojos más expresivos -->
+    <circle cx="-3" cy="-12" r="2" fill="#000" />
+    <circle cx="-3" cy="-12" r="1.2" fill="#fff" />
+    <circle cx="-3" cy="-12" r="0.6" fill="#FFD700" />
+    
+    <!-- Cresta -->
+    <path d="M -2,-20 Q -1,-24 0,-20 Q 1,-24 2,-20" stroke="url(#goldAccent)" stroke-width="1.5" fill="none" />
+  </g>
+  
+  <!-- Texto EcuCondor Ave -->
+  <text x="60" y="88" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" font-weight="bold" fill="#1E3A8A">
+    EcuCondor
+  </text>
+  <text x="60" y="97" text-anchor="middle" font-family="Arial, sans-serif" font-size="5" font-weight="normal" fill="#4A90E2" font-style="italic">
+    Ave
+  </text>
+</svg>
