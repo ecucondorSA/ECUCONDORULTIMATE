@@ -6,10 +6,11 @@ import { logger } from '@/lib/utils/logger';
 
 export const COMPANY_CONFIG = {
   // Company Details
-  name: process.env.NEXT_PUBLIC_COMPANY_NAME || 'Ecucondor SAS',
-  ruc: process.env.NEXT_PUBLIC_COMPANY_RUC || '1391937000OO-1',
+  name: process.env.NEXT_PUBLIC_COMPANY_NAME || 'Ecucondor S.A.S. Sociedad De Beneficio E Interés Colectivo',
+  ruc: process.env.NEXT_PUBLIC_COMPANY_RUC || '1391937000001',
   bank: process.env.NEXT_PUBLIC_COMPANY_BANK || 'Produbanco',
-  bankAccountType: process.env.NEXT_PUBLIC_COMPANY_BANK_ACCOUNT_TYPE || 'Cuenta Corriente',
+  bankAccountType: process.env.NEXT_PUBLIC_COMPANY_BANK_ACCOUNT_TYPE || 'Pro Pyme',
+  bankAccountNumber: process.env.NEXT_PUBLIC_BANK_ACCOUNT_NUMBER || '27059070809',
   domain: process.env.NEXT_PUBLIC_COMPANY_DOMAIN || 'ecucondor.com',
   
   // Contact Information
@@ -48,8 +49,7 @@ export const PAYMENT_INFO = {
   ruc: COMPANY_CONFIG.ruc,
   bank: COMPANY_CONFIG.bank,
   accountType: COMPANY_CONFIG.bankAccountType,
-  // Add specific account numbers when available
-  // accountNumber: process.env.NEXT_PUBLIC_BANK_ACCOUNT_NUMBER || '',
+  accountNumber: COMPANY_CONFIG.bankAccountNumber,
 } as const;
 
 // Validation

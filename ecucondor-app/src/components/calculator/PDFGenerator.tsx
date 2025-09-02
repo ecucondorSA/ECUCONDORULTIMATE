@@ -185,7 +185,9 @@ export class PDFGenerator {
         doc.setFont('helvetica', 'bold');
         doc.text('Beneficiario:', 25, yPos);
         doc.setFont('helvetica', 'normal');
-        doc.text(COMPANY_CONFIG.name, 80, yPos);
+        doc.setFontSize(9);
+        doc.text('Ecucondor S.A.S. Sociedad De Beneficio E Interés Colectivo', 80, yPos);
+        doc.setFontSize(10);
         
         yPos += 8;
         doc.setFont('helvetica', 'bold');
@@ -197,13 +199,13 @@ export class PDFGenerator {
         doc.setFont('helvetica', 'bold');
         doc.text('Banco:', 25, yPos);
         doc.setFont('helvetica', 'normal');
-        doc.text(COMPANY_CONFIG.bankFullName, 80, yPos);
+        doc.text(`${COMPANY_CONFIG.bank} - ${COMPANY_CONFIG.bankAccountType}`, 80, yPos);
         
         yPos += 8;
         doc.setFont('helvetica', 'bold');
-        doc.text('Método de Pago:', 25, yPos);
+        doc.text('Nro. Cuenta:', 25, yPos);
         doc.setFont('helvetica', 'normal');
-        doc.text('Transferencia Bancaria', 80, yPos);
+        doc.text(COMPANY_CONFIG.bankAccountNumber || '27059070809', 80, yPos);
       }
       
       // Footer profesional

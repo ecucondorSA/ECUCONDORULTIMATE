@@ -18,6 +18,7 @@ const PAYMENT_DATA = {
     ruc: COMPANY_CONFIG.ruc,
     bank: COMPANY_CONFIG.bank,
     accountType: COMPANY_CONFIG.bankAccountType,
+    accountNumber: COMPANY_CONFIG.bankAccountNumber,
   },
   mercadopago: {
     alias: 'Reinasm',
@@ -43,7 +44,7 @@ export default function PaymentInstructions({ details }: PaymentInstructionsProp
     } else {
       // Cliente envía USD → Deposita en cuenta bancaria
       paymentMethod = 'transferencia bancaria';
-      accountInfo = `${PAYMENT_DATA.ecucondor.company}\nRUC: ${PAYMENT_DATA.ecucondor.ruc}\n${PAYMENT_DATA.ecucondor.bank} - ${PAYMENT_DATA.ecucondor.accountType}\n\n🏦 Número de cuenta: [Solicitar a Ecucondor]\n💳 Tipo: ${PAYMENT_DATA.ecucondor.accountType}`;
+      accountInfo = `🏦 CUENTA BANCARIA PRODUBANCO\n\n👤 Nombre: Ecucondor S.A.S. Sociedad De Beneficio E Interés Colectivo\n📄 RUC: ${PAYMENT_DATA.ecucondor.ruc}\n🏦 Banco: ${PAYMENT_DATA.ecucondor.bank}\n🌐 Tipo de Cuenta: ${PAYMENT_DATA.ecucondor.accountType}\n📜 Número de Cuenta: ${PAYMENT_DATA.ecucondor.accountNumber || '27059070809'}\n📧 Correo: ecucondor@gmail.com`;
     }
     
     return {
