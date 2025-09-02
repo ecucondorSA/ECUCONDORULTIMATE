@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
       environment: {
         vercel_env: process.env.VERCEL_ENV || 'development',
         node_env: process.env.NODE_ENV || 'development',
-        runtime: typeof EdgeRuntime !== 'undefined' ? 'edge' : 'nodejs',
+        runtime: typeof (globalThis as any).EdgeRuntime !== 'undefined' ? 'edge' : 'nodejs',
         user_agent: request.headers.get('user-agent')
       },
       timestamp: new Date().toISOString()
