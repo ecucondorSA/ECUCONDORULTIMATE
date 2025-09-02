@@ -5,74 +5,11 @@ export function middleware(request: NextRequest) {
   // Get the pathname
   const pathname = request.nextUrl.pathname
 
-  // Dashboard protection - redirect to login if not authenticated
-  if (pathname.startsWith('/dashboard')) {
-    console.log('🛡️ Middleware: Checking dashboard access for:', pathname);
-    
-    // Get all cookies for debugging
-    const allCookies = request.cookies.getAll();
-    console.log('🍪 All cookies:', allCookies.map(c => `${c.name}: ${c.value?.substring(0, 20)}...`));
-    
-    let isAuthenticated = false;
-    
-    // Simplified: Check for any Supabase auth cookie
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    if (supabaseUrl) {
-      const projectRef = supabaseUrl.split('//')[1]?.split('.')[0];
-      console.log('🔑 Project ref:', projectRef);
-      
-      if (projectRef) {
-        // Check for the main Supabase auth cookies
-        const authCookiePatterns = [
-          `sb-${projectRef}-auth-token`,
-          `sb-${projectRef}-auth-token.0`,
-          `sb-${projectRef}-auth-token.1`
-        ];
-        
-        for (const cookieName of authCookiePatterns) {
-          const cookie = request.cookies.get(cookieName);
-          console.log(`🔍 Checking cookie: ${cookieName} = ${cookie?.value ? 'exists' : 'missing'}`);
-          
-          if (cookie?.value) {
-            try {
-              const parsed = JSON.parse(cookie.value);
-              if (parsed.access_token && parsed.user) {
-                console.log(`✅ Found valid session in: ${cookieName}`);
-                isAuthenticated = true;
-                break;
-              }
-            } catch (error) {
-              console.log(`❌ Failed to parse cookie: ${cookieName}`, error);
-            }
-          }
-        }
-      }
-    }
-    
-    // Fallback: If no specific pattern found, check for any sb- cookie with content
-    if (!isAuthenticated) {
-      const supabaseCookies = allCookies.filter(cookie => 
-        cookie.name.startsWith('sb-') && 
-        cookie.value && 
-        cookie.value.length > 50 && // Session data is usually longer
-        cookie.value.includes('access_token')
-      );
-      
-      if (supabaseCookies.length > 0) {
-        console.log('🔍 Found session cookies via fallback:', supabaseCookies.map(c => c.name));
-        isAuthenticated = true;
-      }
-    }
-    
-    if (!isAuthenticated) {
-      console.log('❌ No valid session found, redirecting to login');
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('returnTo', encodeURIComponent(pathname));
-      return NextResponse.redirect(loginUrl);
-    } else {
-      console.log('✅ Session validated, allowing dashboard access');
-    }
-  }
+  // TEMPORARILY DISABLED FOR DEBUGGING - MIDDLEWARE AUTHENTICATION
+  console.log('🛡️ Middleware: Processing request for:', pathname);
+  
+  // Dashboard protection is temporarily disabled for debugging
+  // Will re-enable after finding the root cause
 
   // Clone the response
   const response = NextResponse.next()
