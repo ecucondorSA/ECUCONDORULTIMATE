@@ -54,17 +54,18 @@ export class BinanceService {
   }
 
   /**
-   * Try to get price from Binance API
+   * Try to get price from Binance API, with CoinGecko fallback
    */
   private async fetchFromApi(symbol: string): Promise<BinancePrice | null> {
     try {
-      // Get order book to calculate average price
+      // Try Binance first
       const orderBookResponse = await fetch(
-        `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=5`
+        `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=5`,
+        { signal: AbortSignal.timeout(5000) }
       )
       
       if (!orderBookResponse.ok) {
-        throw new Error('API request failed')
+        throw new Error(`Binance API failed: ${orderBookResponse.status}`)
       }
 
       const orderBook: BinanceOrderBook = await orderBookResponse.json()
@@ -84,8 +85,67 @@ export class BinanceService {
         price: averagePrice,
         timestamp: new Date().toISOString()
       }
-    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      logger.info(`Binance API failed for ${symbol}, trying scraping...`)
+    } catch (error) {
+      logger.warn(`Binance API failed for ${symbol}: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      
+      // Try CoinGecko as fallback
+      try {
+        return await this.fetchFromCoinGecko(symbol)
+      } catch (cgError) {
+        logger.error(`CoinGecko also failed for ${symbol}: ${cgError instanceof Error ? cgError.message : 'Unknown error'}`)
+        return null
+      }
+    }
+  }
+
+  /**
+   * Fallback: get price from CoinGecko API
+   */
+  private async fetchFromCoinGecko(symbol: string): Promise<BinancePrice | null> {
+    try {
+      logger.info(`🦎 Trying CoinGecko for ${symbol}`)
+      
+      // Map Binance symbols to CoinGecko pairs
+      const cgPairs: { [key: string]: { id: string, vs_currency: string } } = {
+        'USDTARS': { id: 'tether', vs_currency: 'ars' },
+        'USDTBRL': { id: 'tether', vs_currency: 'brl' }
+      }
+      
+      const pair = cgPairs[symbol]
+      if (!pair) {
+        throw new Error(`Symbol ${symbol} not supported by CoinGecko fallback`)
+      }
+      
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${pair.id}&vs_currencies=${pair.vs_currency}`,
+        { 
+          signal: AbortSignal.timeout(8000),
+          headers: {
+            'Accept': 'application/json'
+          }
+        }
+      )
+      
+      if (!response.ok) {
+        throw new Error(`CoinGecko API failed: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      const price = data[pair.id]?.[pair.vs_currency]
+      
+      if (!price || price === 0) {
+        throw new Error('Invalid CoinGecko price data')
+      }
+      
+      logger.info(`✅ CoinGecko price for ${symbol}: ${price}`)
+      
+      return {
+        symbol,
+        price,
+        timestamp: new Date().toISOString()
+      }
+    } catch (error) {
+      logger.error(`CoinGecko failed for ${symbol}:`, error)
       return null
     }
   }
