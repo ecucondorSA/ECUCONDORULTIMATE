@@ -25,6 +25,10 @@ export default function VideoBackground({ title, subtitle, features }: VideoBack
           playsInline
           preload="metadata"
           poster="/video-poster.jpg"
+          controls={false}
+          controlsList="nodownload nofullscreen noremoteplayback"
+          disablePictureInPicture
+          onContextMenu={(e) => e.preventDefault()}
           style={{ 
             filter: 'brightness(0.4) contrast(1.2)',
             willChange: 'transform'

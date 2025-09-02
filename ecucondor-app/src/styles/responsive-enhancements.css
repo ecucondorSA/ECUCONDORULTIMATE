@@ -6,24 +6,26 @@
    1. TEXT SELECTION CONTROL
    ======================================== */
 
-/* Disable text selection by default on landing page */
-.landing-page,
-.hero-section,
-.features-section,
-nav,
-.navigation,
-header,
-.btn,
-button,
-.card,
-.testimonial,
-.stats,
-.cta-section {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
+/* Disable text selection by default on landing page - MOBILE ONLY */
+@media (max-width: 768px) {
+  .landing-page,
+  .hero-section,
+  .features-section,
+  nav,
+  .navigation,
+  header,
+  .btn,
+  button,
+  .card,
+  .testimonial,
+  .stats,
+  .cta-section {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
 }
 
 /* Enable text selection for specific content */

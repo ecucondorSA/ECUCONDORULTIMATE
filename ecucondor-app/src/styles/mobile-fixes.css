@@ -1,7 +1,7 @@
 /* CRITICAL MOBILE FIXES FOR ECUCONDOR */
 
 /* ========================================
-   0. FIX INPUT TEXT COLOR (GLOBAL)
+   0. FIX INPUT TEXT COLOR (GLOBAL - applies to all devices)
    ======================================== */
 
 /* Arreglar color de texto en inputs para TODAS las resoluciones */
@@ -27,24 +27,33 @@ input {
 }
 
 /* ========================================
-   1. FIX TAP HIGHLIGHT (FLASH BLANCO)
+   1. FIX TAP HIGHLIGHT (FLASH BLANCO) - MOBILE ONLY
    ======================================== */
 
-* {
-  -webkit-tap-highlight-color: transparent !important;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
-  -webkit-touch-callout: none !important;
+@media (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+    -webkit-touch-callout: none !important;
+  }
 }
 
-/* Específico para elementos interactivos */
-a, button, input, select, textarea, 
-[role="button"], [role="link"],
-.clickable, .btn, .button {
-  -webkit-tap-highlight-color: transparent !important;
-  -webkit-appearance: none !important;
-  outline: none !important;
-  touch-action: manipulation !important;
-  user-select: none !important;
+/* Específico para elementos interactivos - MOBILE ONLY */
+@media (max-width: 768px) {
+  a:not([class*="whatsapp"]), 
+  button:not([class*="whatsapp"]):not([class*="widget"]), 
+  input, select, textarea, 
+  [role="button"]:not([class*="whatsapp"]), 
+  [role="link"]:not([class*="whatsapp"]),
+  .clickable:not([class*="whatsapp"]), 
+  .btn:not([class*="whatsapp"]), 
+  .button:not([class*="whatsapp"]) {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-appearance: none !important;
+    outline: none !important;
+    touch-action: manipulation !important;
+    user-select: none !important;
+  }
 }
 
 /* Prevenir el flash blanco en el body */
@@ -58,33 +67,37 @@ html, body {
    2. FIX HORIZONTAL SCROLL
    ======================================== */
 
-/* Contenedor principal */
-html {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
+/* Contenedor principal - MOBILE ONLY */
+@media (max-width: 768px) {
+  html {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+
+  body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    position: relative !important;
+  }
+
+  /* Todos los elementos no deben exceder el viewport */
+  * {
+    max-width: 100vw !important;
+  }
 }
 
-body {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
-  position: relative !important;
-}
-
-/* Todos los elementos no deben exceder el viewport */
-* {
-  max-width: 100vw !important;
-}
-
-/* Contenedores específicos */
-.container,
-.wrapper,
-.content,
-main,
-section,
-article,
-div {
-  overflow-x: hidden !important;
-  max-width: 100% !important;
+/* Contenedores específicos - MOBILE ONLY */
+@media (max-width: 768px) {
+  .container,
+  .wrapper,
+  .content,
+  main,
+  section,
+  article,
+  div {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+  }
 }
 
 /* ========================================
@@ -285,17 +298,7 @@ textarea:focus {
    8. FIX WHATSAPP WIDGET
    ======================================== */
 
-.whatsapp-widget,
-.whatsapp-button,
-[class*="whatsapp"] {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  width: 56px !important;
-  height: 56px !important;
-  z-index: 999 !important;
-  -webkit-tap-highlight-color: transparent !important;
-}
+/* WhatsApp widget styles removed - let component handle its own styling */
 
 /* ========================================
    9. FIX TEXT SELECTION
@@ -416,17 +419,27 @@ main {
 }
 
 /* ========================================
-   13. FIX IMAGES AND MEDIA
+   13. FIX IMAGES AND MEDIA - MOBILE ONLY
    ======================================== */
 
-img,
-video,
-picture,
-canvas,
-svg {
-  max-width: 100% !important;
-  height: auto !important;
-  display: block !important;
+@media (max-width: 768px) {
+  img,
+  picture,
+  canvas,
+  svg {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+  }
+}
+
+/* Videos need special handling - don't break background videos */
+@media (max-width: 768px) {
+  video:not([class*="background"]):not([class*="hero"]):not([class*="landing"]) {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+  }
 }
 
 /* ========================================

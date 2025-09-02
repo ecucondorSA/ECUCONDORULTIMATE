@@ -248,6 +248,10 @@ function HeroSection() {
                   loop
                   playsInline
                   preload="metadata"
+                  controls={false}
+                  controlsList="nodownload nofullscreen noremoteplayback"
+                  disablePictureInPicture
+                  onContextMenu={(e) => e.preventDefault()}
                 >
                   Tu navegador no soporta el elemento de video.
                 </video>

@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import "./globals-mobile.css";
-import "../styles/ecucondor-theme.css";
-import "../styles/mobile-optimizations.css";
-import "../styles/mobile-fixes.css";
-import "../styles/responsive-enhancements.css";
-import "../styles/pwa-optimizations.css";
+import "../styles/optimized-bundle.css";
+import "../styles/mobile-fix.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -131,6 +130,8 @@ export default function RootLayout({
             }}
           />
         </AuthProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

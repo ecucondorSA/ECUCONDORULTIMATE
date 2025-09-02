@@ -26,13 +26,14 @@ jest.mock('next/navigation', () => ({
   },
 }));
 
-// Mock Framer Motion to avoid animation issues in tests
+// Mock Framer Motion to avoid animation issues in tests  
+import React from 'react';
+
 jest.mock('framer-motion', () => {
-  const React = require('react');
   return {
     motion: {
-      div: React.forwardRef(function MotionDiv({ children, ...props }: React.HTMLAttributes<HTMLDivElement>, ref: React.ForwardedRef<HTMLDivElement>) { return 
-        React.createElement('div', { ...props, ref }, children);
+      div: React.forwardRef(function MotionDiv({ children, ...props }: React.HTMLAttributes<HTMLDivElement>, ref: React.ForwardedRef<HTMLDivElement>) { 
+        return React.createElement('div', { ...props, ref }, children);
       }),
       section: React.forwardRef(function MotionSection({ children, ...props }: React.HTMLAttributes<HTMLElement>, ref: React.ForwardedRef<HTMLElement>) {
         return React.createElement('section', { ...props, ref }, children);

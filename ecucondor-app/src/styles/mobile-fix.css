@@ -1,0 +1,35 @@
+/* Mobile JavaScript Fallback - Show hidden content */
+@media (max-width: 768px) {
+  /* Force show all hidden animated elements on mobile */
+  [style*="opacity:0"],
+  [style*="opacity: 0"] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  /* Ensure critical content is visible */
+  .hero-section > *,
+  .features-section > *,
+  .contact-section > *,
+  section > div > *,
+  .text-left > *,
+  .text-center > * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  /* Fix animations that may be stuck */
+  .animate-fade-in,
+  .animate-slide-in,
+  .animate-scale-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Prevent white flash */
+body.mobile-optimized {
+  visibility: visible !important;
+  opacity: 1 !important;
+}

@@ -154,34 +154,10 @@ export class PDFGenerator {
       yPos += 10;
       
       // Determinar información de pago según la moneda que envía el cliente
-      const sendingCurrency = details.type === 'sell' ? 'ARS' : 'USD';
+      const sendingCurrency = details.type === 'sell' ? 'USD' : 'ARS';
       
-      if (sendingCurrency === 'ARS') {
-        // Cliente envía ARS → Mostrar cuenta MercadoPago
-        doc.setFont('helvetica', 'bold');
-        doc.text('Cuenta:', 25, yPos);
-        doc.setFont('helvetica', 'normal');
-        doc.text('MercadoPago', 80, yPos);
-        
-        yPos += 8;
-        doc.setFont('helvetica', 'bold');
-        doc.text('Beneficiario:', 25, yPos);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Reina Shakira Mosquera', 80, yPos);
-        
-        yPos += 8;
-        doc.setFont('helvetica', 'bold');
-        doc.text('CVU:', 25, yPos);
-        doc.setFont('helvetica', 'normal');
-        doc.text('0000003100085925582280', 80, yPos);
-        
-        yPos += 8;
-        doc.setFont('helvetica', 'bold');
-        doc.text('Alias:', 25, yPos);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Reinasm', 80, yPos);
-      } else {
-        // Cliente envía USD → Mostrar cuenta bancaria
+      if (sendingCurrency === 'USD') {
+        // Cliente envía USD → Mostrar cuenta bancaria Produbanco
         doc.setFont('helvetica', 'bold');
         doc.text('Beneficiario:', 25, yPos);
         doc.setFont('helvetica', 'normal');
@@ -206,6 +182,30 @@ export class PDFGenerator {
         doc.text('Nro. Cuenta:', 25, yPos);
         doc.setFont('helvetica', 'normal');
         doc.text(COMPANY_CONFIG.bankAccountNumber || '27059070809', 80, yPos);
+      } else {
+        // Cliente envía ARS → Mostrar cuenta MercadoPago
+        doc.setFont('helvetica', 'bold');
+        doc.text('Cuenta:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text('MercadoPago', 80, yPos);
+        
+        yPos += 8;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Beneficiario:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Reina Shakira Mosquera', 80, yPos);
+        
+        yPos += 8;
+        doc.setFont('helvetica', 'bold');
+        doc.text('CVU:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text('0000003100085925582280', 80, yPos);
+        
+        yPos += 8;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Alias:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text('reinasmb.', 80, yPos);
       }
       
       // Footer profesional

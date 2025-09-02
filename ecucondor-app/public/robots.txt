@@ -1,0 +1,31 @@
+# Robots.txt - EcuCondor FinTech Platform
+# Permitir indexación completa para todos los bots
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://ecucondor.com/sitemap.xml
+
+# Specific crawl delays for heavy bots
+User-agent: Googlebot
+Crawl-delay: 1
+
+User-agent: Bingbot
+Crawl-delay: 2
+
+# Disallow admin areas and API routes
+Disallow: /api/
+Disallow: /dashboard/admin
+Disallow: /_next/
+Disallow: /admin/
+
+# Allow important business pages
+Allow: /calculator
+Allow: /login
+Allow: /register  
+Allow: /about
+Allow: /contact
+
+# Host declaration
+Host: https://ecucondor.com

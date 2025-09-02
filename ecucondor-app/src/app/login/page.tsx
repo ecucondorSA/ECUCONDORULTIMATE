@@ -54,7 +54,10 @@ export default function LoginPage() {
       if (error) {
         setError(error.message);
       } else if (data.user) {
-        router.push('/dashboard');
+        // Get return URL from query params or default to dashboard
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnTo = urlParams.get('returnTo') || '/dashboard';
+        router.push(returnTo);
       }
     } catch {
       setError('Error de conexión. Intenta nuevamente.');

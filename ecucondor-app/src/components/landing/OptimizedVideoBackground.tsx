@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
 
 interface OptimizedVideoBackgroundProps {
   videoSrc: string;
@@ -56,12 +55,18 @@ export default function OptimizedVideoBackground({
   // Device and connection detection
   useEffect(() => {
     const isMobile = window.innerWidth < 768;
-    const isSlowConnection = navigator.connection?.effectiveType && 
-      ['slow-2g', '2g', '3g'].includes(navigator.connection.effectiveType);
+    // Type-safe connection detection
+    const nav = navigator as Navigator & {
+      connection?: { effectiveType: string };
+      mozConnection?: { effectiveType: string };
+      webkitConnection?: { effectiveType: string };
+    };
+    const connection = nav.connection || nav.mozConnection || nav.webkitConnection;
+    const isSlowConnection = connection?.effectiveType && 
+      ['slow-2g', '2g', '3g'].includes(connection.effectiveType);
     const prefersReducedData = window.matchMedia('(prefers-reduced-data: reduce)').matches;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Don't show video on mobile, slow connections, or if user prefers reduced data/motion
     if (isMobile || isSlowConnection || prefersReducedData || prefersReducedMotion) {
       setShowVideo(false);
     } else {
@@ -88,6 +93,10 @@ export default function OptimizedVideoBackground({
       playsInline: true,
       preload: quality === 'high' ? 'auto' : quality === 'medium' ? 'metadata' : 'none',
       poster: posterImage,
+      controls: false,
+      controlsList: "nodownload nofullscreen noremoteplayback",
+      disablePictureInPicture: true,
+      onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
       onLoadedData: handleVideoLoad,
       onError: handleVideoError,
       style: {

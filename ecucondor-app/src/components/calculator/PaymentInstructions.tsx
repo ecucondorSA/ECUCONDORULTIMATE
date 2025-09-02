@@ -21,7 +21,7 @@ const PAYMENT_DATA = {
     accountNumber: COMPANY_CONFIG.bankAccountNumber,
   },
   mercadopago: {
-    alias: 'Reinasm',
+    alias: 'reinasmb.',
     cvu: '0000003100085925582280',
     nombre: 'Reina Shakira Mosquera',
   }
@@ -31,20 +31,20 @@ export default function PaymentInstructions({ details }: PaymentInstructionsProp
   // Generate payment instructions based on transaction details
   const getPaymentInstructions = (): PaymentInstructionsType => {
     const isReceivingDollars = details.type === 'sell'; // Selling ARS to get USD
-    const sendingCurrency = isReceivingDollars ? 'ARS' : 'USD';
+    const sendingCurrency = isReceivingDollars ? 'USD' : 'ARS';
     
     // Determinar cuenta de depósito según la moneda que envía el cliente
     let accountInfo = '';
     let paymentMethod = '';
     
-    if (sendingCurrency === 'ARS') {
+    if (sendingCurrency === 'USD') {
+      // Cliente envía USD → Deposita en cuenta bancaria Produbanco
+      paymentMethod = 'transferencia bancaria';
+      accountInfo = `🏦 CUENTA BANCARIA PRODUBANCO\n\n👤 Nombre: Ecucondor S.A.S. Sociedad De Beneficio E Interés Colectivo\n📄 RUC: ${PAYMENT_DATA.ecucondor.ruc}\n🏦 Banco: ${PAYMENT_DATA.ecucondor.bank}\n🌐 Tipo de Cuenta: ${PAYMENT_DATA.ecucondor.accountType}\n📜 Número de Cuenta: ${PAYMENT_DATA.ecucondor.accountNumber || '27059070809'}\n📧 Correo: ecucondor@gmail.com`;
+    } else {
       // Cliente envía ARS → Deposita en MercadoPago
       paymentMethod = 'MercadoPago';
       accountInfo = `📱 CUENTA MERCADOPAGO\n\n👤 Nombre: ${PAYMENT_DATA.mercadopago.nombre}\n💳 CVU: ${PAYMENT_DATA.mercadopago.cvu}\n🔑 Alias: ${PAYMENT_DATA.mercadopago.alias}`;
-    } else {
-      // Cliente envía USD → Deposita en cuenta bancaria
-      paymentMethod = 'transferencia bancaria';
-      accountInfo = `🏦 CUENTA BANCARIA PRODUBANCO\n\n👤 Nombre: Ecucondor S.A.S. Sociedad De Beneficio E Interés Colectivo\n📄 RUC: ${PAYMENT_DATA.ecucondor.ruc}\n🏦 Banco: ${PAYMENT_DATA.ecucondor.bank}\n🌐 Tipo de Cuenta: ${PAYMENT_DATA.ecucondor.accountType}\n📜 Número de Cuenta: ${PAYMENT_DATA.ecucondor.accountNumber || '27059070809'}\n📧 Correo: ecucondor@gmail.com`;
     }
     
     return {
