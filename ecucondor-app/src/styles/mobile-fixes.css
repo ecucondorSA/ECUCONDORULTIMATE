@@ -1,6 +1,32 @@
 /* CRITICAL MOBILE FIXES FOR ECUCONDOR */
 
 /* ========================================
+   0. FIX INPUT TEXT COLOR (GLOBAL)
+   ======================================== */
+
+/* Arreglar color de texto en inputs para TODAS las resoluciones */
+input {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background-color: #1a1a1a !important;
+  font-weight: 600 !important;
+}
+
+/* Específico para calculadora */
+.calculator input,
+[class*="calculator"] input,
+.amount-input,
+.calculator-input {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background-color: #1a1a1a !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  caret-color: #FFD700 !important;
+}
+
+/* ========================================
    1. FIX TAP HIGHLIGHT (FLASH BLANCO)
    ======================================== */
 
@@ -185,6 +211,9 @@ textarea {
   font-size: 16px !important; /* Crítico para iOS */
   transform: scale(1) !important;
   -webkit-text-size-adjust: 100% !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background-color: #1a1a1a !important;
 }
 
 /* Focus states sin cambio de color de fondo */
@@ -419,16 +448,31 @@ svg {
 @media screen and (max-width: 768px) {
   /* Input de montos */
   .calculator-input,
-  .amount-input {
+  .amount-input,
+  input[type="number"],
+  input[type="text"] {
     width: 100% !important;
     padding: 16px !important;
     font-size: 20px !important;
+    font-weight: 700 !important;
     text-align: center !important;
     border: 2px solid #FFD700 !important;
     border-radius: 12px !important;
     background-color: #1a1a1a !important;
     color: #ffffff !important;
     -webkit-appearance: none !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #FFD700 !important;
+  }
+
+  /* Específico para inputs de calculator */
+  .calculator input,
+  [class*="calculator"] input,
+  .amount input,
+  .input-amount {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background-color: #1a1a1a !important;
   }
 
   /* Exchange rate display */
