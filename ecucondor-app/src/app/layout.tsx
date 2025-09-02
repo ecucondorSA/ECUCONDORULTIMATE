@@ -1,9 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
-import "./globals-mobile.css";
-import "../styles/optimized-bundle.css";
-import "../styles/mobile-fix.css";
+import "../styles/mobile-first-responsive.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import { Analytics } from '@vercel/analytics/react';
