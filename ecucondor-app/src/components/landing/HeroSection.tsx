@@ -116,16 +116,38 @@ function HeroSection() {
             {/* Cards de Cotizaciones */}
             <motion.div variants={itemVariants}>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-white">
-                  Tasas de Cambio en Tiempo Real
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-white">
+                    Tasas de Cambio en Tiempo Real
+                  </h3>
+                  <motion.div
+                    className="w-3 h-3 bg-green-500 rounded-full"
+                    animate={{ 
+                      opacity: [0.5, 1, 0.5],
+                      scale: [0.8, 1.2, 0.8],
+                      transition: { 
+                        repeat: Infinity, 
+                        duration: 2,
+                        ease: "easeInOut"
+                      }
+                    }}
+                    title="Actualizando en tiempo real"
+                  />
+                </div>
                 {lastUpdate && (
-                  <p className="text-xs text-gray-400">
-                    Actualizado: {new Date(lastUpdate).toLocaleTimeString('es-ES', { 
+                  <motion.p 
+                    className="text-xs text-green-400 font-semibold"
+                    key={lastUpdate.getTime()}
+                    initial={{ scale: 0.8, opacity: 0.5 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    🔄 Actualizado: {new Date(lastUpdate).toLocaleTimeString('es-ES', { 
                       hour: '2-digit', 
-                      minute: '2-digit' 
+                      minute: '2-digit',
+                      second: '2-digit'
                     })}
-                  </p>
+                  </motion.p>
                 )}
               </div>
               

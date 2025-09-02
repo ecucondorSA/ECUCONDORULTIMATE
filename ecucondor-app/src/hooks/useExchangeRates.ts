@@ -74,9 +74,23 @@ const useExchangeRates = (): UseExchangeRatesReturn => {
       setLoading(true);
       setError(null);
 
-      // Obtener datos reales de la API
-      const response = await fetch('/api/rates');
+      logger.info('🔄 Fetching exchange rates...');
+      
+      // Obtener datos reales de la API con cache busting
+      const cacheBuster = Date.now();
+      const response = await fetch(`/api/rates?t=${cacheBuster}`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
+      logger.info('📊 API Response:', data);
       
       if (data.success && data.data) {
         // Transformar datos de API a formato de display
@@ -128,8 +142,10 @@ const useExchangeRates = (): UseExchangeRatesReturn => {
         });
         
         setRates(apiRates);
+        logger.info(`✅ Successfully updated ${apiRates.length} exchange rates`);
       } else {
         // Fallback a datos simulados si API falla
+        logger.warn('⚠️ API response unsuccessful, using mock data');
         const mockRates = generateMockRates();
         setRates(mockRates);
       }
@@ -137,7 +153,7 @@ const useExchangeRates = (): UseExchangeRatesReturn => {
       setLastUpdate(new Date());
     } catch (err) {
       // En caso de error, usar datos simulados
-      logger.warn('API no disponible, usando datos simulados:', err);
+      logger.error('❌ Error fetching rates, using mock data:', err);
       const mockRates = generateMockRates();
       setRates(mockRates);
       setError('API no disponible - mostrando datos simulados');
@@ -155,10 +171,30 @@ const useExchangeRates = (): UseExchangeRatesReturn => {
     // Cargar tasas inicialmente
     fetchRates();
 
-    // Actualizar cada 30 segundos
-    const interval = setInterval(fetchRates, 30000);
+    // Actualizar cada 15 segundos (más frecuente para tiempo real)
+    const interval = setInterval(fetchRates, 15000);
+    
+    // También actualizar cuando la ventana recupera el foco
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        logger.info('Ventana recuperó el foco, actualizando tasas...');
+        fetchRates();
+      }
+    };
+    
+    const handleFocus = () => {
+      logger.info('Ventana recuperó el foco, actualizando tasas...');
+      fetchRates();
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, [fetchRates]);
 
   // Efecto para mostrar notificación de actualización
