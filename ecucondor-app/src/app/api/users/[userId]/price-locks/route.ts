@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest } from 'next/server'
 import { PriceLockService } from '@/lib/services/price-lock'
 import { createSuccessResponse, createErrorResponse } from '@/lib/utils/api'
@@ -41,7 +42,7 @@ export async function GET(
     })
 
   } catch (error) {
-    console.error(`❌ Error getting user price locks for ${userId}:`, error)
+    logger.error(`❌ Error getting user price locks for ${userId}:`, error)
     
     return createErrorResponse(
       'Failed to get user price locks',
@@ -90,7 +91,7 @@ export async function DELETE(
     })
 
   } catch (error) {
-    console.error(`❌ Error cancelling user price locks for ${userId}:`, error)
+    logger.error(`❌ Error cancelling user price locks for ${userId}:`, error)
     
     return createErrorResponse(
       'Failed to cancel user price locks',

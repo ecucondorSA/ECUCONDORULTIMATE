@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest } from 'next/server'
 import { ExchangeRateService } from '@/lib/services/exchange-rates'
 
@@ -20,7 +21,7 @@ function broadcastToClients(data: string) {
     try {
       controller.enqueue(`data: ${data}\n\n`)
     } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      console.log('Client disconnected, removing from active connections')
+      logger.info('Client disconnected, removing from active connections')
       disconnectedControllers.push(controller)
     }
   }
@@ -46,9 +47,9 @@ async function updateAndBroadcast() {
     })
     
     broadcastToClients(message)
-    console.log(`📡 Broadcasted rates to ${activeConnections.size} clients`)
+    logger.info(`📡 Broadcasted rates to ${activeConnections.size} clients`)
   } catch (error) {
-    console.error('❌ Error updating rates for broadcast:', error)
+    logger.error('❌ Error updating rates for broadcast:', error)
     
     // Broadcast error to clients
     const errorMessage = JSON.stringify({
@@ -66,7 +67,7 @@ const UPDATE_INTERVAL = 30000 // 30 seconds
 
 function startGlobalUpdates() {
   if (!updateInterval) {
-    console.log('🚀 Starting global rate updates every 30 seconds')
+    logger.info('🚀 Starting global rate updates every 30 seconds')
     
     // Initial update
     updateAndBroadcast()
@@ -78,14 +79,14 @@ function startGlobalUpdates() {
 
 function stopGlobalUpdates() {
   if (updateInterval && activeConnections.size === 0) {
-    console.log('⏹️  Stopping global rate updates (no active connections)')
+    logger.info('⏹️  Stopping global rate updates (no active connections)')
     clearInterval(updateInterval)
     updateInterval = null
   }
 }
 
 export async function GET(request: NextRequest) {
-  console.log('🔄 New SSE connection established')
+  logger.info('🔄 New SSE connection established')
   
   // Parse query parameters
   const searchParams = request.nextUrl.searchParams
@@ -148,7 +149,7 @@ export async function GET(request: NextRequest) {
     },
     
     cancel() {
-      console.log('🔌 SSE connection cancelled')
+      logger.info('🔌 SSE connection cancelled')
       // Cleanup will be handled by the controller cleanup function
     }
   })

@@ -1,6 +1,7 @@
 'use client';
+import { logger } from '@/lib/utils/logger';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ExchangeRate, CURRENCY_FLAGS, CurrencyPair } from '@/lib/types/calculator';
@@ -10,7 +11,7 @@ interface InlineCalculatorProps {
   className?: string;
 }
 
-export default function InlineCalculator({ className = '' }: InlineCalculatorProps) {
+function InlineCalculator({ className = '' }: InlineCalculatorProps) {
   const [rates, setRates] = useState<ExchangeRate[]>([]);
   const [selectedPair, setSelectedPair] = useState<CurrencyPair>('USD-ARS');
   const [sendAmount, setSendAmount] = useState('100');
@@ -35,7 +36,7 @@ export default function InlineCalculator({ className = '' }: InlineCalculatorPro
           setRates(data.data);
         }
       } catch (error) {
-        console.error('Error fetching rates:', error);
+        logger.error('Error fetching rates:', error);
       }
     };
 
@@ -62,16 +63,16 @@ export default function InlineCalculator({ className = '' }: InlineCalculatorPro
     setTimeout(() => setIsCalculating(false), 300);
   }, [sendAmount, selectedRate, selectedPair]);
 
-  const handleAmountChange = (value: string) => {
+  const handleAmountChange = useCallback((value: string) => {
     // Allow only numbers, dots, and commas
     const cleanValue = value.replace(/[^0-9.,]/g, '');
     setSendAmount(cleanValue);
-  };
+  }, []);
 
-  const handlePairChange = (pair: CurrencyPair) => {
+  const handlePairChange = useCallback((pair: CurrencyPair) => {
     setSelectedPair(pair);
     setSendAmount('100'); // Reset to default amount
-  };
+  }, []);
 
   const rate = selectedRate?.sell_rate || 0;
 
@@ -173,3 +174,5 @@ export default function InlineCalculator({ className = '' }: InlineCalculatorPro
     </motion.div>
   );
 }
+
+export default memo(InlineCalculator);

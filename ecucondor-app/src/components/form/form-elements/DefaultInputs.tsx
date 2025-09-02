@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 "use client";
 import React, { useState } from 'react';
 import ComponentCard from '../../common/ComponentCard';
@@ -15,7 +16,7 @@ export default function DefaultInputs() {
     { value: "development", label: "Development" },
   ];
   const handleSelectChange = (value: string) => {
-    console.log("Selected value:", value);
+    logger.info("Selected value:", value);
   };
   return (
     <ComponentCard title="Default Inputs">
@@ -69,7 +70,7 @@ export default function DefaultInputs() {
             placeholder="Select a date"
             onChange={(dates, currentDateString) => {
               // Handle your logic
-              console.log({ dates, currentDateString });
+              logger.info('Date selected:', { dates, currentDateString });
             }}
           />
         </div>
@@ -81,7 +82,7 @@ export default function DefaultInputs() {
               type="time"
               id="tm"
               name="tm"
-              onChange={(e) => console.log(e.target.value)}
+              onChange={(e) => logger.info(e.target.value)}
             />
             <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
               <TimeIcon />

@@ -84,7 +84,7 @@ async function getDynamicRoutes() {
     // return posts;
     return [];
   } catch (error) {
-    console.error('Error fetching dynamic routes for sitemap:', error);
+    logger.error('Error fetching dynamic routes for sitemap:', error);
     return [];
   }
 }

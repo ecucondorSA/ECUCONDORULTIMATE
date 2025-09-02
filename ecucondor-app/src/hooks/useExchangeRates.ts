@@ -1,4 +1,5 @@
 'use client';
+import { logger } from '@/lib/utils/logger';
 
 import { useState, useEffect, useCallback } from 'react';
 
@@ -79,7 +80,16 @@ const useExchangeRates = (): UseExchangeRatesReturn => {
       
       if (data.success && data.data) {
         // Transformar datos de API a formato de display
-        const apiRates: ExchangeRate[] = data.data.map((rate: any) => {
+        const apiRates: ExchangeRate[] = data.data.map((rate: { 
+          pair: string;
+          sell_rate: number;
+          buy_rate: number;
+          binance_rate?: number;
+          spread?: number;
+          commission_rate?: number;
+          last_updated: string;
+          source: 'fixed' | 'binance' | 'manual';
+        }) => {
           const sellRate = rate.sell_rate || 0;
           const baseRate = rate.binance_rate || sellRate;
           const percentage = baseRate > 0 ? ((sellRate - baseRate) / baseRate * 100) : 0;
@@ -127,7 +137,7 @@ const useExchangeRates = (): UseExchangeRatesReturn => {
       setLastUpdate(new Date());
     } catch (err) {
       // En caso de error, usar datos simulados
-      console.warn('API no disponible, usando datos simulados:', err);
+      logger.warn('API no disponible, usando datos simulados:', err);
       const mockRates = generateMockRates();
       setRates(mockRates);
       setError('API no disponible - mostrando datos simulados');
@@ -155,7 +165,7 @@ const useExchangeRates = (): UseExchangeRatesReturn => {
   useEffect(() => {
     if (lastUpdate && rates.length > 0) {
       // Aquí podrías agregar una notificación toast
-      console.log(`Tasas actualizadas: ${lastUpdate.toLocaleTimeString()}`);
+      logger.info(`Tasas actualizadas: ${lastUpdate.toLocaleTimeString()}`);
     }
   }, [lastUpdate, rates]);
 

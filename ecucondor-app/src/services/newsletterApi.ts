@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 /**
  * Newsletter API Service
  * Maneja suscripciones a newsletter y email marketing
@@ -62,7 +63,7 @@ class NewsletterAPI {
 
       return data;
     } catch (error) {
-      console.error('Error subscribing to newsletter:', error);
+      logger.error('Error subscribing to newsletter:', error);
       
       return {
         success: false,
@@ -94,7 +95,7 @@ class NewsletterAPI {
 
       return data;
     } catch (error) {
-      console.error('Error unsubscribing from newsletter:', error);
+      logger.error('Error unsubscribing from newsletter:', error);
       
       return {
         success: false,
@@ -125,7 +126,7 @@ class NewsletterAPI {
 
       return data;
     } catch (error) {
-      console.error('Error checking subscription status:', error);
+      logger.error('Error checking subscription status:', error);
       
       return {
         success: false,
@@ -160,7 +161,7 @@ class NewsletterAPI {
 
       return data;
     } catch (error) {
-      console.error('Error updating preferences:', error);
+      logger.error('Error updating preferences:', error);
       
       return {
         success: false,
@@ -201,7 +202,7 @@ class NewsletterAPI {
 
       return data;
     } catch (error) {
-      console.error('Error getting newsletter stats:', error);
+      logger.error('Error getting newsletter stats:', error);
       
       return {
         success: false,

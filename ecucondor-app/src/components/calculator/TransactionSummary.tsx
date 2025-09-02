@@ -3,6 +3,7 @@
  * Shows complete transaction details with WhatsApp and PDF actions
  */
 
+import { memo } from 'react';
 import { TransactionDetails } from '@/lib/types/calculator';
 import { COMPANY_CONFIG } from '@/lib/config/company';
 import { generateWhatsAppMessage } from '@/lib/utils/calculator-utils';
@@ -16,7 +17,7 @@ interface TransactionSummaryProps {
   loading: boolean;
 }
 
-export default function TransactionSummary({
+function TransactionSummary({
   details,
   userEmail,
   onClose,
@@ -129,3 +130,5 @@ export default function TransactionSummary({
     </div>
   );
 }
+
+export default memo(TransactionSummary);

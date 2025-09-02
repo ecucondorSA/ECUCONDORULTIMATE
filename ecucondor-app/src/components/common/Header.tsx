@@ -1,4 +1,5 @@
 'use client';
+import { logger } from '@/lib/utils/logger';
 
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -20,7 +21,7 @@ export default function Header({ showLogout = false }: HeaderProps) {
       await signOut();
       router.push('/');
     } catch (error) {
-      console.error('Error al cerrar sesión:', error);
+      logger.error('Error al cerrar sesión:', error);
     } finally {
       setIsLoading(false);
     }

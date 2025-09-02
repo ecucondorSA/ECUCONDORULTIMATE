@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest } from 'next/server'
 import { ExchangeRateService } from '@/lib/services/exchange-rates'
 
@@ -22,7 +23,7 @@ function broadcastToPairClients(pair: string, data: string) {
     try {
       controller.enqueue(`data: ${data}\n\n`)
     } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      console.log(`Client disconnected from ${pair} stream`)
+      logger.info(`Client disconnected from ${pair} stream`)
       disconnectedControllers.push(controller)
     }
   }
@@ -57,9 +58,9 @@ async function updatePairAndBroadcast(pair: string) {
     broadcastToPairClients(pair, message)
     
     const connectionCount = pairConnections.get(pair)?.size || 0
-    console.log(`📡 Broadcasted ${pair} rate to ${connectionCount} clients`)
+    logger.info(`📡 Broadcasted ${pair} rate to ${connectionCount} clients`)
   } catch (error) {
-    console.error(`❌ Error updating ${pair} rate:`, error)
+    logger.error(`❌ Error updating ${pair} rate:`, error)
     
     const errorMessage = JSON.stringify({
       type: 'error',
@@ -77,7 +78,7 @@ const pairIntervals = new Map<string, NodeJS.Timeout>()
 
 function startPairUpdates(pair: string) {
   if (!pairIntervals.has(pair)) {
-    console.log(`🚀 Starting updates for ${pair} every 30 seconds`)
+    logger.info(`🚀 Starting updates for ${pair} every 30 seconds`)
     
     // Initial update
     updatePairAndBroadcast(pair)
@@ -91,7 +92,7 @@ function startPairUpdates(pair: string) {
 function stopPairUpdates(pair: string) {
   const connections = pairConnections.get(pair)
   if ((!connections || connections.size === 0) && pairIntervals.has(pair)) {
-    console.log(`⏹️  Stopping updates for ${pair} (no active connections)`)
+    logger.info(`⏹️  Stopping updates for ${pair} (no active connections)`)
     
     const interval = pairIntervals.get(pair)!
     clearInterval(interval)
@@ -106,7 +107,7 @@ export async function GET(
   const { pair } = await params
   const pairUpper = pair.toUpperCase()
   
-  console.log(`🔄 New SSE connection for ${pairUpper}`)
+  logger.info(`🔄 New SSE connection for ${pairUpper}`)
   
   // Validate pair exists
   const service = getExchangeService()
@@ -188,7 +189,7 @@ export async function GET(
     },
     
     cancel() {
-      console.log(`🔌 SSE connection for ${pairUpper} cancelled`)
+      logger.info(`🔌 SSE connection for ${pairUpper} cancelled`)
       // Cleanup handled by controller cleanup function
     }
   })

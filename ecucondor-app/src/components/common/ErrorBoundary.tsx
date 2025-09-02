@@ -1,4 +1,5 @@
 'use client';
+import { logger } from '@/lib/utils/logger';
 
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -41,7 +42,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    logger.error('ErrorBoundary caught an error:', { error, errorInfo });
     
     this.setState({
       errorInfo: errorInfo.componentStack || null,
@@ -55,7 +56,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     // Log error to monitoring service
     if (process.env.NODE_ENV === 'production') {
       // Aquí podrías enviar a Sentry, LogRocket, etc.
-      console.error('Production Error:', {
+      logger.error('Production Error:', {
         error: error.message,
         stack: error.stack,
         componentStack: errorInfo.componentStack,

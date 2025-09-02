@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest } from 'next/server'
 import { ExchangeRateService } from '@/lib/services/exchange-rates'
 import { TransactionLimitsService } from '@/lib/services/transaction-limits'
@@ -141,7 +142,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (createError) {
-      console.error('Error creating transaction record:', createError)
+      logger.error('Error creating transaction record:', createError)
       return createErrorResponse('Failed to create transaction record', 500)
     }
 
@@ -149,7 +150,7 @@ export async function POST(request: NextRequest) {
     if (price_lock_id && usedPriceLock) {
       const lockUsed = await priceLockService.usePriceLock(price_lock_id)
       if (!lockUsed) {
-        console.warn(`Failed to mark price lock ${price_lock_id} as used`)
+        logger.warn(`Failed to mark price lock ${price_lock_id} as used`)
       }
     }
 
@@ -172,7 +173,7 @@ export async function POST(request: NextRequest) {
       .eq('id', createdTransaction.id)
 
     if (updateError) {
-      console.error('Error updating transaction status:', updateError)
+      logger.error('Error updating transaction status:', updateError)
     }
 
     return createSuccessResponse({
@@ -198,7 +199,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('❌ Error in /api/transactions/execute:', error)
+    logger.error('❌ Error in /api/transactions/execute:', error)
     
     return createErrorResponse(
       'Failed to execute transaction',

@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 /**
  * Company configuration from environment variables
  * All company-related information centralized here
@@ -53,7 +54,7 @@ export const PAYMENT_INFO = {
 
 // Validation
 if (process.env.NODE_ENV === 'development') {
-  console.log('🏢 Company Configuration Loaded:', {
+  logger.info('🏢 Company Configuration Loaded:', {
     name: COMPANY_CONFIG.name,
     bank: COMPANY_CONFIG.bankFullName,
     contact: `${COMPANY_CONFIG.email} | ${COMPANY_CONFIG.whatsappDisplay}`

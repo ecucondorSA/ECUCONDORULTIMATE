@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { createClient } from '@/lib/supabase/server'
 import { PriceLock, PRICE_LOCK_DURATION_MINUTES } from '@/lib/types/limits'
 import { ExchangeRate } from '@/lib/types'
@@ -54,7 +55,7 @@ export class PriceLockService {
       }])
 
     if (error) {
-      console.error('Error creating price lock:', error)
+      logger.error('Error creating price lock:', error)
       throw new Error('Failed to create price lock')
     }
 
@@ -75,7 +76,7 @@ export class PriceLockService {
       .single()
 
     if (error) {
-      console.error('Error getting price lock:', error)
+      logger.error('Error getting price lock:', error)
       return null
     }
 
@@ -83,7 +84,7 @@ export class PriceLockService {
     
     // Check if expired
     if (new Date(priceLock.expires_at) < new Date()) {
-      console.log(`Price lock ${lockId} has expired`)
+      logger.info(`Price lock ${lockId} has expired`)
       return null
     }
 
@@ -103,7 +104,7 @@ export class PriceLockService {
       .eq('used', false)
 
     if (error) {
-      console.error('Error using price lock:', error)
+      logger.error('Error using price lock:', error)
       return false
     }
 
@@ -125,7 +126,7 @@ export class PriceLockService {
       .order('locked_at', { ascending: false })
 
     if (error) {
-      console.error('Error getting user price locks:', error)
+      logger.error('Error getting user price locks:', error)
       return []
     }
 
@@ -145,7 +146,7 @@ export class PriceLockService {
       .select('id')
 
     if (error) {
-      console.error('Error cleaning expired price locks:', error)
+      logger.error('Error cleaning expired price locks:', error)
       return 0
     }
 

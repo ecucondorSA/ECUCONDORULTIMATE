@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest } from 'next/server'
 import { PriceLockService } from '@/lib/services/price-lock'
 import { createSuccessResponse, createErrorResponse } from '@/lib/utils/api'
@@ -29,7 +30,7 @@ export async function GET(
     })
 
   } catch (error) {
-    console.error(`❌ Error getting price lock ${lockId}:`, error)
+    logger.error(`❌ Error getting price lock ${lockId}:`, error)
     
     return createErrorResponse(
       'Failed to get price lock status',
@@ -82,7 +83,7 @@ export async function DELETE(
     }
 
   } catch (error) {
-    console.error(`❌ Error cancelling price lock ${lockId}:`, error)
+    logger.error(`❌ Error cancelling price lock ${lockId}:`, error)
     
     return createErrorResponse(
       'Failed to cancel price lock',

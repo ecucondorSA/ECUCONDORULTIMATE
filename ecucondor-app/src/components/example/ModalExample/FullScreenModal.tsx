@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 "use client";
 import { useModal } from "@/hooks/useModal";
 import ComponentCard from "../../common/ComponentCard";
@@ -13,7 +14,7 @@ export default function FullScreenModal() {
   } = useModal();
   const handleSave = () => {
     // Handle save logic here
-    console.log("Saving changes...");
+    logger.info("Saving changes...");
     closeFullscreenModal();
   };
   return (

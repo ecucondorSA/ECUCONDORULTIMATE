@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 "use client";
 import React from "react";
 import ComponentCard from "../../common/ComponentCard";
@@ -5,7 +6,7 @@ import { useDropzone } from "react-dropzone";
 
 const DropzoneComponent: React.FC = () => {
   const onDrop = (acceptedFiles: File[]) => {
-    console.log("Files dropped:", acceptedFiles);
+    logger.info("Files dropped:", acceptedFiles);
     // Handle file uploads here
   };
 

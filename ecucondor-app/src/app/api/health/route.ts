@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from 'next/server'
 import { ExchangeRateService } from '@/lib/services/exchange-rates'
 import { BinanceService } from '@/lib/services/binance'
@@ -89,7 +90,7 @@ export async function GET(request: NextRequest) {
     })
     
   } catch (error) {
-    console.error('❌ Health check failed:', error)
+    logger.error('❌ Health check failed:', error)
     
     return NextResponse.json({
       status: 'unhealthy',

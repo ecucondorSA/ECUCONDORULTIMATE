@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 // Examples of how to use the Exchange Rate APIs
 import { ExchangeRate } from '@/lib/types'
 
@@ -10,13 +11,13 @@ export async function getAllRates() {
     const data = await response.json()
     
     if (data.success) {
-      console.log('All rates:', data.data)
+      logger.info('All rates:', data.data)
       return data.data
     } else {
-      console.error('Error:', data.error)
+      logger.error('Error:', data.error)
     }
   } catch (error) {
-    console.error('Failed to fetch rates:', error)
+    logger.error('Failed to fetch rates:', error)
   }
 }
 
@@ -29,13 +30,13 @@ export async function getSpecificRate(pair: string) {
     const data = await response.json()
     
     if (data.success) {
-      console.log(`${pair} rate:`, data.data)
+      logger.info(`${pair} rate:`, data.data)
       return data.data
     } else {
-      console.error('Error:', data.error)
+      logger.error('Error:', data.error)
     }
   } catch (error) {
-    console.error(`Failed to fetch ${pair} rate:`, error)
+    logger.error(`Failed to fetch ${pair} rate:`, error)
   }
 }
 
@@ -50,18 +51,18 @@ export async function calculateSellTransaction(pair: string, amount: number) {
     if (data.success) {
       const { rate, transaction } = data.data
       
-      console.log(`Selling ${amount} ${pair.split('-')[0]}:`)
-      console.log(`Rate: ${rate.sell_rate}`)
-      console.log(`You'll receive: ${transaction.target_amount} ${pair.split('-')[1]}`)
-      console.log(`Commission: ${transaction.commission}`)
-      console.log(`Total cost: ${transaction.total_cost}`)
+      logger.info(`Selling ${amount} ${pair.split('-')[0]}:`)
+      logger.info(`Rate: ${rate.sell_rate}`)
+      logger.info(`You'll receive: ${transaction.target_amount} ${pair.split('-')[1]}`)
+      logger.info(`Commission: ${transaction.commission}`)
+      logger.info(`Total cost: ${transaction.total_cost}`)
       
       return data.data
     } else {
-      console.error('Error:', data.error)
+      logger.error('Error:', data.error)
     }
   } catch (error) {
-    console.error('Failed to calculate sell transaction:', error)
+    logger.error('Failed to calculate sell transaction:', error)
   }
 }
 
@@ -76,17 +77,17 @@ export async function calculateBuyTransaction(pair: string, amount: number) {
     if (data.success) {
       const { rate, transaction } = data.data
       
-      console.log(`Buying ${transaction.base_amount} ${pair.split('-')[0]}:`)
-      console.log(`Rate: ${rate.buy_rate}`)
-      console.log(`You need: ${amount} ${pair.split('-')[1]}`)
-      console.log(`Commission: ${transaction.commission}`)
+      logger.info(`Buying ${transaction.base_amount} ${pair.split('-')[0]}:`)
+      logger.info(`Rate: ${rate.buy_rate}`)
+      logger.info(`You need: ${amount} ${pair.split('-')[1]}`)
+      logger.info(`Commission: ${transaction.commission}`)
       
       return data.data
     } else {
-      console.error('Error:', data.error)
+      logger.error('Error:', data.error)
     }
   } catch (error) {
-    console.error('Failed to calculate buy transaction:', error)
+    logger.error('Failed to calculate buy transaction:', error)
   }
 }
 
@@ -97,7 +98,7 @@ export function subscribeToAllRates(callback: (rates: ExchangeRate[]) => void) {
   const eventSource = new EventSource('/api/rates/stream')
   
   eventSource.onopen = () => {
-    console.log('📡 Connected to rates stream')
+    logger.info('📡 Connected to rates stream')
   }
   
   eventSource.onmessage = (event) => {
@@ -106,35 +107,35 @@ export function subscribeToAllRates(callback: (rates: ExchangeRate[]) => void) {
       
       switch (data.type) {
         case 'connected':
-          console.log('✅ Stream connected:', data.message)
+          logger.info('✅ Stream connected:', data.message)
           break
           
         case 'rates_update':
-          console.log('📊 Rates updated:', data.data)
+          logger.info('📊 Rates updated:', data.data)
           callback(data.data)
           break
           
         case 'heartbeat':
-          console.log('💓 Heartbeat:', data.timestamp)
+          logger.info('💓 Heartbeat:', data.timestamp)
           break
           
         case 'error':
-          console.error('❌ Stream error:', data.error)
+          logger.error('❌ Stream error:', data.error)
           break
       }
     } catch (error) {
-      console.error('Failed to parse SSE data:', error)
+      logger.error('Failed to parse SSE data:', error)
     }
   }
   
   eventSource.onerror = (error) => {
-    console.error('❌ SSE connection error:', error)
+    logger.error('❌ SSE connection error:', error)
   }
   
   // Return cleanup function
   return () => {
     eventSource.close()
-    console.log('🔌 Disconnected from rates stream')
+    logger.info('🔌 Disconnected from rates stream')
   }
 }
 
@@ -148,7 +149,7 @@ export function subscribeToSpecificRate(
   const eventSource = new EventSource(`/api/rates/${pair}/stream`)
   
   eventSource.onopen = () => {
-    console.log(`📡 Connected to ${pair} stream`)
+    logger.info(`📡 Connected to ${pair} stream`)
   }
   
   eventSource.onmessage = (event) => {
@@ -157,36 +158,36 @@ export function subscribeToSpecificRate(
       
       switch (data.type) {
         case 'connected':
-          console.log(`✅ Connected to ${pair}:`, data.message)
+          logger.info(`✅ Connected to ${pair}:`, data.message)
           break
           
         case 'initial_rate':
         case 'rate_update':
-          console.log(`📊 ${pair} updated:`, data.data)
+          logger.info(`📊 ${pair} updated:`, data.data)
           callback(data.data)
           break
           
         case 'heartbeat':
-          console.log(`💓 ${pair} heartbeat:`, data.timestamp)
+          logger.info(`💓 ${pair} heartbeat:`, data.timestamp)
           break
           
         case 'error':
-          console.error(`❌ ${pair} error:`, data.error)
+          logger.error(`❌ ${pair} error:`, data.error)
           break
       }
     } catch (error) {
-      console.error('Failed to parse SSE data:', error)
+      logger.error('Failed to parse SSE data:', error)
     }
   }
   
   eventSource.onerror = (error) => {
-    console.error(`❌ ${pair} SSE error:`, error)
+    logger.error(`❌ ${pair} SSE error:`, error)
   }
   
   // Return cleanup function
   return () => {
     eventSource.close()
-    console.log(`🔌 Disconnected from ${pair} stream`)
+    logger.info(`🔌 Disconnected from ${pair} stream`)
   }
 }
 
@@ -198,12 +199,12 @@ export async function checkApiHealth() {
     const response = await fetch('/api/health?detailed=true')
     const data = await response.json()
     
-    console.log('API Health:', data.status)
-    console.log('Services:', data.checks)
+    logger.info('API Health:', data.status)
+    logger.info('Services:', data.checks)
     
     return data
   } catch (error) {
-    console.error('Health check failed:', error)
+    logger.error('Health check failed:', error)
   }
 }
 
@@ -287,14 +288,14 @@ export default function ExchangeCalculator() {
  * Example 9: Business logic simulation (matching user requirements)
  */
 export async function simulateTransactions() {
-  console.log('🎯 Running business logic simulation...')
+  logger.info('🎯 Running business logic simulation...')
   
   // Simulation 1: Client with 100 USD needs pesos
-  console.log('\n💰 Simulation 1: Client sells 100 USD')
+  logger.info('\n💰 Simulation 1: Client sells 100 USD')
   const sell100USD = await calculateSellTransaction('USD-ARS', 100)
   
   // Simulation 2: Client with 150,000 ARS needs dollars  
-  console.log('\n💰 Simulation 2: Client buys USD with 150,000 ARS')
+  logger.info('\n💰 Simulation 2: Client buys USD with 150,000 ARS')
   const buy150kARS = await calculateBuyTransaction('USD-ARS', 150000)
   
   return { sell100USD, buy150kARS }

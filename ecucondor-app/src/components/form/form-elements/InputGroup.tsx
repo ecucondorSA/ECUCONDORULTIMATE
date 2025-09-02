@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 "use client";
 import React from "react";
 import ComponentCard from "../../common/ComponentCard";
@@ -14,7 +15,7 @@ export default function InputGroup() {
     { code: "AU", label: "+61" },
   ];
   const handlePhoneNumberChange = (phoneNumber: string) => {
-    console.log("Updated phone number:", phoneNumber);
+    logger.info("Updated phone number:", phoneNumber);
   };
   return (
     <ComponentCard title="Input Group">

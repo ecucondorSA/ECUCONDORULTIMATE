@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
     // - Slack/Discord para notificaciones internas
 
     // Simulación de procesamiento
-    console.log('📧 Nueva consulta de contacto:', {
+    logger.info('📧 Nueva consulta de contacto:', {
       ...validatedData,
       timestamp: new Date().toISOString(),
       ip: request.headers.get('x-forwarded-for') || 'unknown'
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     }, { status: 200 });
 
   } catch (err) {
-    console.error('❌ Error procesando contacto:', err);
+    logger.error('❌ Error procesando contacto:', err);
 
     if (err instanceof z.ZodError) {
       return NextResponse.json({

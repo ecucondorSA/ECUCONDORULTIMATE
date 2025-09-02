@@ -1,5 +1,6 @@
 'use client';
 
+import { lazy, Suspense } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -8,10 +9,13 @@ import Link from 'next/link';
 import { useCalculator } from '@/hooks/useCalculator';
 import { CURRENCY_FLAGS } from '@/lib/types/calculator';
 import { formatNumber } from '@/lib/utils/calculator-utils';
-import { PDFGenerator } from '@/components/calculator/PDFGenerator';
-import TransactionSummary from '@/components/calculator/TransactionSummary';
 import { logger } from '@/lib/utils/logger';
 import Header from '@/components/common/Header';
+// Keep PDFGenerator import for direct use in handleDownloadPDF
+import { PDFGenerator } from '@/components/calculator/PDFGenerator';
+
+// Lazy load heavy components
+const TransactionSummary = lazy(() => import('@/components/calculator/TransactionSummary'));
 
 export default function CalculatorPage() {
   const { user, loading: authLoading } = useAuth();
@@ -337,13 +341,19 @@ export default function CalculatorPage() {
 
         {/* Transaction Summary Modal */}
         {showSummary && transactionDetails && (
-          <TransactionSummary
-            details={transactionDetails}
-            userEmail={user?.email || null}
-            onClose={() => setShowSummary(false)}
-            onDownloadPDF={handleDownloadPDF}
-            loading={loading}
-          />
+          <Suspense fallback={
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-ecucondor-yellow"></div>
+            </div>
+          }>
+            <TransactionSummary
+              details={transactionDetails}
+              userEmail={user?.email || null}
+              onClose={() => setShowSummary(false)}
+              onDownloadPDF={handleDownloadPDF}
+              loading={loading}
+            />
+          </Suspense>
         )}
       </div>
       </div>

@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 "use client";
 import React from "react";
 import { useModal } from "../../hooks/useModal";
@@ -12,7 +13,7 @@ export default function UserMetaCard() {
   const { isOpen, openModal, closeModal } = useModal();
   const handleSave = () => {
     // Handle save logic here
-    console.log("Saving changes...");
+    logger.info("Saving changes...");
     closeModal();
   };
   return (

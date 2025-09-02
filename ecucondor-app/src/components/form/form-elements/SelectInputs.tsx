@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 "use client";
 import React, { useState } from "react";
 import ComponentCard from "../../common/ComponentCard";
@@ -16,7 +17,7 @@ export default function SelectInputs() {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
 
   const handleSelectChange = (value: string) => {
-    console.log("Selected value:", value);
+    logger.info("Selected value:", value);
   };
 
   const multiOptions = [

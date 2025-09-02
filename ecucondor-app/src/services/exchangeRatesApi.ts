@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 /**
  * Exchange Rates API Service
  * Conecta con APIs externas o tu backend para obtener tasas de cambio reales
@@ -60,7 +61,7 @@ class ExchangeRatesAPI {
         base: data.base_code
       };
     } catch (error) {
-      console.error('Error fetching from external API:', error);
+      logger.error('Error fetching from external API:', error);
       throw error;
     }
   }
@@ -84,7 +85,7 @@ class ExchangeRatesAPI {
 
       return await response.json();
     } catch (error) {
-      console.error('Error fetching from ECUCONDOR API:', error);
+      logger.error('Error fetching from ECUCONDOR API:', error);
       
       // Fallback a datos simulados si la API falla
       return this.getFallbackRates();
@@ -114,7 +115,7 @@ class ExchangeRatesAPI {
       // Intenta primero tu API
       return await this.fetchFromEcucondorAPI();
     } catch (error) {
-      console.warn('ECUCONDOR API failed, trying external API:', error);
+      logger.warn('ECUCONDOR API failed, trying external API:', error);
       
       try {
         // Fallback a API externa
@@ -130,7 +131,7 @@ class ExchangeRatesAPI {
           }
         };
       } catch (externalError) {
-        console.warn('External API also failed, using fallback:', externalError);
+        logger.warn('External API also failed, using fallback:', externalError);
         
         // Último recurso: datos simulados
         return this.getFallbackRates();

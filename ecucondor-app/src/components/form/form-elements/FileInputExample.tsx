@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 "use client";
 import React from "react";
 import ComponentCard from "../../common/ComponentCard";
@@ -8,7 +9,7 @@ export default function FileInputExample() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log("Selected file:", file.name);
+      logger.info("Selected file:", file.name);
     }
   };
 

@@ -1,4 +1,5 @@
 'use client';
+import { logger } from '@/lib/utils/logger';
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -71,7 +72,7 @@ export default function ContactForm({ className = '' }: ContactFormProps) {
 
       reset();
     } catch (error) {
-      console.error('Error submitting form:', error);
+      logger.error('Error submitting form:', error);
       
       toast.error('Error al enviar el mensaje. Por favor intenta nuevamente.', {
         duration: 5000,

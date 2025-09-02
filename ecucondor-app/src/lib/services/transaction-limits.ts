@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { createClient } from '@/lib/supabase/server'
 import { 
   TransactionLimits, 
@@ -60,7 +61,7 @@ export class TransactionLimitsService {
         last_transaction_date: dailyData?.[0]?.created_at || undefined
       }
     } catch (error) {
-      console.error('Error getting user transaction summary:', error)
+      logger.error('Error getting user transaction summary:', error)
       // Return safe defaults on error
       return {
         user_id: userId,

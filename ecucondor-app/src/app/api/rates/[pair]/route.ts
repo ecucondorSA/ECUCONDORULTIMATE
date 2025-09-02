@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from 'next/server'
 import { ExchangeRateService } from '@/lib/services/exchange-rates'
 
@@ -17,7 +18,7 @@ async function ensureRatesUpdated(): Promise<void> {
   const now = Date.now()
   
   if (now - lastUpdate > UPDATE_INTERVAL) {
-    console.log('⏰ Updating rates for specific pair...')
+    logger.info('⏰ Updating rates for specific pair...')
     const service = getExchangeService()
     await service.updateRates()
     lastUpdate = now
@@ -105,7 +106,7 @@ export async function GET(
     })
 
   } catch (error) {
-    console.error(`❌ Error in /api/rates/${pair}:`, error)
+    logger.error(`❌ Error in /api/rates/${pair}:`, error)
     
     return NextResponse.json(
       { 

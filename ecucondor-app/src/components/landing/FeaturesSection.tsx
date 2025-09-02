@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
@@ -55,7 +56,7 @@ const itemVariants = {
   }
 };
 
-export default function FeaturesSection() {
+function FeaturesSection() {
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: true
@@ -191,3 +192,5 @@ export default function FeaturesSection() {
     </section>
   );
 }
+
+export default memo(FeaturesSection);

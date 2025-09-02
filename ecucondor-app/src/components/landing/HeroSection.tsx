@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import useExchangeRates from '@/hooks/useExchangeRates';
@@ -37,7 +38,7 @@ const itemVariants = {
   }
 };
 
-export default function HeroSection() {
+function HeroSection() {
   const { rates, loading, error, lastUpdate } = useExchangeRates();
 
   // Transformar datos del hook a formato de display con validación
@@ -293,3 +294,5 @@ export default function HeroSection() {
     </section>
   );
 }
+
+export default memo(HeroSection);

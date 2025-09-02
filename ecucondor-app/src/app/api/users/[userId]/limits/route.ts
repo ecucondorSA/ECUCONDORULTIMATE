@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest } from 'next/server'
 import { TransactionLimitsService } from '@/lib/services/transaction-limits'
 import { createSuccessResponse, createErrorResponse } from '@/lib/utils/api'
@@ -42,7 +43,7 @@ export async function GET(
     })
 
   } catch (error) {
-    console.error(`❌ Error getting user limits for ${userId}:`, error)
+    logger.error(`❌ Error getting user limits for ${userId}:`, error)
     
     return createErrorResponse(
       'Failed to get user limits',
@@ -84,7 +85,7 @@ export async function POST(
     })
 
   } catch (error) {
-    console.error(`❌ Error checking transaction limits for ${userId}:`, error)
+    logger.error(`❌ Error checking transaction limits for ${userId}:`, error)
     
     return createErrorResponse(
       'Failed to check transaction limits',

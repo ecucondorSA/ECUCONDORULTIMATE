@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { BinancePrice } from '@/lib/types'
 
 // Removed unused BinanceApiResponse interface
@@ -47,7 +48,7 @@ export class BinanceService {
 
       throw new Error('Both API and scraping failed')
     } catch (_error) {
-      console.error(`Failed to get price for ${symbol}:`, _error)
+      logger.error(`Failed to get price for ${symbol}:`, _error)
       return null
     }
   }
@@ -84,7 +85,7 @@ export class BinanceService {
         timestamp: new Date().toISOString()
       }
     } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      console.log(`Binance API failed for ${symbol}, trying scraping...`)
+      logger.info(`Binance API failed for ${symbol}, trying scraping...`)
       return null
     }
   }
@@ -98,7 +99,7 @@ export class BinanceService {
       const pairFormat = this.convertSymbolToPair(symbol)
       const url = `https://www.binance.com/es-AR/trade/${pairFormat}?type=spot`
       
-      console.log(`Scraping from: ${url}`)
+      logger.info(`Scraping from: ${url}`)
 
       const response = await fetch(url, {
         headers: {
@@ -139,7 +140,7 @@ export class BinanceService {
         timestamp: new Date().toISOString()
       }
     } catch (_error) {
-      console.error(`Web scraping failed for ${symbol}:`, _error)
+      logger.error(`Web scraping failed for ${symbol}:`, _error)
       return null
     }
   }

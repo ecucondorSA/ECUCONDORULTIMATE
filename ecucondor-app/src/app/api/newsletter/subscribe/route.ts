@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar si ya está suscrito (simulated)
     // TODO: Implementar verificación real en base de datos
-    console.log('📧 Nueva suscripción al newsletter:', {
+    logger.info('📧 Nueva suscripción al newsletter:', {
       ...validatedData,
       email: normalizedEmail,
       timestamp: new Date().toISOString(),
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
 
   } catch (error) {
-    console.error('❌ Error procesando suscripción:', error);
+    logger.error('❌ Error procesando suscripción:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json({
