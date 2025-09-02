@@ -9,6 +9,8 @@ import HeroSection from '@/components/landing/HeroSection';
 import FeaturesSection from '@/components/landing/FeaturesSection';
 import ContactForm from '@/components/common/ContactForm';
 import WhatsAppWidget from '@/components/common/WhatsAppWidget';
+import ErrorBoundary, { DataErrorBoundary, FormErrorBoundary } from '@/components/common/ErrorBoundary';
+import { LazySection } from '@/components/common/LazyWrapper';
 
 export default function Home() {
   const organizationSchema = {
@@ -98,16 +100,26 @@ export default function Home() {
       <JsonLd data={organizationSchema} />
       <div className="min-h-screen bg-black text-white font-sans">
         {/* Navigation */}
-        <Navigation />
+        <ErrorBoundary>
+          <Navigation />
+        </ErrorBoundary>
 
         {/* Hero Section */}
-        <HeroSection />
+        <DataErrorBoundary>
+          <HeroSection />
+        </DataErrorBoundary>
 
         {/* Features Section */}
-        <FeaturesSection />
+        <ErrorBoundary>
+          <FeaturesSection />
+        </ErrorBoundary>
 
         {/* Testimonials Section */}
-        <section className="py-24 bg-black" id="testimonials">
+        <LazySection 
+          fallback={<div className="py-24 bg-black"><div className="max-w-7xl mx-auto px-4"><div className="h-64 bg-gray-800 rounded animate-pulse"></div></div></div>}
+          rootMargin="200px"
+        >
+          <section className="py-24 bg-black" id="testimonials">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-20">
               <h2 className="text-4xl font-bold mb-6 text-white">
@@ -192,8 +204,13 @@ export default function Home() {
             </div>
           </div>
         </section>
+        </LazySection>
 
         {/* About Section */}
+        <LazySection 
+          fallback={<div className="py-16 bg-gray-50"><div className="max-w-7xl mx-auto px-4"><div className="h-64 bg-gray-200 rounded animate-pulse"></div></div></div>}
+          rootMargin="100px"
+        >
         <section className="py-16 bg-gray-50" id="about">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -262,6 +279,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+        </LazySection>
 
         {/* Contact Section */}
         <section className="py-24 bg-gradient-to-br from-gray-900 to-black" id="contacto">
@@ -336,7 +354,9 @@ export default function Home() {
 
               {/* Formulario de contacto */}
               <div>
-                <ContactForm />
+                <FormErrorBoundary>
+                  <ContactForm />
+                </FormErrorBoundary>
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import useExchangeRates from '@/hooks/useExchangeRates';
+import { ExchangeRatesSkeleton } from '@/components/common/LoadingSkeleton';
 
 interface ExchangeRateDisplay {
   pair: string;
@@ -38,17 +39,20 @@ const itemVariants = {
 export default function HeroSection() {
   const { rates, loading, error, lastUpdate } = useExchangeRates();
 
-  // Transformar datos del hook a formato de display
-  const displayRates: ExchangeRateDisplay[] = rates.map(rate => ({
-    pair: rate.pair,
-    flag: rate.pair === 'USD/ARS' ? '🇺🇸🇦🇷' : 
-          rate.pair === 'USD/BRL' ? '🇺🇸🇧🇷' : 
-          rate.pair === 'BRL/ARS' ? '🇧🇷🇦🇷' : '💱',
-    rate: rate.formattedRate,
-    change: rate.changePercent > 0 ? `+${rate.changePercent.toFixed(1)}%` : `${rate.changePercent.toFixed(1)}%`,
-    trend: rate.changePercent > 0 ? '↗️' : rate.changePercent < 0 ? '↘️' : '➡️',
-    changePercent: rate.changePercent
-  }));
+  // Transformar datos del hook a formato de display con validación
+  const displayRates: ExchangeRateDisplay[] = rates.map(rate => {
+    const percentage = rate.percentage ?? 0;
+    return {
+      pair: rate.pair || 'N/A',
+      flag: rate.pair === 'USD/ARS' ? '🇺🇸🇦🇷' : 
+            rate.pair === 'USD/BRL' ? '🇺🇸🇧🇷' : 
+            rate.pair === 'BRL/ARS' ? '🇧🇷🇦🇷' : '💱',
+      rate: rate.rate || 'N/A',
+      change: percentage > 0 ? `+${percentage.toFixed(1)}%` : `${percentage.toFixed(1)}%`,
+      trend: percentage > 0 ? '↗️' : percentage < 0 ? '↘️' : '➡️',
+      changePercent: percentage
+    };
+  });
 
   return (
     <section className="relative py-16 overflow-hidden bg-black">
@@ -124,10 +128,7 @@ export default function HeroSection() {
               </div>
               
               {loading && rates.length === 0 && (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
-                  <span className="ml-3 text-gray-300">Cargando tasas...</span>
-                </div>
+                <ExchangeRatesSkeleton />
               )}
               
               {error && (
