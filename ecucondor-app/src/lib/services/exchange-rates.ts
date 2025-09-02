@@ -64,16 +64,20 @@ export class ExchangeRateService {
       } catch (error) {
         logger.error(`Failed to calculate rate for ${config.pair}`, error)
         // Add fallback rate if primary source fails
-        const fallbackRate = this.getFallbackRate(config.pair)
-        this.rates.set(config.pair, fallbackRate)
-        logger.warn(`Using fallback rate for ${config.pair}`)
+        try {
+          const fallbackRate = await this.getFallbackRate(config.pair)
+          this.rates.set(config.pair, fallbackRate)
+          logger.warn(`Using fallback rate for ${config.pair}`)
+        } catch (fallbackError) {
+          logger.error(`Fallback also failed for ${config.pair}`, fallbackError)
+        }
       }
     }
 
     // If no rates were successfully fetched, ensure we have fallback data
     if (successCount === 0) {
       logger.warn('All rate sources failed, loading fallback rates')
-      this.loadFallbackRates()
+      await this.loadFallbackRates()
     }
 
     // Calculate cross rates (ARS-BRL, etc.)
@@ -233,26 +237,48 @@ export class ExchangeRateService {
   /**
    * Get fallback rate for a specific pair when external APIs fail
    */
-  private getFallbackRate(pair: string): ExchangeRate {
-    const fallbackRates = {
-      'USD-ARS': {
-        binance_rate: 1350,
-        sell_rate: 1330, // USD sell (client buys USD)
-        buy_rate: 1380,  // USD buy (client sells USD)
-      },
-      'USD-BRL': {
-        binance_rate: 5.2,
-        sell_rate: 5.15,
-        buy_rate: 5.30,
-      }
+  private async getFallbackRate(pair: string): Promise<ExchangeRate> {
+    const config = this.rateConfigs.find(c => c.pair === pair)
+    if (!config) {
+      throw new Error(`No config available for ${pair}`)
     }
 
-    const config = this.rateConfigs.find(c => c.pair === pair)
-    const fallback = fallbackRates[pair as keyof typeof fallbackRates]
-    
-    if (!config || !fallback) {
-      throw new Error(`No fallback available for ${pair}`)
+    let basePrice: number
+
+    // Try to get real Binance price directly
+    if (config.source_symbol) {
+      try {
+        logger.info(`Trying direct Binance API for ${config.source_symbol}`)
+        const response = await fetch(`https://api.binance.com/api/v3/depth?symbol=${config.source_symbol}&limit=5`)
+        
+        if (response.ok) {
+          const orderBook = await response.json()
+          const bestBid = parseFloat(orderBook.bids[0]?.[0] || '0')
+          const bestAsk = parseFloat(orderBook.asks[0]?.[0] || '0')
+          
+          if (bestBid > 0 && bestAsk > 0) {
+            basePrice = (bestBid + bestAsk) / 2
+            logger.info(`✅ Got real Binance price for ${pair}: ${basePrice}`)
+          } else {
+            throw new Error('Invalid order book data')
+          }
+        } else {
+          throw new Error('Binance API request failed')
+        }
+      } catch (error) {
+        logger.warn(`Direct Binance failed for ${pair}:`, error)
+        // Use static fallback as last resort
+        basePrice = pair === 'USD-ARS' ? 1378.5 : 5.2
+        logger.warn(`Using static fallback price: ${basePrice}`)
+      }
+    } else {
+      basePrice = 1.0 // For fixed rates
     }
+
+    // Apply your configured adjustments
+    const sellRate = basePrice + config.sell_adjustment  // -20 for USD-ARS
+    const buyRate = basePrice + config.buy_adjustment    // +50 for USD-ARS
+    const spread = buyRate - sellRate
 
     const [baseCurrency, targetCurrency] = pair.split('-') as [Currency, Currency]
 
@@ -261,10 +287,10 @@ export class ExchangeRateService {
       pair,
       base_currency: baseCurrency,
       target_currency: targetCurrency,
-      binance_rate: fallback.binance_rate,
-      sell_rate: fallback.sell_rate,
-      buy_rate: fallback.buy_rate,
-      spread: fallback.buy_rate - fallback.sell_rate,
+      binance_rate: basePrice,
+      sell_rate: sellRate,
+      buy_rate: buyRate,
+      spread,
       commission_rate: config.commission_sell,
       last_updated: new Date().toISOString(),
       source: 'fallback'
@@ -274,10 +300,10 @@ export class ExchangeRateService {
   /**
    * Load all fallback rates when external APIs are down
    */
-  private loadFallbackRates(): void {
+  private async loadFallbackRates(): Promise<void> {
     for (const config of this.rateConfigs) {
       try {
-        const fallbackRate = this.getFallbackRate(config.pair)
+        const fallbackRate = await this.getFallbackRate(config.pair)
         this.rates.set(config.pair, fallbackRate)
         logger.info(`Loaded fallback rate for ${config.pair}`)
       } catch (error) {
