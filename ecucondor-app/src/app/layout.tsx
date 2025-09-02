@@ -4,6 +4,7 @@ import "./globals.css";
 import "./globals-mobile.css";
 import "../styles/ecucondor-theme.css";
 import "../styles/mobile-optimizations.css";
+import "../styles/mobile-fixes.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
 
@@ -98,7 +99,8 @@ export default function RootLayout({
   return (
     <html lang="es" className="dark">
       <body
-        className={`${outfit.variable} font-outfit antialiased bg-ecucondor-primary text-ecucondor-primary`}
+        className={`${outfit.variable} font-outfit antialiased bg-ecucondor-primary text-ecucondor-primary mobile-optimized`}
+        style={{ WebkitTapHighlightColor: 'transparent' }}
       >
         <AuthProvider>
           {children}

@@ -1,0 +1,542 @@
+/* CRITICAL MOBILE FIXES FOR ECUCONDOR */
+
+/* ========================================
+   1. FIX TAP HIGHLIGHT (FLASH BLANCO)
+   ======================================== */
+
+* {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  -webkit-touch-callout: none !important;
+}
+
+/* Específico para elementos interactivos */
+a, button, input, select, textarea, 
+[role="button"], [role="link"],
+.clickable, .btn, .button {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-appearance: none !important;
+  outline: none !important;
+  touch-action: manipulation !important;
+  user-select: none !important;
+}
+
+/* Prevenir el flash blanco en el body */
+html, body {
+  -webkit-tap-highlight-color: transparent !important;
+  background-color: #000000 !important; /* Mantener fondo negro */
+  overscroll-behavior: none !important;
+}
+
+/* ========================================
+   2. FIX HORIZONTAL SCROLL
+   ======================================== */
+
+/* Contenedor principal */
+html {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Todos los elementos no deben exceder el viewport */
+* {
+  max-width: 100vw !important;
+}
+
+/* Contenedores específicos */
+.container,
+.wrapper,
+.content,
+main,
+section,
+article,
+div {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+
+/* ========================================
+   3. FIX COTIZACIONES LAYOUT
+   ======================================== */
+
+@media screen and (max-width: 768px) {
+  /* Calculadora container */
+  .calculator-container,
+  .calculator-main,
+  [class*="calculator"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    margin: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Cotizaciones cards */
+  .exchange-rate-card,
+  .rate-card,
+  .quote-card,
+  [class*="rate"],
+  [class*="exchange"] {
+    width: calc(100% - 2rem) !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    overflow-x: hidden !important;
+    word-wrap: break-word !important;
+  }
+
+  /* Tablas de cotizaciones */
+  .rates-table,
+  .quotations-table,
+  table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    overflow-x: auto !important;
+    display: block !important;
+  }
+
+  /* Celdas de tabla */
+  td, th {
+    padding: 0.5rem !important;
+    font-size: 0.875rem !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+
+  /* Grid de cotizaciones */
+  .rates-grid,
+  .grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+
+  /* Currency pair buttons */
+  .currency-pair-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .currency-pair-button,
+  [class*="currency-button"] {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 1rem !important;
+  }
+}
+
+/* ========================================
+   4. FIX ACTIVE/HOVER STATES
+   ======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  /* Desactivar todos los hover en móvil */
+  *:hover {
+    background-color: inherit !important;
+    color: inherit !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  button:hover,
+  a:hover,
+  .btn:hover,
+  .button:hover {
+    background-color: inherit !important;
+    transform: none !important;
+  }
+
+  /* Active states para feedback táctil */
+  button:active,
+  a:active,
+  .btn:active,
+  .button:active {
+    opacity: 0.9 !important;
+    transform: scale(0.98) !important;
+    transition: all 0.1s !important;
+  }
+}
+
+/* ========================================
+   5. FIX INPUT FOCUS (ZOOM PREVENTION)
+   ======================================== */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+input[type="url"],
+select,
+textarea {
+  font-size: 16px !important; /* Crítico para iOS */
+  transform: scale(1) !important;
+  -webkit-text-size-adjust: 100% !important;
+}
+
+/* Focus states sin cambio de color de fondo */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #FFD700 !important;
+  outline-offset: 2px !important;
+  background-color: inherit !important;
+}
+
+/* ========================================
+   6. FIX MODAL Y OVERLAYS
+   ======================================== */
+
+@media screen and (max-width: 768px) {
+  .modal,
+  .overlay,
+  [role="dialog"] {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    padding: 1rem !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+}
+
+/* ========================================
+   7. FIX NAVIGATION
+   ======================================== */
+
+@media screen and (max-width: 768px) {
+  nav,
+  .navigation,
+  .navbar,
+  header {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    position: relative !important;
+  }
+
+  .nav-menu,
+  .menu {
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .nav-item,
+  .menu-item {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
+
+/* ========================================
+   8. FIX WHATSAPP WIDGET
+   ======================================== */
+
+.whatsapp-widget,
+.whatsapp-button,
+[class*="whatsapp"] {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  width: 56px !important;
+  height: 56px !important;
+  z-index: 999 !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* ========================================
+   9. FIX TEXT SELECTION
+   ======================================== */
+
+@media screen and (max-width: 768px) {
+  /* Permitir selección solo en contenido de texto */
+  p, span, h1, h2, h3, h4, h5, h6, li {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+  }
+
+  /* Prevenir selección en elementos interactivos */
+  button, a, input, select, label {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+}
+
+/* ========================================
+   10. FIX SCROLLING PERFORMANCE
+   ======================================== */
+
+.scrollable,
+.scroll-container,
+[class*="scroll"] {
+  -webkit-overflow-scrolling: touch !important;
+  overflow-scrolling: touch !important;
+  scroll-behavior: smooth !important;
+}
+
+/* Prevenir scroll bounce en iOS sin bloquear el scroll */
+body {
+  position: relative !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: none !important;
+}
+
+.main-content,
+main {
+  width: 100% !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* ========================================
+   11. FIX BACKGROUND COLORS
+   ======================================== */
+
+/* Mantener colores oscuros consistentes */
+.bg-ecucondor-primary,
+.bg-black,
+.dark {
+  background-color: #000000 !important;
+}
+
+.bg-ecucondor-secondary {
+  background-color: #1a1a1a !important;
+}
+
+/* Prevenir cambios de color no deseados */
+*:focus {
+  background-color: inherit !important;
+}
+
+/* ========================================
+   12. FIX BUTTONS AND LINKS
+   ======================================== */
+
+@media screen and (max-width: 768px) {
+  button,
+  .btn,
+  .button,
+  a.button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 48px !important;
+    min-width: 48px !important;
+    padding: 12px 20px !important;
+    margin: 4px !important;
+    border-radius: 8px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    position: relative !important;
+    overflow: hidden !important;
+    -webkit-tap-highlight-color: transparent !important;
+    touch-action: manipulation !important;
+    user-select: none !important;
+    transition: opacity 0.2s !important;
+  }
+
+  /* Estado activo con feedback visual sutil */
+  button:active,
+  .btn:active {
+    opacity: 0.8 !important;
+  }
+
+  /* Botón primario */
+  .btn-primary,
+  .button-primary {
+    background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+    color: #000000 !important;
+  }
+
+  /* Botón secundario */
+  .btn-secondary,
+  .button-secondary {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border: 1px solid #333333 !important;
+  }
+}
+
+/* ========================================
+   13. FIX IMAGES AND MEDIA
+   ======================================== */
+
+img,
+video,
+picture,
+canvas,
+svg {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block !important;
+}
+
+/* ========================================
+   14. FIX Z-INDEX ISSUES
+   ======================================== */
+
+.header,
+.navigation { z-index: 100 !important; }
+.modal,
+.overlay { z-index: 1000 !important; }
+.toast,
+.notification { z-index: 2000 !important; }
+.whatsapp-widget { z-index: 999 !important; }
+
+/* ========================================
+   15. SPECIFIC FIXES FOR CALCULATOR
+   ======================================== */
+
+@media screen and (max-width: 768px) {
+  /* Input de montos */
+  .calculator-input,
+  .amount-input {
+    width: 100% !important;
+    padding: 16px !important;
+    font-size: 20px !important;
+    text-align: center !important;
+    border: 2px solid #FFD700 !important;
+    border-radius: 12px !important;
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    -webkit-appearance: none !important;
+  }
+
+  /* Exchange rate display */
+  .exchange-rate-display,
+  .rate-display {
+    width: calc(100% - 2rem) !important;
+    margin: 1rem auto !important;
+    padding: 1rem !important;
+    background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+    color: #000000 !important;
+    border-radius: 12px !important;
+    text-align: center !important;
+    font-weight: bold !important;
+    font-size: 1.125rem !important;
+    overflow: hidden !important;
+    word-wrap: break-word !important;
+  }
+
+  /* Transaction type buttons */
+  .transaction-type-selector {
+    display: flex !important;
+    width: 100% !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .transaction-type-button {
+    flex: 1 !important;
+    padding: 12px !important;
+    font-size: 16px !important;
+    border: none !important;
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+  }
+
+  .transaction-type-button.active {
+    background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+    color: #000000 !important;
+  }
+}
+
+/* ========================================
+   16. LANDSCAPE ORIENTATION FIXES
+   ======================================== */
+
+@media screen and (max-width: 812px) and (orientation: landscape) {
+  .header,
+  .navigation {
+    position: relative !important;
+    padding: 0.5rem !important;
+  }
+
+  .calculator-input {
+    padding: 8px !important;
+    font-size: 16px !important;
+  }
+
+  button,
+  .btn {
+    min-height: 40px !important;
+    padding: 8px 16px !important;
+  }
+
+  section {
+    padding: 1rem !important;
+  }
+}
+
+/* ========================================
+   17. DARK MODE CONSISTENCY
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+  }
+
+  input,
+  select,
+  textarea {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border-color: #333333 !important;
+  }
+}
+
+/* ========================================
+   18. FINAL OVERRIDES
+   ======================================== */
+
+/* Asegurar que no hay scroll horizontal */
+@media screen and (max-width: 768px) {
+  body > * {
+    overflow-x: hidden !important;
+  }
+
+  /* Fix para cualquier elemento que cause overflow */
+  .overflow-hidden {
+    overflow: hidden !important;
+  }
+
+  .overflow-x-hidden {
+    overflow-x: hidden !important;
+  }
+
+  .overflow-y-auto {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+}
