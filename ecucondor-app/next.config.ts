@@ -1,10 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Configuración de Turbopack
-  turbopack: {
-    root: '/home/edu/ECUCONDORULTIMATE/ecucondor-app',
-  },
   // Optimizaciones de imagen
   images: {
     domains: ['ecucondor.com'],
