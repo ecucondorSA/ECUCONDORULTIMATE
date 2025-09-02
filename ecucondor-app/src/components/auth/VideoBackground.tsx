@@ -15,19 +15,31 @@ interface VideoBackgroundProps {
 export default function VideoBackground({ title, subtitle, features }: VideoBackgroundProps) {
   return (
     <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-      {/* Video Background with Blur */}
-      <video
-        className="absolute inset-0 w-full h-full object-cover blur-sm scale-110"
-        autoPlay
-        muted
-        loop
-        playsInline
-        poster="/video-poster.jpg" // Fallback poster image
-      >
-        <source src="/login-video.mp4" type="video/mp4" />
-        {/* Fallback for browsers that don't support video */}
-        <div className="absolute inset-0 bg-gradient-to-br from-ecucondor-primary to-ecucondor-tertiary"></div>
-      </video>
+      {/* Enhanced Video Background */}
+      <div className="video-background">
+        <video
+          className="absolute inset-0 w-full h-full object-cover blur-sm scale-110 transition-opacity duration-1000"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/video-poster.jpg"
+          style={{ 
+            filter: 'brightness(0.4) contrast(1.2)',
+            willChange: 'transform'
+          }}
+          onLoadStart={() => console.log('Video loading started')}
+          onError={() => console.warn('Video failed to load')}
+        >
+          <source src="/login-video.mp4" type="video/mp4" />
+          {/* Enhanced fallback */}
+          <div className="absolute inset-0 bg-gradient-to-br from-ecucondor-primary via-black to-ecucondor-tertiary opacity-90"></div>
+        </video>
+        
+        {/* Video overlay with better performance */}
+        <div className="video-overlay"></div>
+      </div>
       
       {/* Stronger Overlay for better text readability */}
       <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-ecucondor-primary/85 to-ecucondor-tertiary/90"></div>

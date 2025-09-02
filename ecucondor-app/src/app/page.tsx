@@ -67,7 +67,7 @@ export default function Home() {
       <JsonLd data={financialServiceSchema} />
       <JsonLd data={faqSchema} />
       <JsonLd data={organizationSchema} />
-      <div className="min-h-screen bg-black text-white font-sans">
+      <div className="min-h-screen bg-black text-white font-sans landing-page">
         {/* Navigation */}
         <ErrorBoundary>
           <Navigation />

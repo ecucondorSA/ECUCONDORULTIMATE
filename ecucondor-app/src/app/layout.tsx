@@ -5,6 +5,8 @@ import "./globals-mobile.css";
 import "../styles/ecucondor-theme.css";
 import "../styles/mobile-optimizations.css";
 import "../styles/mobile-fixes.css";
+import "../styles/responsive-enhancements.css";
+import "../styles/pwa-optimizations.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
 
