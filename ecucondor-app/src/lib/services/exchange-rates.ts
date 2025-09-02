@@ -52,15 +52,28 @@ export class ExchangeRateService {
     // Fetch prices from Binance
     const binancePrices = await this.binanceService.getMultiplePrices(binanceSymbols)
     
+    let successCount = 0
+    
     // Calculate rates for each pair
     for (const config of this.rateConfigs) {
       try {
         const rate = await this.calculateRate(config, binancePrices)
         this.rates.set(config.pair, rate)
         logger.info(`Updated ${config.pair}`, { sell: rate.sell_rate, buy: rate.buy_rate })
+        successCount++
       } catch (error) {
         logger.error(`Failed to calculate rate for ${config.pair}`, error)
+        // Add fallback rate if primary source fails
+        const fallbackRate = this.getFallbackRate(config.pair)
+        this.rates.set(config.pair, fallbackRate)
+        logger.warn(`Using fallback rate for ${config.pair}`)
       }
+    }
+
+    // If no rates were successfully fetched, ensure we have fallback data
+    if (successCount === 0) {
+      logger.warn('All rate sources failed, loading fallback rates')
+      this.loadFallbackRates()
     }
 
     // Calculate cross rates (ARS-BRL, etc.)
@@ -215,6 +228,62 @@ export class ExchangeRateService {
    */
   getRateConfig(pair: string): RateConfig | null {
     return this.rateConfigs.find(config => config.pair === pair) || null
+  }
+
+  /**
+   * Get fallback rate for a specific pair when external APIs fail
+   */
+  private getFallbackRate(pair: string): ExchangeRate {
+    const fallbackRates = {
+      'USD-ARS': {
+        binance_rate: 1350,
+        sell_rate: 1330, // USD sell (client buys USD)
+        buy_rate: 1380,  // USD buy (client sells USD)
+      },
+      'USD-BRL': {
+        binance_rate: 5.2,
+        sell_rate: 5.15,
+        buy_rate: 5.30,
+      }
+    }
+
+    const config = this.rateConfigs.find(c => c.pair === pair)
+    const fallback = fallbackRates[pair as keyof typeof fallbackRates]
+    
+    if (!config || !fallback) {
+      throw new Error(`No fallback available for ${pair}`)
+    }
+
+    const [baseCurrency, targetCurrency] = pair.split('-') as [Currency, Currency]
+
+    return {
+      id: `fallback_${pair.toLowerCase()}_${Date.now()}`,
+      pair,
+      base_currency: baseCurrency,
+      target_currency: targetCurrency,
+      binance_rate: fallback.binance_rate,
+      sell_rate: fallback.sell_rate,
+      buy_rate: fallback.buy_rate,
+      spread: fallback.buy_rate - fallback.sell_rate,
+      commission_rate: config.commission_sell,
+      last_updated: new Date().toISOString(),
+      source: 'fallback'
+    }
+  }
+
+  /**
+   * Load all fallback rates when external APIs are down
+   */
+  private loadFallbackRates(): void {
+    for (const config of this.rateConfigs) {
+      try {
+        const fallbackRate = this.getFallbackRate(config.pair)
+        this.rates.set(config.pair, fallbackRate)
+        logger.info(`Loaded fallback rate for ${config.pair}`)
+      } catch (error) {
+        logger.error(`Failed to load fallback for ${config.pair}`, error)
+      }
+    }
   }
 
   /**
