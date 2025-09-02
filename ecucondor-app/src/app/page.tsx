@@ -142,7 +142,7 @@ export default function Home() {
               {/* Columna central: imagen */}
               <div className="flex items-center justify-center">
                 <Image 
-                  src="/assets/ChatGPT Image 1 sept 2025, 04_01_58.png" 
+                  src="/imagen/C.png" 
                   alt="Clientes felices ECUCONDOR"
                   width={400}
                   height={600}
@@ -210,7 +210,7 @@ export default function Home() {
               {/* Imagen a la izquierda */}
               <div className="animate-fade-in">
                 <Image 
-                  src="/assets/image.png" 
+                  src="/imagen/U.png" 
                   alt="ECUCONDOR - Plataforma Financiera"
                   width={300}
                   height={400}

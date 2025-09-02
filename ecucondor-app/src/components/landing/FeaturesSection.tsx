@@ -142,7 +142,7 @@ function FeaturesSection() {
                 }}
               >
                 <Image 
-                  src="/assets/ChatGPT Image 1 sept 2025, 05_04_06.png" 
+                  src="/imagen/E.png" 
                   alt="ECUCONDOR - Plataforma Financiera"
                   width={200}
                   height={356}
