@@ -13,7 +13,7 @@ export interface ExchangeRate {
   spread: number // buy_rate - sell_rate
   commission_rate: number // Commission percentage (0.03 for USD->ARS, 0 for ARS->USD)
   last_updated: string
-  source: 'binance' | 'fixed' | 'calculated'
+  source: 'binance' | 'fixed' | 'calculated' | 'fallback'
 }
 
 // Binance scraping types
