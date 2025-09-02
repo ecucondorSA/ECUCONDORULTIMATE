@@ -1,13 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
 
 export const ThemeToggleButton: React.FC = () => {
   const { toggleTheme } = useTheme();
+  const [isPressed, setIsPressed] = useState(false);
+
+  const handleToggle = (e: React.MouseEvent) => {
+    // Prevenir propagación de evento
+    e.stopPropagation();
+    e.preventDefault();
+    
+    // Evitar clics múltiples accidentales
+    if (isPressed) return;
+    
+    setIsPressed(true);
+    toggleTheme();
+    
+    // Reset después de delay
+    setTimeout(() => {
+      setIsPressed(false);
+    }, 500);
+  };
 
   return (
     <button
-      onClick={toggleTheme}
-      className="relative flex items-center justify-center text-gray-500 transition-colors bg-white border border-gray-200 rounded-full hover:text-dark-900 h-11 w-11 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+      onClick={handleToggle}
+      disabled={isPressed}
+      className={`
+        relative flex items-center justify-center text-gray-500 transition-colors 
+        bg-white border border-gray-200 rounded-full hover:text-dark-900 h-11 w-11 
+        hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 
+        dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white
+        touch-target
+        ${isPressed ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+      `}
+      style={{ 
+        WebkitTapHighlightColor: 'transparent',
+        touchAction: 'manipulation' // Prevenir zoom en iOS
+      }}
     >
       <svg
         className="hidden dark:block"

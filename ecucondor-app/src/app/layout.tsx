@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import "../styles/mobile-first-responsive.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { Toaster } from "react-hot-toast";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -97,13 +98,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="dark">
+    <html lang="es">
       <body
         className={`${outfit.variable} font-outfit antialiased bg-ecucondor-primary text-ecucondor-primary mobile-optimized`}
         style={{ WebkitTapHighlightColor: 'transparent' }}
       >
-        <AuthProvider>
-          {children}
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
           <Toaster
             position="top-right"
             toastOptions={{
@@ -128,7 +130,8 @@ export default function RootLayout({
               },
             }}
           />
-        </AuthProvider>
+          </AuthProvider>
+        </ThemeProvider>
         <Analytics />
         <SpeedInsights />
       </body>
