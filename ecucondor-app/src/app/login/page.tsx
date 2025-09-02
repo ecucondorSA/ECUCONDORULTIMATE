@@ -58,7 +58,13 @@ export default function LoginPage() {
         // Wait for auth context to update before redirecting
         setTimeout(() => {
           const urlParams = new URLSearchParams(window.location.search);
-          const returnTo = urlParams.get('returnTo') || '/dashboard';
+          const returnToParam = urlParams.get('returnTo') || '/dashboard';
+          
+          // Decode URL-encoded parameters (fix for %2Fdashboard -> /dashboard)
+          const returnTo = decodeURIComponent(returnToParam);
+          
+          console.log('🔄 Login successful, redirecting to:', returnTo);
+          console.log('🔍 Original param:', returnToParam);
           
           // Force hard navigation to ensure middleware sees the auth state
           window.location.href = returnTo;
