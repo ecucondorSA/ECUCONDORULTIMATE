@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   description: "Plataforma FinTech líder para intercambio seguro de divisas entre USD, ARS y BRL. Tasas competitivas, transacciones rápidas y confianza garantizada en Ecuador, Argentina y Brasil.",
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png', sizes: '32x32' },
       { url: '/icon.png', type: 'image/png', sizes: '32x32' },
     ],
     apple: [
