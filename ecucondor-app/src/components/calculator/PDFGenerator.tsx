@@ -59,7 +59,7 @@ export class PDFGenerator {
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(24);
       doc.setFont('helvetica', 'bold');
-      doc.text('🦅 ECUCONDOR', 20, 25);
+      doc.text('ECUCONDOR', 20, 25);
       
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
@@ -189,8 +189,8 @@ export class PDFGenerator {
       
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.text(`✓ Este comprobante ha sido enviado automáticamente a ${COMPANY_CONFIG.email}`, 25, yPos + 8);
-      doc.text('⏱ Tiempo estimado de procesamiento: 5 minutos - 1 hora', 25, yPos + 16);
+      doc.text(`* Este comprobante ha sido enviado automáticamente a ${COMPANY_CONFIG.email}`, 25, yPos + 8);
+      doc.text('* Tiempo estimado de procesamiento: 5 minutos - 1 hora', 25, yPos + 16);
       
       // Información de contacto en el pie
       doc.setFillColor(darkColor[0], darkColor[1], darkColor[2]);

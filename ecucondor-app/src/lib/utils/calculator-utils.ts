@@ -60,22 +60,26 @@ export function calculateSendToReceive(
   
   const currentRate = transactionType === 'sell' ? rate.sell_rate : rate.buy_rate;
   const commissionRate = COMMISSION_RATES[pair] || COMMISSION_RATES.standard;
+  const [baseCurrency, targetCurrency] = pair.split('-');
   
   let receiveAmount: number;
   
   if (transactionType === 'sell') {
     // Client sells base currency (USD) for target currency (ARS)
+    // USD → ARS: multiply by rate, then subtract commission
     const grossConverted = sendAmount * currentRate;
     const commissionAmount = grossConverted * commissionRate;
     receiveAmount = grossConverted - commissionAmount;
   } else {
     // Client buys base currency (USD) with target currency (ARS)
+    // ARS → USD: divide by rate (no commission on buy)
     receiveAmount = sendAmount / currentRate;
   }
   
-  logger.debug('Cálculo Send→Receive', {
+  logger.debug('Cálculo Send→Receive CORREGIDO', {
     tipo: transactionType,
     par: pair,
+    direccion: transactionType === 'sell' ? `${baseCurrency}→${targetCurrency}` : `${targetCurrency}→${baseCurrency}`,
     envio: sendAmount,
     tasa: currentRate,
     comision: (commissionRate * 100) + '%',
@@ -98,24 +102,29 @@ export function calculateReceiveToSend(
   
   const currentRate = transactionType === 'sell' ? rate.sell_rate : rate.buy_rate;
   const commissionRate = COMMISSION_RATES[pair] || COMMISSION_RATES.standard;
+  const [baseCurrency, targetCurrency] = pair.split('-');
   
   let sendAmount: number;
   
   if (transactionType === 'sell') {
+    // Client wants to receive X ARS, needs to send Y USD
     // Work backwards: desired receive + commission = gross, then divide by rate
     const grossNeeded = receiveAmount / (1 - commissionRate);
     sendAmount = grossNeeded / currentRate;
   } else {
+    // Client wants to receive X USD, needs to send Y ARS
     // For buy: multiply receive amount by rate
     sendAmount = receiveAmount * currentRate;
   }
   
-  logger.debug('Cálculo Receive→Send', {
+  logger.debug('Cálculo Receive→Send CORREGIDO', {
     tipo: transactionType,
     par: pair,
-    recibir: receiveAmount,
-    comision: (commissionRate * 100) + '%',
-    resultado: sendAmount
+    direccion: transactionType === 'sell' ? `${baseCurrency}→${targetCurrency}` : `${targetCurrency}→${baseCurrency}`,
+    quiere_recibir: receiveAmount,
+    necesita_enviar: sendAmount,
+    tasa: currentRate,
+    comision: (commissionRate * 100) + '%'
   });
   
   return Math.max(0, sendAmount);

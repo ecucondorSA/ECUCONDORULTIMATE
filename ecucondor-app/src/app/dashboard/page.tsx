@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+import { logger } from '@/lib/utils/logger';
+import Header from '@/components/common/Header';
 
 // Dashboard stats component
 const DashboardStats = () => {
@@ -19,13 +21,24 @@ const DashboardStats = () => {
   }, []);
 
   const fetchDashboardData = async () => {
-    // In production, fetch from your APIs
-    setStats({
-      totalTransactions: 47,
-      monthlyVolume: 2850.50,
-      activePriceLocks: 2,
-      availableLimit: 7149.50,
-    });
+    try {
+      // TODO: Replace with real API call when backend is ready
+      // For now, show zeros for new users
+      setStats({
+        totalTransactions: 0,
+        monthlyVolume: 0.00,
+        activePriceLocks: 0,
+        availableLimit: 10000.00, // Default limit for new users
+      });
+    } catch {
+      // Set default values on error
+      setStats({
+        totalTransactions: 0,
+        monthlyVolume: 0.00,
+        activePriceLocks: 0,
+        availableLimit: 10000.00,
+      });
+    }
   };
 
 
@@ -99,95 +112,73 @@ const ExchangeRatesTable = ({ rates }: { rates: {
   pair: string;
   buy_rate: number;
   sell_rate: number;
-  spread: number;
   last_updated: string;
 }[] }) => {
   return (
     <div className="ecucondor-card p-6">
-      <h3 className="text-lg font-semibold text-ecucondor-primary mb-4">
-        Tipos de Cambio en Tiempo Real
+      <h3 className="text-xl font-bold text-ecucondor-primary mb-6">
+        💱 Tipos de Cambio en Tiempo Real
       </h3>
-      <div className="overflow-x-auto">
-        <table className="ecucondor-table w-full">
-          <thead>
-            <tr>
-              <th className="px-4 py-3 text-left">Par</th>
-              <th className="px-4 py-3 text-left">Compra</th>
-              <th className="px-4 py-3 text-left">Venta</th>
-              <th className="px-4 py-3 text-left">Spread</th>
-              <th className="px-4 py-3 text-left">Actualizado</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rates.map((rate) => (
-              <tr key={rate.pair} className="hover:bg-ecucondor-tertiary/50">
-                <td className="px-4 py-3 font-medium text-ecucondor-primary">
-                  {rate.pair}
-                </td>
-                <td className="px-4 py-3 rate-buy">
-                  {rate.buy_rate.toLocaleString('es-AR', { 
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {rates.map((rate) => (
+          <div key={rate.pair} className="bg-gradient-to-r from-ecucondor-yellow/10 to-ecucondor-yellow/5 border border-ecucondor-yellow/20 rounded-xl p-6 hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-lg font-bold text-ecucondor-primary">{rate.pair}</h4>
+              <span className="text-xs text-ecucondor-muted bg-ecucondor-tertiary/30 px-2 py-1 rounded-full">
+                {new Date(rate.last_updated).toLocaleTimeString('es-AR', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </span>
+            </div>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-ecucondor-muted">Compramos</span>
+                <span className="text-xl font-bold text-ecucondor-buy">
+                  ${rate.buy_rate.toLocaleString('es-AR', { 
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2 
                   })}
-                </td>
-                <td className="px-4 py-3 rate-sell">
-                  {rate.sell_rate.toLocaleString('es-AR', { 
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-ecucondor-muted">Vendemos</span>
+                <span className="text-xl font-bold text-ecucondor-sell">
+                  ${rate.sell_rate.toLocaleString('es-AR', { 
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2 
                   })}
-                </td>
-                <td className="px-4 py-3 rate-spread">
-                  {rate.spread.toLocaleString('es-AR', { 
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2 
-                  })}
-                </td>
-                <td className="px-4 py-3 text-sm text-ecucondor-muted">
-                  {new Date(rate.last_updated).toLocaleTimeString('es-AR', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
+      {rates.length === 0 && (
+        <div className="text-center py-12">
+          <div className="w-16 h-16 bg-ecucondor-yellow/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-ecucondor-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          </div>
+          <p className="text-ecucondor-muted">Cargando tipos de cambio...</p>
+        </div>
+      )}
     </div>
   );
 };
 
 // Recent transactions component
 const RecentTransactions = () => {
-  const mockTransactions = [
-    {
-      id: 1,
-      pair: 'USD-ARS',
-      type: 'sell',
-      amount: 100,
-      total: 135075,
-      status: 'completed',
-      date: new Date(),
-    },
-    {
-      id: 2,
-      pair: 'USD-ARS',
-      type: 'buy',
-      amount: 150000,
-      total: 105.63,
-      status: 'completed',
-      date: new Date(Date.now() - 3600000),
-    },
-    {
-      id: 3,
-      pair: 'ARS-BRL',
-      type: 'sell',
-      amount: 50000,
-      total: 167.8,
-      status: 'pending',
-      date: new Date(Date.now() - 7200000),
-    },
-  ];
+  // TODO: Replace with real transactions from API
+  const transactions: {
+    id: string;
+    type: 'buy' | 'sell';
+    pair: string;
+    amount: number;
+    date: Date;
+    status: 'completed' | 'pending' | 'failed';
+  }[] = [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -211,38 +202,62 @@ const RecentTransactions = () => {
       <h3 className="text-lg font-semibold text-ecucondor-primary mb-4">
         Transacciones Recientes
       </h3>
-      <div className="space-y-4">
-        {mockTransactions.map((tx) => (
-          <div key={tx.id} className="flex items-center justify-between p-4 bg-ecucondor-tertiary/50 rounded-lg">
-            <div className="flex items-center space-x-4">
-              <div className={`p-2 rounded-full ${tx.type === 'buy' ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
-                <svg className={`w-4 h-4 ${getTypeColor(tx.type)}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {tx.type === 'buy' ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-                  )}
-                </svg>
+      
+      {transactions.length === 0 ? (
+        // Empty state for new users
+        <div className="text-center py-12">
+          <div className="w-16 h-16 bg-ecucondor-tertiary rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-ecucondor-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          </div>
+          <h4 className="text-lg font-medium text-ecucondor-primary mb-2">
+            Sin transacciones aún
+          </h4>
+          <p className="text-ecucondor-muted mb-6 max-w-md mx-auto">
+            Cuando realices tu primera transacción, aparecerá aquí junto con todo tu historial.
+          </p>
+          <Link 
+            href="/calculator"
+            className="btn-ecucondor-primary py-2 px-6 rounded-lg font-medium inline-block"
+          >
+            Hacer mi primera transacción
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {transactions.map((tx) => (
+            <div key={tx.id} className="flex items-center justify-between p-4 bg-ecucondor-tertiary/50 rounded-lg">
+              <div className="flex items-center space-x-4">
+                <div className={`p-2 rounded-full ${tx.type === 'buy' ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+                  <svg className={`w-4 h-4 ${getTypeColor(tx.type)}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {tx.type === 'buy' ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                    )}
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-medium text-ecucondor-primary">{tx.pair}</p>
+                  <p className="text-sm text-ecucondor-muted">
+                    {tx.type === 'buy' ? 'Compra' : 'Venta'} • {tx.date.toLocaleDateString('es-AR')}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium text-ecucondor-primary">{tx.pair}</p>
-                <p className="text-sm text-ecucondor-muted">
-                  {tx.type === 'buy' ? 'Compra' : 'Venta'} • {tx.date.toLocaleDateString('es-AR')}
+              <div className="text-right">
+                <p className="font-medium text-ecucondor-primary">
+                  {tx.amount.toLocaleString('es-AR')}
+                </p>
+                <p className={`text-sm font-medium ${getStatusColor(tx.status)}`}>
+                  {tx.status === 'completed' ? 'Completada' : 
+                   tx.status === 'pending' ? 'Pendiente' : 'Fallida'}
                 </p>
               </div>
             </div>
-            <div className="text-right">
-              <p className="font-medium text-ecucondor-primary">
-                {tx.amount.toLocaleString('es-AR')}
-              </p>
-              <p className={`text-sm font-medium ${getStatusColor(tx.status)}`}>
-                {tx.status === 'completed' ? 'Completada' : 
-                 tx.status === 'pending' ? 'Pendiente' : 'Fallida'}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -254,9 +269,10 @@ export default function DashboardPage() {
     pair: string;
     buy_rate: number;
     sell_rate: number;
-    spread: number;
     last_updated: string;
   }[]>([]);
+  const [showPriceLock, setShowPriceLock] = useState(false);
+  const [showLimits, setShowLimits] = useState(false);
 
   useEffect(() => {
     fetchRates();
@@ -273,7 +289,7 @@ export default function DashboardPage() {
         setRates(data.data);
       }
     } catch (error) {
-      console.error('Error fetching rates:', error);
+      logger.error('Error fetching dashboard rates', error);
     }
   };
 
@@ -306,7 +322,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-ecucondor-primary">
+      <Header showLogout={true} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Personalized Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -355,19 +373,133 @@ export default function DashboardPage() {
             </svg>
             Realizar Transacción
           </Link>
-          <button className="btn-ecucondor-secondary p-4 rounded-lg text-center">
+          <button 
+            onClick={() => setShowPriceLock(true)}
+            className="btn-ecucondor-secondary p-4 rounded-lg text-center hover:bg-ecucondor-yellow/20 transition-colors"
+          >
             <svg className="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             Bloquear Precio
           </button>
-          <button className="btn-ecucondor-secondary p-4 rounded-lg text-center">
+          <button 
+            onClick={() => setShowLimits(true)}
+            className="btn-ecucondor-secondary p-4 rounded-lg text-center hover:bg-ecucondor-yellow/20 transition-colors"
+          >
             <svg className="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
             Ver Límites
           </button>
         </div>
+      </div>
+
+      {/* Price Lock Modal */}
+      {showPriceLock && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="ecucondor-card p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-ecucondor-primary">Bloquear Precio</h3>
+              <button 
+                onClick={() => setShowPriceLock(false)}
+                className="text-ecucondor-muted hover:text-ecucondor-primary"
+              >
+                ×
+              </button>
+            </div>
+            <div className="space-y-4">
+              <p className="text-ecucondor-muted text-sm">
+                Bloquea una tasa de cambio favorable por un tiempo determinado para asegurar tu transacción.
+              </p>
+              <div className="bg-ecucondor-yellow/10 border border-ecucondor-yellow/20 rounded-lg p-4">
+                <p className="text-sm text-ecucondor-primary">
+                  🚧 <strong>Próximamente disponible</strong>
+                </p>
+                <p className="text-xs text-ecucondor-muted mt-1">
+                  Esta funcionalidad estará disponible próximamente para ofrecerte mayor control sobre tus transacciones.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setShowPriceLock(false)}
+                  className="flex-1 btn-ecucondor-secondary py-2 px-4 rounded-lg"
+                >
+                  Cerrar
+                </button>
+                <Link 
+                  href="/calculator" 
+                  className="flex-1 btn-ecucondor-primary py-2 px-4 rounded-lg text-center"
+                  onClick={() => setShowPriceLock(false)}
+                >
+                  Ir a Calculadora
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Limits Modal */}
+      {showLimits && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="ecucondor-card p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-ecucondor-primary">Límites de Transacción</h3>
+              <button 
+                onClick={() => setShowLimits(false)}
+                className="text-ecucondor-muted hover:text-ecucondor-primary"
+              >
+                ×
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div className="grid gap-3">
+                <div className="flex justify-between items-center py-2 border-b border-ecucondor-tertiary">
+                  <span className="text-sm text-ecucondor-muted">Límite diario</span>
+                  <span className="font-medium text-ecucondor-primary">$10,000 USD</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-ecucondor-tertiary">
+                  <span className="text-sm text-ecucondor-muted">Límite mensual</span>
+                  <span className="font-medium text-ecucondor-primary">$50,000 USD</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-ecucondor-tertiary">
+                  <span className="text-sm text-ecucondor-muted">Utilizado este mes</span>
+                  <span className="font-medium text-ecucondor-buy">$0 USD</span>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-sm text-ecucondor-muted">Disponible</span>
+                  <span className="font-bold text-ecucondor-primary text-lg">$50,000 USD</span>
+                </div>
+              </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-800">
+                  📊 <strong>Aumenta tus límites</strong>
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  Completa la verificación KYC para acceder a límites más altos y funciones premium.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setShowLimits(false)}
+                  className="flex-1 btn-ecucondor-secondary py-2 px-4 rounded-lg"
+                >
+                  Cerrar
+                </button>
+                <button 
+                  onClick={() => {
+                    setShowLimits(false);
+                    // TODO: Navigate to KYC verification
+                  }}
+                  className="flex-1 btn-ecucondor-primary py-2 px-4 rounded-lg"
+                >
+                  Verificar KYC
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

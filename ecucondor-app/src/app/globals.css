@@ -3,6 +3,17 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* EcuCondor Theme Colors */
+  --ecucondor-primary: #1a1a1a;
+  --ecucondor-secondary: #f5f5f5;
+  --ecucondor-tertiary: #2a2a2a;
+  --ecucondor-yellow: #f1c40f;
+  --ecucondor-yellow-600: #d4ac0d;
+  --ecucondor-muted: #888888;
+  --ecucondor-buy: #10b981;
+  --ecucondor-sell: #ef4444;
+  --neon-gold: #ffd700;
 }
 
 @theme inline {
@@ -10,12 +21,23 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* EcuCondor Theme Colors */
+  --color-ecucondor-primary: var(--ecucondor-primary);
+  --color-ecucondor-secondary: var(--ecucondor-secondary);
+  --color-ecucondor-tertiary: var(--ecucondor-tertiary);
+  --color-ecucondor-yellow: var(--ecucondor-yellow);
+  --color-ecucondor-yellow-600: var(--ecucondor-yellow-600);
+  --color-ecucondor-muted: var(--ecucondor-muted);
+  --color-ecucondor-buy: var(--ecucondor-buy);
+  --color-ecucondor-sell: var(--ecucondor-sell);
+  --color-neon-gold: var(--neon-gold);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--ecucondor-primary);
+    --foreground: var(--ecucondor-secondary);
   }
 }
 
@@ -24,3 +46,123 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* EcuCondor Custom Components */
+.ecucondor-card {
+  @apply bg-ecucondor-secondary border border-ecucondor-tertiary shadow-sm rounded-lg;
+}
+
+.ecucondor-table {
+  @apply min-w-full divide-y divide-ecucondor-tertiary;
+}
+
+.ecucondor-table thead th {
+  @apply px-4 py-3 text-left text-xs font-medium text-ecucondor-muted uppercase tracking-wider bg-ecucondor-tertiary;
+}
+
+.ecucondor-table tbody tr {
+  @apply hover:bg-ecucondor-tertiary/50;
+}
+
+.ecucondor-table tbody td {
+  @apply px-4 py-4 whitespace-nowrap text-sm text-ecucondor-primary;
+}
+
+.btn-ecucondor-primary {
+  @apply bg-ecucondor-yellow hover:bg-ecucondor-yellow-600 text-black font-medium transition-colors duration-200;
+}
+
+.btn-ecucondor-secondary {
+  @apply bg-ecucondor-tertiary hover:bg-ecucondor-tertiary/80 text-ecucondor-secondary border border-ecucondor-tertiary font-medium transition-colors duration-200;
+}
+
+.rate-buy {
+  @apply text-ecucondor-buy font-medium;
+}
+
+.rate-sell {
+  @apply text-ecucondor-sell font-medium;
+}
+
+.rate-spread {
+  @apply text-ecucondor-muted font-medium;
+}
+
+.status-success {
+  @apply text-green-500;
+}
+
+.status-warning {
+  @apply text-yellow-500;
+}
+
+.status-error {
+  @apply text-red-500;
+}
+
+.status-info {
+  @apply text-blue-500;
+}
+
+/* Loading pulse animation */
+.ecucondor-pulse {
+  @apply animate-pulse;
+}
+
+/* Animaciones personalizadas para la nueva landing page */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.6s ease-out;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .text-5xl {
+    font-size: 2.5rem;
+  }
+  
+  .text-4xl {
+    font-size: 2rem;
+  }
+}
+
