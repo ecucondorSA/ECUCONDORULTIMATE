@@ -300,7 +300,7 @@ body {
 
   /* Fix for iOS bounce scrolling */
   body {
-    position: fixed;
+    position: relative;
     width: 100%;
     overflow-x: hidden;
   }
