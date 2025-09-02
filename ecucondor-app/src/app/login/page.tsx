@@ -55,56 +55,11 @@ export default function LoginPage() {
         setError(error.message);
         setIsLoading(false);
       } else if (data.user && data.session) {
-        console.log('✅ Login successful, setting up redirect...');
-        const urlParams = new URLSearchParams(window.location.search);
-        const returnToParam = urlParams.get('returnTo') || '/dashboard';
+        console.log('✅ Login successful - AuthContext will handle redirect');
+        setIsLoading(false);
         
-        // Decode URL-encoded parameters (fix for %2Fdashboard -> /dashboard)
-        const returnTo = decodeURIComponent(returnToParam);
-        
-        console.log('🔄 Login successful, redirecting to:', returnTo);
-        console.log('🔍 Original param:', returnToParam);
-        console.log('🍪 Cookies before redirect:', document.cookie);
-        
-        // Wait for Supabase to properly set cookies and update auth state
-        let attempts = 0;
-        const maxAttempts = 10;
-        
-        const checkAuthAndRedirect = async () => {
-          attempts++;
-          console.log(`🔄 Auth check attempt ${attempts}/${maxAttempts}`);
-          
-          try {
-            // Check if auth state is properly set
-            const { session } = await authService.getCurrentSession();
-            console.log('🔍 Current session check:', session ? 'Active' : 'None');
-            
-            if (session) {
-              console.log('✅ Session confirmed, redirecting now...');
-              // Use router.push for better Next.js navigation
-              router.push(returnTo);
-              return;
-            }
-            
-            // If no session but we haven't exceeded attempts, wait and try again
-            if (attempts < maxAttempts) {
-              setTimeout(checkAuthAndRedirect, 300);
-            } else {
-              console.log('❌ Max attempts reached, forcing redirect...');
-              window.location.replace(returnTo);
-            }
-          } catch (error) {
-            console.log('❌ Error checking auth state:', error);
-            if (attempts < maxAttempts) {
-              setTimeout(checkAuthAndRedirect, 300);
-            } else {
-              window.location.replace(returnTo);
-            }
-          }
-        };
-        
-        // Start the auth check process
-        setTimeout(checkAuthAndRedirect, 500);
+        // Let AuthContext handle the redirect logic to avoid conflicts
+        // The AuthContext listens to SIGNED_IN events and will redirect appropriately
       }
     } catch {
       setError('Error de conexión. Intenta nuevamente.');

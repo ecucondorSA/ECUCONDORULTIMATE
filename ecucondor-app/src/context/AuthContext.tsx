@@ -38,18 +38,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Handle successful authentication
         if (event === 'SIGNED_IN' && session) {
-          console.log('User signed in successfully');
+          console.log('🔐 AuthContext: User signed in successfully');
+          console.log('🌍 AuthContext: Current pathname:', window.location.pathname);
+          console.log('🔍 AuthContext: Current search params:', window.location.search);
           
-          // Check if user was redirected from a protected page
-          const urlParams = new URLSearchParams(window.location.search);
-          const returnTo = urlParams.get('returnTo');
-          
-          if (returnTo && window.location.pathname === '/login') {
-            console.log('🔄 AuthContext: Post-login redirect to:', returnTo);
+          // Check if user was redirected from a protected page or is on login page
+          if (window.location.pathname === '/login') {
+            const urlParams = new URLSearchParams(window.location.search);
+            const returnTo = urlParams.get('returnTo');
+            
+            // Default to dashboard if no returnTo parameter
+            const redirectUrl = returnTo ? decodeURIComponent(returnTo) : '/dashboard';
+            
+            console.log('🔄 AuthContext: Post-login redirect to:', redirectUrl);
+            console.log('📍 AuthContext: returnTo param:', returnTo);
+            
             // Small delay to ensure state is updated
             setTimeout(() => {
-              window.location.replace(decodeURIComponent(returnTo));
-            }, 100);
+              console.log('🚀 AuthContext: Executing redirect now...');
+              window.location.replace(redirectUrl);
+            }, 200);
+          } else {
+            console.log('⏭️ AuthContext: Not on login page, skipping redirect');
           }
         }
         

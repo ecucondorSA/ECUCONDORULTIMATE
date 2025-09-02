@@ -11,95 +11,66 @@ export function middleware(request: NextRequest) {
     
     // Get all cookies for debugging
     const allCookies = request.cookies.getAll();
-    console.log('🍪 All cookies:', allCookies.map(c => `${c.name}=${c.value ? 'present' : 'empty'}`));
+    console.log('🍪 All cookies:', allCookies.map(c => `${c.name}: ${c.value?.substring(0, 20)}...`));
     
     let isAuthenticated = false;
     
-    // Method 1: Check for standard Supabase auth cookies
+    // Simplified: Check for any Supabase auth cookie
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     if (supabaseUrl) {
       const projectRef = supabaseUrl.split('//')[1]?.split('.')[0];
       console.log('🔑 Project ref:', projectRef);
       
       if (projectRef) {
-        // Check multiple possible Supabase cookie patterns
-        const possibleCookieNames = [
+        // Check for the main Supabase auth cookies
+        const authCookiePatterns = [
           `sb-${projectRef}-auth-token`,
           `sb-${projectRef}-auth-token.0`,
-          `sb-${projectRef}-auth-token.1`,
-          `supabase-auth-token`,
-          `supabase.auth.token`
+          `sb-${projectRef}-auth-token.1`
         ];
         
-        for (const cookieName of possibleCookieNames) {
+        for (const cookieName of authCookiePatterns) {
           const cookie = request.cookies.get(cookieName);
-          if (cookie?.value && cookie.value !== 'null' && cookie.value !== '{}') {
-            console.log(`✅ Found valid auth cookie: ${cookieName}`);
-            isAuthenticated = true;
-            break;
+          console.log(`🔍 Checking cookie: ${cookieName} = ${cookie?.value ? 'exists' : 'missing'}`);
+          
+          if (cookie?.value) {
+            try {
+              const parsed = JSON.parse(cookie.value);
+              if (parsed.access_token && parsed.user) {
+                console.log(`✅ Found valid session in: ${cookieName}`);
+                isAuthenticated = true;
+                break;
+              }
+            } catch (error) {
+              console.log(`❌ Failed to parse cookie: ${cookieName}`, error);
+            }
           }
         }
       }
     }
     
-    // Method 2: Fallback - check any cookie starting with 'sb-' that looks like auth data
+    // Fallback: If no specific pattern found, check for any sb- cookie with content
     if (!isAuthenticated) {
       const supabaseCookies = allCookies.filter(cookie => 
         cookie.name.startsWith('sb-') && 
         cookie.value && 
-        cookie.value !== 'null' && 
-        cookie.value !== '{}' &&
-        cookie.value.length > 10 // Auth tokens are usually longer
+        cookie.value.length > 50 && // Session data is usually longer
+        cookie.value.includes('access_token')
       );
       
       if (supabaseCookies.length > 0) {
-        console.log('🔍 Found Supabase cookies via fallback:', supabaseCookies.map(c => c.name));
-        
-        // Try to detect if any cookie contains JWT-like content
-        for (const cookie of supabaseCookies) {
-          try {
-            const parsed = JSON.parse(cookie.value);
-            if (parsed.access_token || parsed.refresh_token) {
-              console.log(`✅ Found valid session data in: ${cookie.name}`);
-              isAuthenticated = true;
-              break;
-            }
-          } catch {
-            // Check if it looks like a JWT token
-            if (cookie.value.includes('.') && cookie.value.split('.').length === 3) {
-              console.log(`✅ Found JWT-like token in: ${cookie.name}`);
-              isAuthenticated = true;
-              break;
-            }
-          }
-        }
-      }
-    }
-    
-    // Method 3: Final fallback - check for any authentication indicators
-    if (!isAuthenticated) {
-      const authCookies = allCookies.filter(cookie => 
-        (cookie.name.toLowerCase().includes('auth') || 
-         cookie.name.toLowerCase().includes('session') ||
-         cookie.name.toLowerCase().includes('token')) &&
-        cookie.value && 
-        cookie.value !== 'null' &&
-        cookie.value.length > 20
-      );
-      
-      if (authCookies.length > 0) {
-        console.log('🔍 Found potential auth cookies:', authCookies.map(c => c.name));
+        console.log('🔍 Found session cookies via fallback:', supabaseCookies.map(c => c.name));
         isAuthenticated = true;
       }
     }
     
     if (!isAuthenticated) {
-      console.log('❌ No authentication found, redirecting to login');
+      console.log('❌ No valid session found, redirecting to login');
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('returnTo', encodeURIComponent(pathname));
       return NextResponse.redirect(loginUrl);
     } else {
-      console.log('✅ Authentication detected, allowing dashboard access');
+      console.log('✅ Session validated, allowing dashboard access');
     }
   }
 
