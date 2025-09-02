@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Configuración de Turbopack
+  turbopack: {
+    root: '/home/edu/ECUCONDORULTIMATE/ecucondor-app',
+  },
   // Optimizaciones de imagen
   images: {
     domains: ['ecucondor.com'],
@@ -45,32 +49,35 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  webpack: (config, { isServer }) => {
-    // Resolver problemas con jsPDF y módulos de Node.js
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      canvas: false,
-      encoding: false,
-    };
-    
-    // Alias para evitar resolución de módulos problemáticos
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      canvas: false,
-      encoding: false,
-    };
-
-    // Optimizaciones de bundle
-    if (!isServer) {
+  // Configuración condicional - solo cuando no se usa Turbopack
+  ...(!process.env.TURBOPACK && {
+    webpack: (config, { isServer }) => {
+      // Resolver problemas con jsPDF y módulos de Node.js
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
+        canvas: false,
+        encoding: false,
       };
-    }
+      
+      // Alias para evitar resolución de módulos problemáticos
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        canvas: false,
+        encoding: false,
+      };
 
-    return config;
-  },
+      // Optimizaciones de bundle
+      if (!isServer) {
+        config.resolve.fallback = {
+          ...config.resolve.fallback,
+          fs: false,
+        };
+      }
+
+      return config;
+    },
+  }),
 };
 
 export default nextConfig;
