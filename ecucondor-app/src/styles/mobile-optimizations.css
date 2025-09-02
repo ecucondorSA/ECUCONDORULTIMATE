@@ -1,0 +1,265 @@
+/* Mobile Optimizations for EcuCondor */
+
+/* Base mobile styles */
+@media screen and (max-width: 768px) {
+  /* Fix horizontal scroll issues */
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
+  /* Improve touch targets - minimum 44px for mobile */
+  button, 
+  a, 
+  input, 
+  select, 
+  textarea,
+  .clickable {
+    min-height: 44px !important;
+    padding: 12px 16px !important;
+  }
+
+  /* Better font sizes for mobile readability */
+  body {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+
+  h1 {
+    font-size: 1.75rem !important;
+    line-height: 1.2 !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+    line-height: 1.3 !important;
+  }
+
+  h3 {
+    font-size: 1.25rem !important;
+  }
+
+  p, span, div {
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Fix container padding for mobile */
+  .container,
+  .max-w-7xl,
+  .max-w-6xl,
+  .max-w-5xl,
+  .max-w-4xl {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Navigation improvements */
+  nav {
+    padding: 0.75rem 1rem !important;
+  }
+
+  /* Form improvements */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    padding: 14px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+  }
+
+  /* Cards and modals */
+  .rounded-2xl {
+    border-radius: 12px !important;
+  }
+
+  /* Tables - make them scrollable */
+  table {
+    display: block !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+  }
+
+  /* Grid adjustments */
+  .grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  /* Flex adjustments */
+  .flex-row {
+    flex-direction: column !important;
+  }
+
+  /* Calculator specific fixes */
+  .calculator-container {
+    padding: 1rem !important;
+    margin: 0 !important;
+  }
+
+  .calculator-input {
+    font-size: 20px !important;
+    padding: 16px !important;
+  }
+
+  .currency-selector {
+    min-height: 48px !important;
+    font-size: 16px !important;
+  }
+
+  /* Modal improvements */
+  .modal, 
+  [role="dialog"] {
+    margin: 1rem !important;
+    max-height: calc(100vh - 2rem) !important;
+    overflow-y: auto !important;
+  }
+
+  /* Toast notifications */
+  .toast,
+  [role="alert"] {
+    width: calc(100vw - 2rem) !important;
+    margin: 1rem !important;
+  }
+
+  /* Dropdown menus */
+  .dropdown-menu,
+  [role="menu"] {
+    width: 100% !important;
+    max-width: calc(100vw - 2rem) !important;
+  }
+
+  /* Images optimization */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Remove hover effects on mobile */
+  @media (hover: none) {
+    a:hover,
+    button:hover {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* Better spacing for mobile */
+  section {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+
+  /* Fix z-index issues */
+  .fixed,
+  .sticky {
+    z-index: 50 !important;
+  }
+
+  /* WhatsApp widget position */
+  .whatsapp-widget {
+    bottom: 20px !important;
+    right: 20px !important;
+    transform: scale(0.9) !important;
+  }
+}
+
+/* Specific breakpoints for small phones */
+@media screen and (max-width: 375px) {
+  body {
+    font-size: 14px !important;
+  }
+
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.25rem !important;
+  }
+
+  .container {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+}
+
+/* Landscape mode adjustments */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  nav {
+    padding: 0.5rem !important;
+  }
+
+  section {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  .hero-section {
+    min-height: calc(100vh - 60px) !important;
+  }
+}
+
+/* Touch-friendly utilities */
+.touch-friendly {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+/* Smooth scrolling for mobile */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Fix for iOS Safari bottom bar */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Accessibility improvements for mobile */
+@media screen and (max-width: 768px) {
+  .sr-only-mobile {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Focus visible for keyboard navigation */
+  *:focus-visible {
+    outline: 3px solid #FFD700 !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Performance optimizations */
+@media screen and (max-width: 768px) {
+  /* Disable animations on low-end devices */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Optimize font loading */
+  .font-outfit {
+    font-display: swap;
+  }
+}

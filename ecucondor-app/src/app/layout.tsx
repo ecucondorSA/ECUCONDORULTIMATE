@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
+import "./globals-mobile.css";
 import "../styles/ecucondor-theme.css";
+import "../styles/mobile-optimizations.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
 
@@ -17,6 +19,12 @@ export const metadata: Metadata = {
     template: "%s | EcuCondor"
   },
   description: "Plataforma FinTech líder para intercambio seguro de divisas entre USD, ARS y BRL. Tasas competitivas, transacciones rápidas y confianza garantizada en Ecuador, Argentina y Brasil.",
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
   keywords: [
     'intercambio divisas',
     'cambio moneda',
