@@ -7,10 +7,30 @@ export function middleware(request: NextRequest) {
 
   // Dashboard protection - redirect to login if not authenticated
   if (pathname.startsWith('/dashboard')) {
-    // Check for auth session cookie
-    const authToken = request.cookies.get('sb-qfregiogzspihbglvpqs-auth-token')
+    // Check for Supabase auth session cookies (new format)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    let authCookie = null
     
-    if (!authToken) {
+    if (supabaseUrl) {
+      // Extract project ref from Supabase URL
+      const projectRef = supabaseUrl.split('//')[1]?.split('.')[0]
+      if (projectRef) {
+        authCookie = request.cookies.get(`sb-${projectRef}-auth-token`)
+      }
+    }
+    
+    // Fallback: check common Supabase cookie patterns
+    if (!authCookie) {
+      const cookieNames = Array.from(request.cookies.getAll().map(c => c.name))
+      const supabaseCookie = cookieNames.find(name => 
+        name.startsWith('sb-') && name.endsWith('-auth-token')
+      )
+      if (supabaseCookie) {
+        authCookie = request.cookies.get(supabaseCookie)
+      }
+    }
+    
+    if (!authCookie?.value) {
       // Redirect to login with return URL
       const loginUrl = new URL('/login', request.url)
       loginUrl.searchParams.set('returnTo', pathname)

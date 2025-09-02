@@ -53,17 +53,21 @@ export default function LoginPage() {
       
       if (error) {
         setError(error.message);
-      } else if (data.user) {
-        // Get return URL from query params or default to dashboard
-        const urlParams = new URLSearchParams(window.location.search);
-        const returnTo = urlParams.get('returnTo') || '/dashboard';
-        router.push(returnTo);
+        setIsLoading(false);
+      } else if (data.user && data.session) {
+        // Wait for auth context to update before redirecting
+        setTimeout(() => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const returnTo = urlParams.get('returnTo') || '/dashboard';
+          
+          // Force hard navigation to ensure middleware sees the auth state
+          window.location.href = returnTo;
+        }, 1000);
       }
     } catch {
       setError('Error de conexión. Intenta nuevamente.');
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   const handleGoogleLogin = async () => {

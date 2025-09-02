@@ -31,10 +31,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // Handle successful authentication
+        if (event === 'SIGNED_IN' && session) {
+          console.log('User signed in successfully');
+        }
+        
+        // Handle sign out
+        if (event === 'SIGNED_OUT') {
+          console.log('User signed out');
+          // Force redirect to login if user was signed out
+          if (window.location.pathname.startsWith('/dashboard')) {
+            window.location.href = '/login';
+          }
+        }
       }
     );
 

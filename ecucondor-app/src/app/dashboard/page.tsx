@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { logger } from '@/lib/utils/logger';
 import Header from '@/components/common/Header';
@@ -265,6 +266,7 @@ const RecentTransactions = () => {
 // Main dashboard page
 export default function DashboardPage() {
   const { user, loading } = useAuth();
+  const router = useRouter();
   const [rates, setRates] = useState<{
     pair: string;
     buy_rate: number;
@@ -275,15 +277,28 @@ export default function DashboardPage() {
   const [showLimits, setShowLimits] = useState(false);
   const [greeting, setGreeting] = useState(''); // Saludo fijo para la sesión
 
+  // Auth protection
   useEffect(() => {
-    // Generar saludo una sola vez al cargar la página
-    setGreeting(generateGreeting());
-    
-    fetchRates();
-    // Set up real-time updates
-    const interval = setInterval(fetchRates, 30000); // Update every 30 seconds
-    return () => clearInterval(interval);
-  }, []);
+    if (!loading && !user) {
+      console.log('No user found, redirecting to login');
+      router.push('/login?returnTo=%2Fdashboard');
+      return;
+    }
+  }, [user, loading, router]);
+
+  useEffect(() => {
+    // Only initialize if user is authenticated
+    if (!loading && user) {
+      // Generar saludo una sola vez al cargar la página
+      setGreeting(generateGreeting());
+      
+      fetchRates();
+      
+      // Set up real-time updates
+      const interval = setInterval(fetchRates, 30000); // Update every 30 seconds
+      return () => clearInterval(interval);
+    }
+  }, [loading, user]);
 
   const fetchRates = async () => {
     try {
