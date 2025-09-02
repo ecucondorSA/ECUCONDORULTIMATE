@@ -39,6 +39,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Handle successful authentication
         if (event === 'SIGNED_IN' && session) {
           console.log('User signed in successfully');
+          
+          // Check if user was redirected from a protected page
+          const urlParams = new URLSearchParams(window.location.search);
+          const returnTo = urlParams.get('returnTo');
+          
+          if (returnTo && window.location.pathname === '/login') {
+            console.log('🔄 AuthContext: Post-login redirect to:', returnTo);
+            // Small delay to ensure state is updated
+            setTimeout(() => {
+              window.location.replace(decodeURIComponent(returnTo));
+            }, 100);
+          }
         }
         
         // Handle sign out

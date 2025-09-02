@@ -31,10 +31,30 @@ export const authService = {
 
   // Sign in with Google
   async signInWithGoogle() {
+    // Store the current returnTo parameter if it exists
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnTo = urlParams.get('returnTo');
+    if (returnTo) {
+      sessionStorage.setItem('returnTo', returnTo);
+    }
+
+    // Get the correct redirect URL based on environment
+    const getRedirectUrl = () => {
+      // In production, use the app URL from environment variables
+      if (process.env.NODE_ENV === 'production') {
+        return `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback` || `${window.location.origin}/auth/callback`;
+      }
+      // In development, use localhost
+      return `${window.location.origin}/auth/callback`;
+    };
+
+    const redirectUrl = getRedirectUrl();
+    console.log('🔄 Google OAuth redirect URL:', redirectUrl);
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: redirectUrl,
       },
     });
     return { data, error };
@@ -48,8 +68,21 @@ export const authService = {
 
   // Reset password
   async resetPassword(email: string) {
+    // Get the correct redirect URL based on environment
+    const getRedirectUrl = () => {
+      // In production, use the app URL from environment variables
+      if (process.env.NODE_ENV === 'production') {
+        return `${process.env.NEXT_PUBLIC_APP_URL}/reset-password` || `${window.location.origin}/reset-password`;
+      }
+      // In development, use localhost
+      return `${window.location.origin}/reset-password`;
+    };
+
+    const redirectUrl = getRedirectUrl();
+    console.log('🔄 Password reset redirect URL:', redirectUrl);
+
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: redirectUrl,
     });
     return { data, error };
   },

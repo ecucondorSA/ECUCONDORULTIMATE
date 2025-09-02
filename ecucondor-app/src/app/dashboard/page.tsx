@@ -277,12 +277,18 @@ export default function DashboardPage() {
   const [showLimits, setShowLimits] = useState(false);
   const [greeting, setGreeting] = useState(''); // Saludo fijo para la sesión
 
-  // Auth protection
+  // Auth protection with better loading handling
   useEffect(() => {
-    if (!loading && !user) {
-      console.log('No user found, redirecting to login');
-      router.push('/login?returnTo=%2Fdashboard');
-      return;
+    if (!loading) {
+      if (!user) {
+        console.log('No user found, redirecting to login');
+        const currentPath = window.location.pathname;
+        const loginUrl = `/login?returnTo=${encodeURIComponent(currentPath)}`;
+        router.push(loginUrl);
+        return;
+      } else {
+        console.log('✅ Dashboard: User authenticated:', user.email);
+      }
     }
   }, [user, loading, router]);
 

@@ -66,14 +66,45 @@ export default function LoginPage() {
         console.log('🔍 Original param:', returnToParam);
         console.log('🍪 Cookies before redirect:', document.cookie);
         
-        // Wait longer for cookies to be set properly
-        setTimeout(() => {
-          console.log('🍪 Cookies after timeout:', document.cookie);
-          console.log('🚀 Performing redirect...');
+        // Wait for Supabase to properly set cookies and update auth state
+        let attempts = 0;
+        const maxAttempts = 10;
+        
+        const checkAuthAndRedirect = async () => {
+          attempts++;
+          console.log(`🔄 Auth check attempt ${attempts}/${maxAttempts}`);
           
-          // Force a full page reload to ensure middleware sees the auth state
-          window.location.replace(returnTo);
-        }, 2000); // Increased timeout
+          try {
+            // Check if auth state is properly set
+            const { session } = await authService.getCurrentSession();
+            console.log('🔍 Current session check:', session ? 'Active' : 'None');
+            
+            if (session) {
+              console.log('✅ Session confirmed, redirecting now...');
+              // Use router.push for better Next.js navigation
+              router.push(returnTo);
+              return;
+            }
+            
+            // If no session but we haven't exceeded attempts, wait and try again
+            if (attempts < maxAttempts) {
+              setTimeout(checkAuthAndRedirect, 300);
+            } else {
+              console.log('❌ Max attempts reached, forcing redirect...');
+              window.location.replace(returnTo);
+            }
+          } catch (error) {
+            console.log('❌ Error checking auth state:', error);
+            if (attempts < maxAttempts) {
+              setTimeout(checkAuthAndRedirect, 300);
+            } else {
+              window.location.replace(returnTo);
+            }
+          }
+        };
+        
+        // Start the auth check process
+        setTimeout(checkAuthAndRedirect, 500);
       }
     } catch {
       setError('Error de conexión. Intenta nuevamente.');
