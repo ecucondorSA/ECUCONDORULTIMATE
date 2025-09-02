@@ -152,7 +152,7 @@ export default function Home() {
                       </div>
                     </div>
                     <p className="text-gray-300 text-lg leading-relaxed">
-                      "{testimonial.text}"
+                      &ldquo;{testimonial.text}&rdquo;
                     </p>
                     <div className="flex text-yellow-400 mt-4">
                       <span>{'⭐'.repeat(testimonial.rating)}</span>
@@ -196,7 +196,7 @@ export default function Home() {
                       </div>
                     </div>
                     <p className="text-gray-300 text-lg leading-relaxed">
-                      "{testimonial.text}"
+                      &ldquo;{testimonial.text}&rdquo;
                     </p>
                     <div className="flex text-yellow-400 mt-4">
                       <span>{'⭐'.repeat(testimonial.rating)}</span>

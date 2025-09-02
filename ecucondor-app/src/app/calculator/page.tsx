@@ -19,7 +19,6 @@ export default function CalculatorPage() {
 
   // Use custom calculator hook for all logic
   const {
-    rates,
     selectedPair,
     transactionType,
     sendAmount,

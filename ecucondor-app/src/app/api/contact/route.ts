@@ -69,14 +69,14 @@ export async function POST(request: NextRequest) {
       }
     }, { status: 200 });
 
-  } catch (error) {
-    console.error('❌ Error procesando contacto:', error);
+  } catch (err) {
+    console.error('❌ Error procesando contacto:', err);
 
-    if (error instanceof z.ZodError) {
+    if (err instanceof z.ZodError) {
       return NextResponse.json({
         success: false,
         message: 'Datos inválidos',
-        errors: error.errors
+        errors: err.errors
       }, { status: 400 });
     }
 

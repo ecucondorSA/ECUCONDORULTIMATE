@@ -41,7 +41,7 @@ export interface PaymentInstructions {
 }
 
 export interface PDFData {
-  doc: any; // jsPDF document
+  doc: unknown; // jsPDF document
   transactionId: string;
 }
 
