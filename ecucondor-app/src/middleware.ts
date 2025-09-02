@@ -5,11 +5,12 @@ export function middleware(request: NextRequest) {
   // Get the pathname
   const pathname = request.nextUrl.pathname
 
-  // TEMPORARILY DISABLED FOR DEBUGGING - MIDDLEWARE AUTHENTICATION
+  // Dashboard protection moved to client-side (dashboard page itself)
+  // Middleware doesn't handle auth since Supabase stores session in localStorage
   console.log('🛡️ Middleware: Processing request for:', pathname);
   
-  // Dashboard protection is temporarily disabled for debugging
-  // Will re-enable after finding the root cause
+  // Let client-side components handle authentication
+  // This is more reliable with Supabase localStorage-based sessions
 
   // Clone the response
   const response = NextResponse.next()
