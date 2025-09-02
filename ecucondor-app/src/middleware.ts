@@ -7,34 +7,49 @@ export function middleware(request: NextRequest) {
 
   // Dashboard protection - redirect to login if not authenticated
   if (pathname.startsWith('/dashboard')) {
-    // Check for Supabase auth session cookies (new format)
+    console.log('🛡️ Middleware: Checking dashboard access for:', pathname);
+    
+    // Get all cookies for debugging
+    const allCookies = request.cookies.getAll();
+    console.log('🍪 All cookies:', allCookies.map(c => c.name));
+    
+    // Check for Supabase auth session cookies
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     let authCookie = null
     
     if (supabaseUrl) {
       // Extract project ref from Supabase URL
       const projectRef = supabaseUrl.split('//')[1]?.split('.')[0]
+      console.log('🔑 Looking for project ref:', projectRef);
+      
       if (projectRef) {
         authCookie = request.cookies.get(`sb-${projectRef}-auth-token`)
+        console.log(`🔍 Checking cookie: sb-${projectRef}-auth-token`, authCookie?.value ? 'Found' : 'Not found');
       }
     }
     
     // Fallback: check common Supabase cookie patterns
     if (!authCookie) {
-      const cookieNames = Array.from(request.cookies.getAll().map(c => c.name))
+      const cookieNames = Array.from(allCookies.map(c => c.name))
       const supabaseCookie = cookieNames.find(name => 
-        name.startsWith('sb-') && name.endsWith('-auth-token')
+        name.startsWith('sb-') && (name.includes('auth-token') || name.includes('session'))
       )
+      console.log('🔍 Fallback cookie search:', supabaseCookie);
+      
       if (supabaseCookie) {
         authCookie = request.cookies.get(supabaseCookie)
+        console.log('✅ Found fallback cookie:', supabaseCookie);
       }
     }
     
     if (!authCookie?.value) {
+      console.log('❌ No auth cookie found, redirecting to login');
       // Redirect to login with return URL
       const loginUrl = new URL('/login', request.url)
       loginUrl.searchParams.set('returnTo', pathname)
       return NextResponse.redirect(loginUrl)
+    } else {
+      console.log('✅ Auth cookie found, allowing access to dashboard');
     }
   }
 
