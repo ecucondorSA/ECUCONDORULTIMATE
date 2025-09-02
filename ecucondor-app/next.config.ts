@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Configuración de Turbopack
   turbopack: {
-    root: '/home/edu/ECUCONDORULTIMATE/ecucondor-app',
+    root: process.cwd(),
   },
   // Optimizaciones de imagen avanzadas
   images: {
@@ -26,6 +26,10 @@ const nextConfig: NextConfig = {
       'lucide-react',
       '@supabase/supabase-js'
     ],
+    // Explicitly enable turbo mode for development
+    turbo: {
+      root: process.cwd()
+    }
   },
 
   // Redirects para SEO y UX
