@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: false,
         message: 'Datos inválidos',
-        errors: err.errors
+        errors: err.issues
       }, { status: 400 });
     }
 
@@ -99,7 +99,7 @@ export async function GET() {
         lastUpdate: new Date().toISOString()
       }
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({
       success: false,
       message: 'Error al obtener estadísticas'

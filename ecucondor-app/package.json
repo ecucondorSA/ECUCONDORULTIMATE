@@ -7,7 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "security-check": "node scripts/security-check.js",
+    "security-check": "node scripts/security-check.mjs",
     "test-api": "node test-api.js",
     "simulate": "node -e \"import('./src/lib/examples/api-usage.js').then(m => m.simulateTransactions())\""
   },

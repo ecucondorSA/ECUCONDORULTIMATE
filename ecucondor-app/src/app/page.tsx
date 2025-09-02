@@ -61,40 +61,6 @@ export default function Home() {
     ]
   };
 
-  const testimonials = [
-    {
-      id: 1,
-      name: "Carlos Mendoza",
-      position: "Empresario - TechStart Argentina",
-      initials: "CM",
-      text: "ECUCONDOR ha revolucionado completamente la forma en que manejamos nuestras transacciones internacionales. La rapidez y seguridad son incomparables.",
-      rating: 5
-    },
-    {
-      id: 2,
-      name: "Ana Silva",
-      position: "Migrante Ecuatoriana - Ecucondor 2 años",
-      initials: "AS",
-      text: "Me encanta la plataforma, la veo diario así estoy al tanto de la cotización actual, son los mejores, 100% recomendado.",
-      rating: 5
-    },
-    {
-      id: 3,
-      name: "Miguel Rodríguez",
-      position: "CEO - Fintech Solutions",
-      initials: "MR",
-      text: "ECUCONDOR no es solo una plataforma financiera, es un socio estratégico. Su tecnología blockchain y las herramientas de IA nos han dado una ventaja competitiva increíble en el mercado.",
-      rating: 5
-    },
-    {
-      id: 4,
-      name: "João S.",
-      position: "São Paulo, Brasil",
-      initials: "JS",
-      text: "Excelente serviço. Rápido, confiável e com um atendimento ao cliente impecável. Recomendo!",
-      rating: 5
-    }
-  ];
 
   return (
     <>
@@ -136,29 +102,41 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {/* Columna izquierda: 2 testimonios */}
               <div className="space-y-8">
-                {testimonials.slice(0, 2).map((testimonial, index) => (
-                  <div
-                    key={testimonial.id}
-                    className="bg-black rounded-2xl p-8 border-2 border-yellow-500/50 hover:border-yellow-400 transition-all duration-500 animate-fade-in shadow-2xl hover:shadow-yellow-500/30 transform hover:scale-105 hover:-translate-y-2"
-                    style={{ animationDelay: `${index * 0.2}s` }}
-                  >
-                    <div className="flex items-center mb-6">
-                      <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
-                        <span className="text-black font-bold text-xl">{testimonial.initials}</span>
-                      </div>
-                      <div>
-                        <h4 className="text-xl font-bold text-white">{testimonial.name}</h4>
-                        <p className="text-yellow-400">{testimonial.position}</p>
-                      </div>
+                <div className="bg-black rounded-2xl p-8 border-2 border-yellow-500/50 hover:border-yellow-400 transition-all duration-500 animate-fade-in shadow-2xl hover:shadow-yellow-500/30 transform hover:scale-105 hover:-translate-y-2">
+                  <div className="flex items-center mb-6">
+                    <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
+                      <span className="text-black font-bold text-xl">CM</span>
                     </div>
-                    <p className="text-gray-300 text-lg leading-relaxed">
-                      &ldquo;{testimonial.text}&rdquo;
-                    </p>
-                    <div className="flex text-yellow-400 mt-4">
-                      <span>{'⭐'.repeat(testimonial.rating)}</span>
+                    <div>
+                      <h4 className="text-xl font-bold text-white">Carlos Mendoza</h4>
+                      <p className="text-yellow-400">Empresario - TechStart Argentina</p>
                     </div>
                   </div>
-                ))}
+                  <p className="text-gray-300 text-lg leading-relaxed">
+                    &ldquo;ECUCONDOR ha revolucionado completamente la forma en que manejamos nuestras transacciones internacionales. La rapidez y seguridad son incomparables.&rdquo;
+                  </p>
+                  <div className="flex text-yellow-400 mt-4">
+                    <span>⭐⭐⭐⭐⭐</span>
+                  </div>
+                </div>
+
+                <div className="bg-black rounded-2xl p-8 border-2 border-yellow-500/50 hover:border-yellow-400 transition-all duration-500 animate-fade-in shadow-2xl hover:shadow-yellow-500/30 transform hover:scale-105 hover:-translate-y-2">
+                  <div className="flex items-center mb-6">
+                    <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
+                      <span className="text-black font-bold text-xl">AS</span>
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-bold text-white">Ana Silva</h4>
+                      <p className="text-yellow-400">Migrante Ecuatoriana - EcuCondor 2 años</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 text-lg leading-relaxed">
+                    &ldquo;Me encanta la plataforma, la veo diario así estoy al tanto de la cotización actual, son los mejores, 100% recomendado.&rdquo;
+                  </p>
+                  <div className="flex text-yellow-400 mt-4">
+                    <span>⭐⭐⭐⭐⭐</span>
+                  </div>
+                </div>
               </div>
 
               {/* Columna central: imagen */}
@@ -180,29 +158,41 @@ export default function Home() {
 
               {/* Columna derecha: 2 testimonios */}
               <div className="space-y-8">
-                {testimonials.slice(2, 4).map((testimonial, index) => (
-                  <div
-                    key={testimonial.id}
-                    className="bg-black rounded-2xl p-8 border-2 border-yellow-500/50 hover:border-yellow-400 transition-all duration-500 animate-fade-in shadow-2xl hover:shadow-yellow-500/30 transform hover:scale-105 hover:-translate-y-2"
-                    style={{ animationDelay: `${0.4 + index * 0.2}s` }}
-                  >
-                    <div className="flex items-center mb-6">
-                      <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
-                        <span className="text-black font-bold text-xl">{testimonial.initials}</span>
-                      </div>
-                      <div>
-                        <h4 className="text-xl font-bold text-white">{testimonial.name}</h4>
-                        <p className="text-yellow-400">{testimonial.position}</p>
-                      </div>
+                <div className="bg-black rounded-2xl p-8 border-2 border-yellow-500/50 hover:border-yellow-400 transition-all duration-500 animate-fade-in shadow-2xl hover:shadow-yellow-500/30 transform hover:scale-105 hover:-translate-y-2">
+                  <div className="flex items-center mb-6">
+                    <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
+                      <span className="text-black font-bold text-xl">MR</span>
                     </div>
-                    <p className="text-gray-300 text-lg leading-relaxed">
-                      &ldquo;{testimonial.text}&rdquo;
-                    </p>
-                    <div className="flex text-yellow-400 mt-4">
-                      <span>{'⭐'.repeat(testimonial.rating)}</span>
+                    <div>
+                      <h4 className="text-xl font-bold text-white">Miguel Rodríguez</h4>
+                      <p className="text-yellow-400">CEO - Fintech Solutions</p>
                     </div>
                   </div>
-                ))}
+                  <p className="text-gray-300 text-lg leading-relaxed">
+                    &ldquo;ECUCONDOR no es solo una plataforma financiera, es un socio estratégico. Su tecnología avanzada nos ha dado una ventaja competitiva increíble en el mercado.&rdquo;
+                  </p>
+                  <div className="flex text-yellow-400 mt-4">
+                    <span>⭐⭐⭐⭐⭐</span>
+                  </div>
+                </div>
+
+                <div className="bg-black rounded-2xl p-8 border-2 border-yellow-500/50 hover:border-yellow-400 transition-all duration-500 animate-fade-in shadow-2xl hover:shadow-yellow-500/30 transform hover:scale-105 hover:-translate-y-2">
+                  <div className="flex items-center mb-6">
+                    <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
+                      <span className="text-black font-bold text-xl">JS</span>
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-bold text-white">João Silva</h4>
+                      <p className="text-yellow-400">São Paulo, Brasil</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 text-lg leading-relaxed">
+                    &ldquo;Excelente serviço. Rápido, confiável e com um atendimento ao cliente impecável. Recomendo!&rdquo;
+                  </p>
+                  <div className="flex text-yellow-400 mt-4">
+                    <span>⭐⭐⭐⭐⭐</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -438,6 +428,14 @@ export default function Home() {
             </div>
 
             <div className="border-t border-gray-800 pt-8 text-center">
+              {/* Signature */}
+              <div className="mb-6">
+                <p className="text-ecucondor-yellow text-lg font-medium">
+                  Con mucha alegría,<br />
+                  E.M 😊🎉
+                </p>
+              </div>
+              
               <p className="text-gray-400">
                 2024 ECUCONDOR S.A.S. Todos los derechos reservados.
               </p>

@@ -29,7 +29,7 @@ export default function LoadingSkeleton({
       backgroundPosition: ['200% 0%', '-200% 0%'],
       transition: {
         duration: 1.5,
-        ease: 'linear',
+        ease: 'linear' as const,
         repeat: Infinity,
       }
     }

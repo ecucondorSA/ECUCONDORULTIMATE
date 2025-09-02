@@ -59,7 +59,9 @@ export function calculateSendToReceive(
   if (!rate || sendAmount <= 0) return 0;
   
   const currentRate = transactionType === 'sell' ? rate.sell_rate : rate.buy_rate;
-  const commissionRate = COMMISSION_RATES[pair] || COMMISSION_RATES.standard;
+  // Obtener comisión específica por par y tipo de transacción
+  const commissionKey = `${pair}-${transactionType}`;
+  const commissionRate = COMMISSION_RATES[commissionKey] || COMMISSION_RATES[pair] || COMMISSION_RATES.standard;
   const [baseCurrency, targetCurrency] = pair.split('-');
   
   let receiveAmount: number;
@@ -101,7 +103,9 @@ export function calculateReceiveToSend(
   if (!rate || receiveAmount <= 0) return 0;
   
   const currentRate = transactionType === 'sell' ? rate.sell_rate : rate.buy_rate;
-  const commissionRate = COMMISSION_RATES[pair] || COMMISSION_RATES.standard;
+  // Obtener comisión específica por par y tipo de transacción
+  const commissionKey = `${pair}-${transactionType}`;
+  const commissionRate = COMMISSION_RATES[commissionKey] || COMMISSION_RATES[pair] || COMMISSION_RATES.standard;
   const [baseCurrency, targetCurrency] = pair.split('-');
   
   let sendAmount: number;
@@ -147,7 +151,9 @@ export function getTransactionDetails(
     return null;
   }
   
-  const commissionRate = COMMISSION_RATES[selectedPair] || COMMISSION_RATES.standard;
+  // Obtener comisión específica por par y tipo de transacción
+  const commissionKey = `${selectedPair}-${transactionType}`;
+  const commissionRate = COMMISSION_RATES[commissionKey] || COMMISSION_RATES[selectedPair] || COMMISSION_RATES.standard;
   const rate = transactionType === 'sell' ? selectedRate.sell_rate : selectedRate.buy_rate;
   
   logger.debug('RESUMEN DEBUG', {
@@ -174,7 +180,7 @@ export function getTransactionDetails(
  */
 export function generateWhatsAppMessage(
   details: TransactionDetails | null,
-  paymentInstructions: any,
+  paymentInstructions: Record<string, unknown>,
   userEmail: string | null,
   includePDF: boolean = false
 ): string {
@@ -190,9 +196,9 @@ Soy ${userName} y les escribo para hacer un cambio con ustedes 🎉
 💱 *CONFIRMACIÓN DE CAMBIO - ECUCONDOR* ✨
 
 📝 *Detalles de mi operación:*
-• 📤 Envié: ${paymentInstructions?.send?.currency} ${formatNumber(details.sendAmount)}
-• 📥 Recibiré: ${paymentInstructions?.receive?.currency} ${formatNumber(details.receiveAmount)}
-• 💳 Método de pago: ${paymentInstructions?.send?.method}
+• 📤 Envié: ${details.pair.split('-')[details.type === 'sell' ? 0 : 1]} ${formatNumber(details.sendAmount)}
+• 📥 Recibiré: ${details.pair.split('-')[details.type === 'sell' ? 1 : 0]} ${formatNumber(details.receiveAmount)}
+• 💳 Método de pago: Transferencia bancaria
 
 ✅ *CONFIRMACIÓN IMPORTANTE:*
 • ✅ Ya realicé el pago completo
@@ -201,7 +207,7 @@ Soy ${userName} y les escribo para hacer un cambio con ustedes 🎉
 
 ⏰ Comprendo perfectamente que la conversión puede tardar entre 5 minutos y 1 hora, no hay problema 😌
 
-🤝 Confío plenamente en su servicio profesional y quedo a la espera de la confirmación y el envío de mis ${paymentInstructions?.receive?.currency}.`;
+🤝 Confío plenamente en su servicio profesional y quedo a la espera de la confirmación y el envío de mis ${details.pair.split('-')[details.type === 'sell' ? 1 : 0]}.`;
 
   if (includePDF) {
     message += `
@@ -216,7 +222,6 @@ Soy ${userName} y les escribo para hacer un cambio con ustedes 🎉
 
 🙏 Muchísimas gracias por este excelente servicio 
 💚 Realmente aprecio la confianza y profesionalismo de Ecucondor
-🌟 Espero hacer muchos más cambios con ustedes en el futuro
 
 Que tengan un día increíble 🌈✨`;
 

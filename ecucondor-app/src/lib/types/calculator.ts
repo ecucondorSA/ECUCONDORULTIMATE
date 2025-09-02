@@ -41,7 +41,10 @@ export interface PaymentInstructions {
 }
 
 export interface PDFData {
-  doc: unknown; // jsPDF document
+  doc: { 
+    save: (filename: string) => void;
+    output: (type: string) => string;
+  }; // jsPDF document with save and output methods
   transactionId: string;
 }
 
@@ -73,8 +76,12 @@ export const CURRENCY_FLAGS: Record<Currency, string> = {
   BRL: '🇧🇷'
 };
 
-// Commission rates by pair
+// Commission rates by pair and transaction type
 export const COMMISSION_RATES: Record<string, number> = {
-  'USD-ARS': 0.03, // 3% only for USD to ARS
-  'standard': 0.0,  // 0% for other pairs
+  'USD-ARS-sell': 0.03, // 3% cuando vendes USD por ARS
+  'USD-ARS-buy': 0.0,   // 0% cuando compras USD con ARS (promoción!)
+  'USD-BRL-sell': 0.02, // 2% cuando vendes USD por BRL
+  'USD-BRL-buy': 0.02,  // 2% cuando compras USD con BRL
+  'ARS-BRL': 0.025,     // 2.5% para conversiones ARS-BRL
+  'standard': 0.0       // 0% por defecto
 };

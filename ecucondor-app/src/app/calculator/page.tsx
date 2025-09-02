@@ -51,7 +51,7 @@ export default function CalculatorPage() {
       setLoading(true);
       logger.debug('Loading activado');
 
-      const pdfData = await PDFGenerator.generatePDFReceipt(transactionDetails, user);
+      const pdfData = await PDFGenerator.generatePDFReceipt(transactionDetails, user as Record<string, unknown> | null);
       logger.debug('generatePDFReceipt resultado', !!pdfData);
 
       if (pdfData) {
@@ -62,7 +62,7 @@ export default function CalculatorPage() {
 
         // Send to Ecucondor
         logger.debug('Enviando a Ecucondor...');
-        await PDFGenerator.sendPDFToEcucondor(pdfData, user?.email);
+        await PDFGenerator.sendPDFToEcucondor(pdfData);
         logger.info('Enviado a Ecucondor');
 
         // Show success message and provide next steps
@@ -213,35 +213,35 @@ export default function CalculatorPage() {
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
-                onClick={() => setTransactionType('buy')}
+                onClick={() => setTransactionType('sell')}
                 className={`p-4 rounded-lg text-center transition-all ${
-                  transactionType === 'buy'
+                  transactionType === 'sell'
                     ? 'bg-green-500/20 border-2 border-green-500 text-green-400'
                     : 'bg-ecucondor-tertiary border-2 border-ecucondor-tertiary text-ecucondor-secondary hover:border-green-500/50'
                 }`}
               >
-                <div className="text-sm">Vender</div>
+                <div className="text-sm">Vender USD</div>
+                <div className="text-xs opacity-75 mt-1">
+                  {selectedPair.split('-')[0]} → {selectedPair.split('-')[1]}
+                </div>
+                <div className="text-xs opacity-50 mt-1">
+                  (Envías {selectedPair.split('-')[0]}, recibes {selectedPair.split('-')[1]})
+                </div>
+              </button>
+              <button
+                onClick={() => setTransactionType('buy')}
+                className={`p-4 rounded-lg text-center transition-all ${
+                  transactionType === 'buy'
+                    ? 'bg-blue-500/20 border-2 border-blue-500 text-blue-400'
+                    : 'bg-ecucondor-tertiary border-2 border-ecucondor-tertiary text-ecucondor-secondary hover:border-blue-500/50'
+                }`}
+              >
+                <div className="text-sm">Comprar USD</div>
                 <div className="text-xs opacity-75 mt-1">
                   {selectedPair.split('-')[1]} → {selectedPair.split('-')[0]}
                 </div>
                 <div className="text-xs opacity-50 mt-1">
                   (Envías {selectedPair.split('-')[1]}, recibes {selectedPair.split('-')[0]})
-                </div>
-              </button>
-              <button
-                onClick={() => setTransactionType('sell')}
-                className={`p-4 rounded-lg text-center transition-all ${
-                  transactionType === 'sell'
-                    ? 'bg-blue-500/20 border-2 border-blue-500 text-blue-400'
-                    : 'bg-ecucondor-tertiary border-2 border-ecucondor-tertiary text-ecucondor-secondary hover:border-blue-500/50'
-                }`}
-              >
-                <div className="text-sm">Comprar</div>
-                <div className="text-xs opacity-75 mt-1">
-                  Dólares Ecuatorianos
-                </div>
-                <div className="text-xs opacity-50 mt-1">
-                  (Envías {selectedPair.split('-')[1]}, recibes USD)
                 </div>
               </button>
             </div>
@@ -251,11 +251,11 @@ export default function CalculatorPage() {
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
               <label className="block text-sm font-medium text-ecucondor-secondary mb-2">
-                {transactionType === 'buy' ? 'Envías' : 'Envías'}
+                Envías
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-xl">
-                  {transactionType === 'buy' 
+                  {transactionType === 'sell' 
                     ? CURRENCY_FLAGS[currencies.from]
                     : CURRENCY_FLAGS[currencies.to]
                   }
@@ -276,7 +276,7 @@ export default function CalculatorPage() {
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-xl">
-                  {transactionType === 'buy' 
+                  {transactionType === 'sell' 
                     ? CURRENCY_FLAGS[currencies.to]
                     : CURRENCY_FLAGS[currencies.from]
                   }
@@ -303,14 +303,6 @@ export default function CalculatorPage() {
                   {formatNumber(transactionType === 'sell' ? selectedRate.sell_rate : selectedRate.buy_rate)}
                 </span>
               </div>
-              {selectedRate.spread > 0 && (
-                <div className="flex items-center justify-between text-sm mt-1">
-                  <span className="text-ecucondor-muted">Spread:</span>
-                  <span className="text-ecucondor-secondary">
-                    {formatNumber(selectedRate.spread)}
-                  </span>
-                </div>
-              )}
             </div>
           )}
 
@@ -347,7 +339,7 @@ export default function CalculatorPage() {
         {showSummary && transactionDetails && (
           <TransactionSummary
             details={transactionDetails}
-            userEmail={user?.email}
+            userEmail={user?.email || null}
             onClose={() => setShowSummary(false)}
             onDownloadPDF={handleDownloadPDF}
             loading={loading}

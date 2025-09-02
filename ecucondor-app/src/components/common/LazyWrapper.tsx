@@ -1,12 +1,19 @@
 'use client';
 
 import { Suspense, lazy, ComponentType, useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import LoadingSkeleton from './LoadingSkeleton';
 import ErrorBoundary from './ErrorBoundary';
 
+interface ErrorFallbackProps {
+  error: Error;
+  resetError: () => void;
+  errorInfo: string | null;
+}
+
 interface LazyWrapperProps {
   fallback?: React.ComponentType;
-  errorFallback?: React.ComponentType;
+  errorFallback?: React.ComponentType<ErrorFallbackProps>;
   className?: string;
 }
 
@@ -35,7 +42,7 @@ export function withLazyLoading<T extends object>(
     );
   };
 
-  WrappedComponent.displayName = `LazyWrapped(${LazyComponent.displayName || 'Component'})`;
+  WrappedComponent.displayName = 'LazyWrapped(Component)';
   
   return WrappedComponent;
 }
@@ -103,7 +110,7 @@ export function LazyImage({
             <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse rounded" />
           )}
           
-          <img
+          <Image
             src={hasError ? placeholder : src}
             alt={alt}
             onLoad={handleLoad}
@@ -112,6 +119,8 @@ export function LazyImage({
               isLoaded ? 'opacity-100' : 'opacity-0'
             } ${className}`}
             loading="lazy"
+            width={500}
+            height={300}
           />
           
           {hasError && (

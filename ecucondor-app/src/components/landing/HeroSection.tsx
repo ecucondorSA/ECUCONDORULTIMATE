@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import useExchangeRates from '@/hooks/useExchangeRates';
 import { ExchangeRatesSkeleton } from '@/components/common/LoadingSkeleton';
+import InlineCalculator from '@/components/landing/InlineCalculator';
 
 interface ExchangeRateDisplay {
   pair: string;
@@ -31,7 +32,7 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: "easeOut"
+      ease: "easeOut" as const
     }
   }
 };
@@ -227,6 +228,63 @@ export default function HeroSection() {
                 >
                   Tu navegador no soporta el elemento de video.
                 </video>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Calculadora Inline - Nueva Sección */}
+        <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          {/* Calculadora */}
+          <InlineCalculator />
+          
+          {/* Información adicional */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="space-y-6"
+          >
+            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <h3 className="text-xl font-bold text-ecucondor-yellow mb-4 flex items-center gap-2">
+                ⚡ Por qué elegir ECUCONDOR
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl">🔒</div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-1">100% Seguro</h4>
+                    <p className="text-gray-300 text-sm">Transacciones protegidas con encriptación de nivel bancario</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl">⚡</div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-1">Ultra Rápido</h4>
+                    <p className="text-gray-300 text-sm">Procesamiento en 5-60 minutos, 24/7</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl">💰</div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-1">Mejores Tasas</h4>
+                    <p className="text-gray-300 text-sm">Tasas competitivas actualizadas en tiempo real</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-r from-ecucondor-yellow/20 to-yellow-400/20 rounded-2xl p-6 border border-ecucondor-yellow/30">
+              <div className="text-center">
+                <h3 className="text-lg font-bold text-ecucondor-yellow mb-2">
+                  🎉 ¡Promoción Especial!
+                </h3>
+                <p className="text-white text-sm mb-3">
+                  No cobramos comisión de ARS a USD
+                </p>
+                <p className="text-xs text-gray-300">
+                  * Solo aplica para conversiones de Pesos Argentinos a Dólares. Otras conversiones sí tienen comisión.
+                </p>
               </div>
             </div>
           </motion.div>

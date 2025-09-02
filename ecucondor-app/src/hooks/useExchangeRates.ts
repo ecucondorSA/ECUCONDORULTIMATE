@@ -73,18 +73,65 @@ const useExchangeRates = (): UseExchangeRatesReturn => {
       setLoading(true);
       setError(null);
 
-      // Simular delay de API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // TODO: Reemplazar con tu API real
-      // const response = await fetch('/api/exchange-rates');
-      // const data = await response.json();
+      // Obtener datos reales de la API
+      const response = await fetch('/api/rates');
+      const data = await response.json();
       
-      const mockRates = generateMockRates();
-      setRates(mockRates);
+      if (data.success && data.data) {
+        // Transformar datos de API a formato de display
+        const apiRates: ExchangeRate[] = data.data.map((rate: any) => {
+          const sellRate = rate.sell_rate || 0;
+          const baseRate = rate.binance_rate || sellRate;
+          const percentage = baseRate > 0 ? ((sellRate - baseRate) / baseRate * 100) : 0;
+          
+          // Mapear pares de API a formato de display
+          let displayPair = rate.pair;
+          let flag = '💱';
+          let formattedRate = sellRate.toFixed(2);
+          
+          if (rate.pair === 'USD-ARS') {
+            displayPair = 'USD/ARS';
+            flag = '🇺🇸🇦🇷';
+            formattedRate = `$${sellRate.toFixed(2)}`;
+          } else if (rate.pair === 'USD-BRL') {
+            displayPair = 'USD/BRL';
+            flag = '🇺🇸🇧🇷';
+            formattedRate = `R$ ${sellRate.toFixed(2)}`;
+          } else if (rate.pair === 'ARS-BRL') {
+            displayPair = 'BRL/ARS';
+            flag = '🇧🇷🇦🇷';
+            // La tasa ARS-BRL nos dice cuántos BRL vale 1 ARS
+            // Para mostrar BRL/ARS, necesitamos invertir: cuántos ARS vale 1 BRL
+            const brlToArsRate = 1 / sellRate;
+            formattedRate = `$${brlToArsRate.toFixed(2)}`;
+          }
+          
+          return {
+            pair: displayPair,
+            flag,
+            rate: formattedRate,
+            change: `${percentage > 0 ? '+' : ''}${percentage.toFixed(1)}%`,
+            trend: percentage > 0 ? '↗️' : percentage < 0 ? '↘️' : '➡️',
+            percentage,
+            lastUpdate: new Date(rate.last_updated)
+          };
+        });
+        
+        setRates(apiRates);
+      } else {
+        // Fallback a datos simulados si API falla
+        const mockRates = generateMockRates();
+        setRates(mockRates);
+      }
+      
       setLastUpdate(new Date());
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar tasas');
+      // En caso de error, usar datos simulados
+      console.warn('API no disponible, usando datos simulados:', err);
+      const mockRates = generateMockRates();
+      setRates(mockRates);
+      setError('API no disponible - mostrando datos simulados');
+      setLastUpdate(new Date());
     } finally {
       setLoading(false);
     }

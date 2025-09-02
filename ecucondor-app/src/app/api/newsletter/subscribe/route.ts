@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: false,
         message: 'Datos inválidos',
-        errors: error.errors
+        errors: error.issues
       }, { status: 400 });
     }
 

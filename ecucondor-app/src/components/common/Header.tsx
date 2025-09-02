@@ -58,7 +58,7 @@ export default function Header({ showLogout = false }: HeaderProps) {
                   href="/dashboard"
                   className="text-gray-300 hover:text-yellow-400 transition-colors"
                 >
-                  Dashboard
+                  Panel de Control
                 </Link>
                 <Link
                   href="/calculator"

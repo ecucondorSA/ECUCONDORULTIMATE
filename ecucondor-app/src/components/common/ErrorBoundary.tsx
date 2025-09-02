@@ -44,7 +44,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     
     this.setState({
-      errorInfo: errorInfo.componentStack,
+      errorInfo: errorInfo.componentStack || null,
     });
 
     // Llamar callback opcional de error
@@ -190,7 +190,7 @@ export function FormErrorBoundary({ children, onError }: ErrorBoundaryProps) {
   );
 }
 
-function FormErrorFallback({ error, resetError }: ErrorFallbackProps) {
+function FormErrorFallback({ resetError }: Pick<ErrorFallbackProps, 'resetError'>) {
   return (
     <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
       <AlertTriangle className="w-8 h-8 text-red-600 mx-auto mb-4" />

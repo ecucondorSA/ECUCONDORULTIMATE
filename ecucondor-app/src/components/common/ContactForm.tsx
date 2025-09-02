@@ -11,10 +11,10 @@ import toast from 'react-hot-toast';
 const contactSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   email: z.string().email('Email inválido'),
-  phone: z.string().min(10, 'Teléfono debe tener al menos 10 dígitos').optional(),
+  phone: z.string().optional(),
   subject: z.string().min(5, 'El asunto debe tener al menos 5 caracteres'),
   message: z.string().min(10, 'El mensaje debe tener al menos 10 caracteres'),
-  newsletter: z.boolean().default(false)
+  newsletter: z.boolean().optional()
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -33,11 +33,20 @@ export default function ContactForm({ className = '' }: ContactFormProps) {
     formState: { errors, isValid }
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
-    mode: 'onChange'
+    mode: 'onChange',
+    defaultValues: {
+      newsletter: false
+    }
   });
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
+    
+    // Ensure newsletter has a default value
+    const submitData = {
+      ...data,
+      newsletter: data.newsletter ?? false
+    };
     
     try {
       // Simular envío a API
@@ -46,7 +55,7 @@ export default function ContactForm({ className = '' }: ContactFormProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(submitData),
       });
 
       if (!response.ok) {

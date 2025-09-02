@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { ExchangeRate, CalculatorState, TransactionDetails, CurrencyPair, TransactionType } from '@/lib/types/calculator';
+import { ExchangeRate, CurrencyPair, TransactionType } from '@/lib/types/calculator';
 import { 
   parseAmount, 
   formatNumber, 

@@ -3,21 +3,15 @@
  * Handles PDF generation and email sending functionality
  */
 
-import { TransactionDetails, PDFData, PaymentInstructions } from '@/lib/types/calculator';
+import { TransactionDetails, PDFData } from '@/lib/types/calculator';
 import { COMPANY_CONFIG } from '@/lib/config/company';
 import { formatNumber } from '@/lib/utils/calculator-utils';
 import { logger } from '@/lib/utils/logger';
 
-interface PDFGeneratorProps {
-  details: TransactionDetails;
-  userEmail: string | null;
-  onPDFGenerated?: (pdfData: PDFData) => void;
-}
-
 export class PDFGenerator {
   static async generatePDFReceipt(
     details: TransactionDetails | null, 
-    user: any = null
+    user: Record<string, unknown> | null = null
   ): Promise<PDFData | null> {
     logger.debug('generatePDFReceipt iniciado', { details: !!details, user: !!user });
     
@@ -40,7 +34,6 @@ export class PDFGenerator {
       const doc = new jsPDF();
       logger.debug('Documento PDF creado');
 
-      const clientEmail = user?.email || 'Cliente';
       const currentDate = new Date().toLocaleString('es-AR');
       const transactionId = `ECU-${Date.now()}`;
       
@@ -203,34 +196,18 @@ export class PDFGenerator {
       return { doc, transactionId };
     } catch (error) {
       logger.error('Error generando PDF', error);
-      logger.error('Stack trace', error.stack);
+      if (error instanceof Error) {
+        logger.error('Stack trace', error.stack);
+      }
       return null;
     }
   }
 
-  static async sendPDFToEcucondor(pdfData: PDFData, userEmail?: string): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static async sendPDFToEcucondor(pdfData: PDFData): Promise<void> {
     try {
-      // Convertir PDF a base64
-      const pdfBase64 = pdfData.doc.output('datauristring');
-      
-      // En una implementación real, esto se enviaría a una API
-      const emailData = {
-        to: COMPANY_CONFIG.email,
-        subject: `Nuevo comprobante de transacción - ${pdfData.transactionId}`,
-        body: `
-          Se ha generado un nuevo comprobante de transacción.
-          
-          Cliente: ${userEmail || 'Cliente'}
-          ID Transacción: ${pdfData.transactionId}
-          Fecha: ${new Date().toLocaleString('es-AR')}
-          
-          El comprobante PDF se adjunta a este mensaje.
-        `,
-        attachment: {
-          filename: `Comprobante_${pdfData.transactionId}.pdf`,
-          content: pdfBase64
-        }
-      };
+      // En una implementación real, esto se enviaría a una API de email
+      // junto con el PDF como adjunto para el sistema interno de Ecucondor
 
       // Simular envío (en producción sería una llamada a API)
       logger.info('PDF enviado automáticamente a Ecucondor');

@@ -273,8 +273,12 @@ export default function DashboardPage() {
   }[]>([]);
   const [showPriceLock, setShowPriceLock] = useState(false);
   const [showLimits, setShowLimits] = useState(false);
+  const [greeting, setGreeting] = useState(''); // Saludo fijo para la sesión
 
   useEffect(() => {
+    // Generar saludo una sola vez al cargar la página
+    setGreeting(generateGreeting());
+    
     fetchRates();
     // Set up real-time updates
     const interval = setInterval(fetchRates, 30000); // Update every 30 seconds
@@ -303,11 +307,63 @@ export default function DashboardPage() {
     return 'Usuario';
   };
 
-  const getGreeting = () => {
+  const generateGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Buenos días';
-    if (hour < 18) return 'Buenas tardes';
-    return 'Buenas noches';
+    
+    if (hour >= 5 && hour < 12) {
+      // Mañana - mensajes energéticos
+      const morningGreetings = [
+        '¡Buenos días, financiero madrugador! ☀️',
+        '¡El sol sale y tus inversiones brillan! 🌅',
+        '¡Buenos días! ¡Que las ganancias te acompañen! ✨',
+        '¡Mañana perfecta para hacer crecer tu dinero! 🌱',
+        '¡Buenos días, campeón de las divisas! 🏆'
+      ];
+      return morningGreetings[Math.floor(Math.random() * morningGreetings.length)];
+    } else if (hour >= 12 && hour < 18) {
+      // Tarde - mensajes motivadores
+      const afternoonGreetings = [
+        '¡Buenas tardes! ¡La productividad continúa! 💼',
+        '¡Tarde perfecta para revisar tus inversiones! 📈',
+        '¡Buenas tardes, maestro del cambio de divisas! 🎯',
+        '¡El mejor momento para hacer negocios inteligentes! 🧠',
+        '¡Buenas tardes! ¡Tus finanzas están en buenas manos! 👌',
+        '¡La tarde es tuya, aprovecha cada oportunidad! 🚀'
+      ];
+      return afternoonGreetings[Math.floor(Math.random() * afternoonGreetings.length)];
+    } else if (hour >= 18 && hour < 22) {
+      // Noche temprana - mensajes relajados
+      const eveningGreetings = [
+        '¡Buenas noches! ¡Tiempo de revisar el día! 🌆',
+        '¡La noche llega, pero las oportunidades no paran! 🌟',
+        '¡Buenas noches, estratega financiero! 📊',
+        '¡Hora de planificar el éxito de mañana! 🎯',
+        '¡Buenas noches! ¡Que tus cuentas sumen felicidad! 😊'
+      ];
+      return eveningGreetings[Math.floor(Math.random() * eveningGreetings.length)];
+    } else if (hour >= 22 || hour < 2) {
+      // Noche tardía - mensajes graciosos para noctámbulos
+      const lateNightGreetings = [
+        '¡Hola, alma nocturna! 🌙',
+        '¿Trabajando hasta tarde? ¡Admirable! ✨',
+        '¡Saludos, búho financiero! 🦉',
+        '¡La noche es joven y las divisas nunca duermen! 🌟',
+        '¡Los mercados asiáticos ya están despiertos! 🌏',
+        '¡Nocturno pero nunca desorganizado! 🦇'
+      ];
+      return lateNightGreetings[Math.floor(Math.random() * lateNightGreetings.length)];
+    } else {
+      // Madrugada 2-5am - mensajes para los más valientes
+      const earlyMorningGreetings = [
+        '¿Aún despierto? ¡Eres incansable! 🌅',
+        '¡Madrugador o trasnochador? En cualquier caso, ¡hola! 🌄',
+        '¡Los mercados globales nunca paran, como tú! 🌍',
+        '¡Hora de los valientes financieros! 💪',
+        '¡Definitivamente eres un guerrero de las finanzas! ⚔️',
+        '¡3 AM y aquí sigues! ¡Eres una leyenda! 👑'
+      ];
+      return earlyMorningGreetings[Math.floor(Math.random() * earlyMorningGreetings.length)];
+    }
   };
 
   if (loading) {
@@ -329,7 +385,7 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-ecucondor-primary">
-            {getGreeting()}, <span className="text-neon-gold">{getUserName()}</span>
+            {greeting}, <span className="text-neon-gold">{getUserName()}</span>
           </h1>
           <p className="text-ecucondor-muted">
             Bienvenido a tu panel de control de Ecucondor

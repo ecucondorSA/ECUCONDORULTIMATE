@@ -5,8 +5,11 @@
  * Verifies that sensitive data is not exposed in the codebase
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 console.log('🔒 Ecucondor Security Check\n');
 
