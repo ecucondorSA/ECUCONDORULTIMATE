@@ -26,10 +26,6 @@ const nextConfig: NextConfig = {
       'lucide-react',
       '@supabase/supabase-js'
     ],
-    // Explicitly enable turbo mode for development
-    turbo: {
-      root: process.cwd()
-    }
   },
 
   // Redirects para SEO y UX

@@ -1,5 +1,5 @@
-import { logger } from '@/lib/utils/logger';
 "use client";
+import { logger } from '@/lib/utils/logger';
 import { useModal } from "@/hooks/useModal";
 import ComponentCard from "../../common/ComponentCard";
 

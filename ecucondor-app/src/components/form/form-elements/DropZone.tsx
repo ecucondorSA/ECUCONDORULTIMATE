@@ -1,5 +1,5 @@
-import { logger } from '@/lib/utils/logger';
 "use client";
+import { logger } from '@/lib/utils/logger';
 import React from "react";
 import ComponentCard from "../../common/ComponentCard";
 import { useDropzone } from "react-dropzone";
