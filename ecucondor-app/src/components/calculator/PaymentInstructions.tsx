@@ -20,7 +20,9 @@ const PAYMENT_DATA = {
     accountType: COMPANY_CONFIG.bankAccountType,
   },
   mercadopago: {
-    alias: 'ecucondor.mp',
+    alias: 'Reinasm',
+    cvu: '0000003100085925582280',
+    nombre: 'Reina Shakira Mosquera',
   }
 };
 
@@ -28,22 +30,33 @@ export default function PaymentInstructions({ details }: PaymentInstructionsProp
   // Generate payment instructions based on transaction details
   const getPaymentInstructions = (): PaymentInstructionsType => {
     const isReceivingDollars = details.type === 'sell'; // Selling ARS to get USD
+    const sendingCurrency = isReceivingDollars ? 'ARS' : 'USD';
+    
+    // Determinar cuenta de depósito según la moneda que envía el cliente
+    let accountInfo = '';
+    let paymentMethod = '';
+    
+    if (sendingCurrency === 'ARS') {
+      // Cliente envía ARS → Deposita en MercadoPago
+      paymentMethod = 'MercadoPago';
+      accountInfo = `📱 CUENTA MERCADOPAGO\n\n👤 Nombre: ${PAYMENT_DATA.mercadopago.nombre}\n💳 CVU: ${PAYMENT_DATA.mercadopago.cvu}\n🔑 Alias: ${PAYMENT_DATA.mercadopago.alias}`;
+    } else {
+      // Cliente envía USD → Deposita en cuenta bancaria
+      paymentMethod = 'transferencia bancaria';
+      accountInfo = `${PAYMENT_DATA.ecucondor.company}\nRUC: ${PAYMENT_DATA.ecucondor.ruc}\n${PAYMENT_DATA.ecucondor.bank} - ${PAYMENT_DATA.ecucondor.accountType}\n\n🏦 Número de cuenta: [Solicitar a Ecucondor]\n💳 Tipo: ${PAYMENT_DATA.ecucondor.accountType}`;
+    }
     
     return {
       send: {
-        currency: isReceivingDollars ? 'ARS' : 'USD',
+        currency: sendingCurrency,
         amount: details.sendAmount,
-        // LÓGICA CORREGIDA:
-        // - Cliente da ARS (recibe USD) → Transferencia a Produbanco
-        // - Cliente da USD (recibe ARS) → Transferencia a Produbanco también
-        method: 'transferencia bancaria',
-        account: `${PAYMENT_DATA.ecucondor.company}\nRUC: ${PAYMENT_DATA.ecucondor.ruc}\n${PAYMENT_DATA.ecucondor.bank} - ${PAYMENT_DATA.ecucondor.accountType}\n\n🏦 Número de cuenta: [Solicitar a Ecucondor]\n💳 Tipo: ${PAYMENT_DATA.ecucondor.accountType}`
+        method: paymentMethod,
+        account: accountInfo
       },
       receive: {
         currency: isReceivingDollars ? 'USD' : 'ARS',
         amount: details.receiveAmount,
-        // Cliente siempre recibe por MercadoPago
-        method: 'MercadoPago'
+        method: isReceivingDollars ? 'transferencia bancaria' : 'MercadoPago'
       }
     };
   };

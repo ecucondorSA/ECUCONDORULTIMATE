@@ -149,31 +149,62 @@ export class PDFGenerator {
       yPos += 15;
       
       doc.setFillColor(248, 249, 250);
-      doc.rect(20, yPos, 170, 40, 'F');
+      doc.rect(20, yPos, 170, 45, 'F');
       
       yPos += 10;
-      doc.setFont('helvetica', 'bold');
-      doc.text('Beneficiario:', 25, yPos);
-      doc.setFont('helvetica', 'normal');
-      doc.text(COMPANY_CONFIG.name, 80, yPos);
       
-      yPos += 8;
-      doc.setFont('helvetica', 'bold');
-      doc.text('RUC:', 25, yPos);
-      doc.setFont('helvetica', 'normal');
-      doc.text(COMPANY_CONFIG.ruc, 80, yPos);
+      // Determinar información de pago según la moneda que envía el cliente
+      const sendingCurrency = details.type === 'sell' ? 'ARS' : 'USD';
       
-      yPos += 8;
-      doc.setFont('helvetica', 'bold');
-      doc.text('Banco:', 25, yPos);
-      doc.setFont('helvetica', 'normal');
-      doc.text(COMPANY_CONFIG.bankFullName, 80, yPos);
-      
-      yPos += 8;
-      doc.setFont('helvetica', 'bold');
-      doc.text('Método de Pago:', 25, yPos);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Transferencia Bancaria', 80, yPos);
+      if (sendingCurrency === 'ARS') {
+        // Cliente envía ARS → Mostrar cuenta MercadoPago
+        doc.setFont('helvetica', 'bold');
+        doc.text('Cuenta:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text('MercadoPago', 80, yPos);
+        
+        yPos += 8;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Beneficiario:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Reina Shakira Mosquera', 80, yPos);
+        
+        yPos += 8;
+        doc.setFont('helvetica', 'bold');
+        doc.text('CVU:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text('0000003100085925582280', 80, yPos);
+        
+        yPos += 8;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Alias:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Reinasm', 80, yPos);
+      } else {
+        // Cliente envía USD → Mostrar cuenta bancaria
+        doc.setFont('helvetica', 'bold');
+        doc.text('Beneficiario:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text(COMPANY_CONFIG.name, 80, yPos);
+        
+        yPos += 8;
+        doc.setFont('helvetica', 'bold');
+        doc.text('RUC:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text(COMPANY_CONFIG.ruc, 80, yPos);
+        
+        yPos += 8;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Banco:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text(COMPANY_CONFIG.bankFullName, 80, yPos);
+        
+        yPos += 8;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Método de Pago:', 25, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Transferencia Bancaria', 80, yPos);
+      }
       
       // Footer profesional
       yPos += 25;
