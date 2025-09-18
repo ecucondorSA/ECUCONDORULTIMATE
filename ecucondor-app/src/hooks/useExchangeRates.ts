@@ -78,12 +78,25 @@ const useExchangeRates = (): UseExchangeRatesReturn => {
       
       // Obtener datos reales de la API con cache busting
       const cacheBuster = Date.now();
-      const response = await fetch(`/api/rates?t=${cacheBuster}`, {
+      
+      // Try public endpoint first, then fallback to main API
+      let response = await fetch(`/api/public-rates?t=${cacheBuster}`, {
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
         }
       });
+      
+      // If public endpoint fails, try main API
+      if (!response.ok) {
+        logger.warn('Public endpoint failed, trying main API...');
+        response = await fetch(`/api/rates?t=${cacheBuster}`, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+      }
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

@@ -25,15 +25,26 @@ function InlineCalculator({ className = '' }: InlineCalculatorProps) {
 
   const currencies = useMemo(() => getCurrencies(selectedPair), [selectedPair]);
 
-  // Fetch rates
+  // Fetch rates from public endpoint
   useEffect(() => {
     const fetchRates = async () => {
       try {
-        const response = await fetch('/api/rates');
+        // Try public endpoint first (no authentication required)
+        const response = await fetch('/api/public-rates');
         const data = await response.json();
         
         if (data.success && data.data) {
           setRates(data.data);
+          logger.info('✅ Rates fetched from public endpoint');
+        } else {
+          // Fallback to main API
+          const fallbackResponse = await fetch('/api/rates');
+          const fallbackData = await fallbackResponse.json();
+          
+          if (fallbackData.success && fallbackData.data) {
+            setRates(fallbackData.data);
+            logger.info('✅ Rates fetched from main API');
+          }
         }
       } catch (error) {
         logger.error('Error fetching rates:', error);
@@ -41,6 +52,10 @@ function InlineCalculator({ className = '' }: InlineCalculatorProps) {
     };
 
     fetchRates();
+    
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(fetchRates, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   // Calculate conversion when amount or pair changes
