@@ -306,7 +306,17 @@ export default function CalculatorPage() {
                   Tasa {transactionType === 'sell' ? 'venta' : 'compra'}:
                 </span>
                 <span className="font-semibold text-white">
-                  {formatNumber(transactionType === 'sell' ? selectedRate.sell_rate : selectedRate.buy_rate)}
+                  {(() => {
+                    const rateToShow = transactionType === 'sell' ? selectedRate.sell_rate : selectedRate.buy_rate;
+                    console.log('🔍 DEBUG TASA:', {
+                      transactionType,
+                      sell_rate: selectedRate.sell_rate,
+                      buy_rate: selectedRate.buy_rate,
+                      rateToShow,
+                      formatted: formatNumber(rateToShow)
+                    });
+                    return formatNumber(rateToShow);
+                  })()}
                 </span>
               </div>
             </div>

@@ -54,14 +54,19 @@ function InlineCalculator({ className = '' }: InlineCalculatorProps) {
     const numAmount = parseAmount(sendAmount);
     
     if (numAmount > 0) {
-      const converted = calculateSendToReceive(numAmount, selectedRate, 'sell', selectedPair);
+      // Determine transaction type based on which currency is being sent
+      const [fromCurrency] = selectedPair.split('-');
+      const isSellingBaseCurrency = fromCurrency === currencies.from;
+      const transactionType = isSellingBaseCurrency ? 'sell' : 'buy';
+      
+      const converted = calculateSendToReceive(numAmount, selectedRate, transactionType, selectedPair);
       setReceiveAmount(formatNumber(converted));
     } else {
       setReceiveAmount('');
     }
     
     setTimeout(() => setIsCalculating(false), 300);
-  }, [sendAmount, selectedRate, selectedPair]);
+  }, [sendAmount, selectedRate, selectedPair, currencies]);
 
   const handleAmountChange = useCallback((value: string) => {
     // Allow only numbers, dots, and commas
@@ -74,7 +79,19 @@ function InlineCalculator({ className = '' }: InlineCalculatorProps) {
     setSendAmount('100'); // Reset to default amount
   }, []);
 
-  const rate = selectedRate?.sell_rate || 0;
+  // Use appropriate rate based on transaction direction
+  // For USD-ARS: sell_rate when client sells USD, buy_rate when client buys USD
+  const rate = useMemo(() => {
+    if (!selectedRate) return 0;
+    
+    // For display purposes, show the rate the client would get
+    // If they're sending USD (selling USD to us), show sell_rate
+    // If they're sending ARS (buying USD from us), show buy_rate
+    const [fromCurrency] = selectedPair.split('-');
+    const isSellingBaseCurrency = fromCurrency === currencies.from;
+    
+    return isSellingBaseCurrency ? selectedRate.sell_rate : selectedRate.buy_rate;
+  }, [selectedRate, selectedPair, currencies]);
 
   return (
     <motion.div
@@ -154,7 +171,20 @@ function InlineCalculator({ className = '' }: InlineCalculatorProps) {
         <div className="flex items-center justify-between mb-4 p-3 bg-white/5 rounded-lg border border-white/10">
           <span className="text-sm text-white/80">Tasa de Cambio:</span>
           <span className="font-semibold text-ecucondor-yellow">
-            1 {currencies.from} = {formatNumber(rate)} {currencies.to}
+            1 {currencies.from} = {(() => {
+              console.log('🔍 DEBUG INLINE CALCULATOR:', {
+                selectedPair,
+                'currencies.from': currencies.from,
+                'currencies.to': currencies.to,
+                selectedRate: selectedRate ? {
+                  sell_rate: selectedRate.sell_rate,
+                  buy_rate: selectedRate.buy_rate
+                } : null,
+                rate,
+                formatted: formatNumber(rate)
+              });
+              return formatNumber(rate);
+            })()} {currencies.to}
           </span>
         </div>
       )}
