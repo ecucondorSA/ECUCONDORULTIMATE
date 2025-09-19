@@ -41,10 +41,19 @@ const itemVariants = {
 function HeroSection() {
   const { rates, loading, error, lastUpdate, connectionStatus, isUsingSSE } = useOptimizedExchangeRates();
 
+  // Debug logging
+  console.log('🔍 HeroSection Debug:', { 
+    ratesCount: rates.length, 
+    rates: rates.slice(0, 2), 
+    connectionStatus, 
+    isUsingSSE,
+    lastUpdate 
+  });
+
   // Transformar datos del hook a formato de display con validación
-  const displayRates: ExchangeRateDisplay[] = rates.map(rate => {
+  const displayRates: ExchangeRateDisplay[] = rates.map((rate, index) => {
     const percentage = rate.percentage ?? 0;
-    return {
+    const transformedRate = {
       pair: rate.pair || 'N/A',
       flag: rate.pair === 'USD/ARS' ? '🇺🇸🇦🇷' : 
             rate.pair === 'USD/BRL' ? '🇺🇸🇧🇷' : 
@@ -54,6 +63,16 @@ function HeroSection() {
       trend: percentage > 0 ? '↗️' : percentage < 0 ? '↘️' : '➡️',
       changePercent: percentage
     };
+    
+    // Debug each transformation
+    if (index === 0) {
+      console.log('🔍 Rate Transformation:', { 
+        input: rate, 
+        output: transformedRate 
+      });
+    }
+    
+    return transformedRate;
   });
 
   return (
