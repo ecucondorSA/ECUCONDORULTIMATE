@@ -1,0 +1,10 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
+
+[env]
+NEXT_PUBLIC_APP_URL = "https://${{RAILWAY_PUBLIC_DOMAIN}}"
+NEXT_PUBLIC_API_URL = "https://${{RAILWAY_PUBLIC_DOMAIN}}/api"
