@@ -1,6 +1,10 @@
 import { NextRequest } from 'next/server';
 import { logger } from '@/lib/utils/logger';
 
+// Deploy to regions with better Binance API access
+export const runtime = 'edge';
+export const preferredRegion = ['fra1', 'sin1'];
+
 // Cache en memoria para última tasa conocida
 let lastKnownRates = {
   USDTARS: { price: null as number | null, timestamp: null as number | null },

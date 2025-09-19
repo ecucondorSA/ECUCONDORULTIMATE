@@ -1,6 +1,10 @@
 import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from 'next/server'
 
+// Deploy to regions with better Binance API access
+export const runtime = 'edge';
+export const preferredRegion = ['fra1', 'sin1'];
+
 export async function GET(request: NextRequest) {
   try {
     logger.info('🔬 Starting Binance API debug...')
