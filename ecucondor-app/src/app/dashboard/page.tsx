@@ -300,18 +300,36 @@ export default function DashboardPage() {
       
       fetchRates();
       
-      // Set up real-time updates
-      const interval = setInterval(fetchRates, 30000); // Update every 30 seconds
+      // Set up real-time updates - more frequent for dashboard
+      const interval = setInterval(fetchRates, 10000); // Update every 10 seconds for real-time experience
       return () => clearInterval(interval);
     }
   }, [loading, user]);
 
   const fetchRates = async () => {
     try {
-      const response = await fetch('/api/rates');
-      const data = await response.json();
-      if (data.success) {
+      // Try public endpoint first for real-time updates without cache
+      let response = await fetch('/api/public-rates', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      });
+      let data = await response.json();
+      
+      if (data.success && data.data) {
         setRates(data.data);
+        logger.info('✅ Dashboard rates fetched from public endpoint');
+      } else {
+        // Fallback to main API
+        response = await fetch('/api/rates');
+        data = await response.json();
+        
+        if (data.success && data.data) {
+          setRates(data.data);
+          logger.info('✅ Dashboard rates fetched from main API');
+        }
       }
     } catch (error) {
       logger.error('Error fetching dashboard rates', error);

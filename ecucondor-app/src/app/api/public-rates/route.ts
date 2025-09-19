@@ -1,64 +1,92 @@
 import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from 'next/server'
 
-// Función para obtener tasas dinámicas
+// Función para obtener tasas dinámicas - usar el servicio principal
 async function getDynamicRates() {
   try {
-    // Intentar obtener de Binance directamente
-    const binanceResponse = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["USDTARS","USDTBRL"]', {
-      next: { revalidate: 30 } // Cache por 30 segundos
-    });
+    // Usar el servicio de tasas principal que ya funciona correctamente
+    const { ExchangeRateService } = await import('@/lib/services/exchange-rates');
+    const rateService = ExchangeRateService.getInstance();
+    await rateService.updateRates();
+    const rates = rateService.getAllRates();
     
-    if (binanceResponse.ok) {
-      const binanceData = await binanceResponse.json();
-      const usdtArs = binanceData.find((item: any) => item.symbol === 'USDTARS');
-      const usdtBrl = binanceData.find((item: any) => item.symbol === 'USDTBRL');
-      
-      const usdArsRate = usdtArs ? parseFloat(usdtArs.price) : 1474.7; // fallback
-      const usdBrlRate = usdtBrl ? parseFloat(usdtBrl.price) : 5.31; // fallback
-      
-      // Aplicar la lógica de negocio de EcuCondor
-      const usdArsSellRate = usdArsRate - 20; // EcuCondor vende USD más barato
-      const usdArsBuyRate = usdArsRate + 117; // EcuCondor compra USD más caro (como mencionaste ~1591)
-      
-      const usdBrlSellRate = usdBrlRate - 0.05;
-      const usdBrlBuyRate = usdBrlRate + 0.10;
-      
-      // Calcular ARS-BRL basado en las otras tasas
-      const arsBrlSellRate = usdBrlSellRate / usdArsSellRate;
-      const arsBrlBuyRate = usdBrlBuyRate / usdArsBuyRate;
-      
-      return [
-        {
-          pair: 'USD-ARS',
-          sell_rate: Math.round(usdArsSellRate * 100) / 100,
-          buy_rate: Math.round(usdArsBuyRate * 100) / 100,
-          binance_rate: usdArsRate,
-          spread: Math.round((usdArsBuyRate - usdArsSellRate) * 100) / 100,
-          last_updated: new Date().toISOString(),
-          source: 'binance'
-        },
-        {
-          pair: 'USD-BRL',
-          sell_rate: Math.round(usdBrlSellRate * 100) / 100,
-          buy_rate: Math.round(usdBrlBuyRate * 100) / 100,
-          binance_rate: usdBrlRate,
-          spread: Math.round((usdBrlBuyRate - usdBrlSellRate) * 100) / 100,
-          last_updated: new Date().toISOString(),
-          source: 'binance'
-        },
-        {
-          pair: 'ARS-BRL',
-          sell_rate: Math.round(arsBrlSellRate * 10000) / 10000,
-          buy_rate: Math.round(arsBrlBuyRate * 10000) / 10000,
-          spread: Math.round((arsBrlBuyRate - arsBrlSellRate) * 10000) / 10000,
-          last_updated: new Date().toISOString(),
-          source: 'calculated'
-        }
-      ];
-    }
+    logger.info('✅ Got rates from ExchangeRateService:', rates.length);
+    
+    // Transformar al formato esperado por el frontend
+    return rates.map(rate => ({
+      pair: rate.pair,
+      sell_rate: rate.sell_rate,
+      buy_rate: rate.buy_rate,
+      binance_rate: rate.binance_rate || rate.sell_rate + 20, // Reverse calculate for display
+      spread: rate.spread,
+      last_updated: rate.last_updated,
+      source: rate.source
+    }));
   } catch (error) {
-    logger.warn('Failed to fetch from Binance, using fallback rates');
+    logger.warn('ExchangeRateService failed, trying Binance directly:', error);
+    
+    // Fallback a Binance directo si el servicio falla - SIN CACHE para tiempo real
+    try {
+      const binanceResponse = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["USDTARS","USDTBRL"]', {
+        cache: 'no-store', // Sin cache para actualizaciones en tiempo real
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+      
+      if (binanceResponse.ok) {
+        const binanceData = await binanceResponse.json();
+        const usdtArs = binanceData.find((item: any) => item.symbol === 'USDTARS');
+        const usdtBrl = binanceData.find((item: any) => item.symbol === 'USDTBRL');
+        
+        const usdArsRate = usdtArs ? parseFloat(usdtArs.price) : 1474.7;
+        const usdBrlRate = usdtBrl ? parseFloat(usdtBrl.price) : 5.31;
+        
+        // Aplicar la lógica de negocio de EcuCondor (corregida)
+        const usdArsSellRate = usdArsRate - 20; // EcuCondor vende USD más barato
+        const usdArsBuyRate = usdArsRate + 50;  // EcuCondor compra USD (corregido de 117 a 50)
+        
+        const usdBrlSellRate = usdBrlRate - 0.05;
+        const usdBrlBuyRate = usdBrlRate + 0.10;
+        
+        // Calcular ARS-BRL basado en las otras tasas
+        const arsBrlSellRate = usdBrlSellRate / usdArsSellRate;
+        const arsBrlBuyRate = usdBrlBuyRate / usdArsBuyRate;
+        
+        return [
+          {
+            pair: 'USD-ARS',
+            sell_rate: Math.round(usdArsSellRate * 100) / 100,
+            buy_rate: Math.round(usdArsBuyRate * 100) / 100,
+            binance_rate: usdArsRate,
+            spread: Math.round((usdArsBuyRate - usdArsSellRate) * 100) / 100,
+            last_updated: new Date().toISOString(),
+            source: 'binance'
+          },
+          {
+            pair: 'USD-BRL',
+            sell_rate: Math.round(usdBrlSellRate * 100) / 100,
+            buy_rate: Math.round(usdBrlBuyRate * 100) / 100,
+            binance_rate: usdBrlRate,
+            spread: Math.round((usdBrlBuyRate - usdBrlSellRate) * 100) / 100,
+            last_updated: new Date().toISOString(),
+            source: 'binance'
+          },
+          {
+            pair: 'ARS-BRL',
+            sell_rate: Math.round(arsBrlSellRate * 10000) / 10000,
+            buy_rate: Math.round(arsBrlBuyRate * 10000) / 10000,
+            spread: Math.round((arsBrlBuyRate - arsBrlSellRate) * 10000) / 10000,
+            last_updated: new Date().toISOString(),
+            source: 'calculated'
+          }
+        ];
+      }
+    } catch (binanceError) {
+      logger.error('Binance fallback also failed:', binanceError);
+    }
   }
   
   // Fallback con valores base pero dinámicos (pequeña fluctuación)
@@ -106,12 +134,14 @@ export async function GET(request: NextRequest) {
       data: dynamicRates,
       count: dynamicRates.length,
       timestamp: new Date().toISOString(),
-      note: "Dynamic rates with real Binance data + EcuCondor business logic"
+      note: "Real-time dynamic rates with live Binance data + EcuCondor business logic"
     }, {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Cache-Control': 'public, max-age=30'
+        'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0'
       }
     });
 

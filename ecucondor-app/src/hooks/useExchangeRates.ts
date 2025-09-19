@@ -118,6 +118,7 @@ const useExchangeRates = (): UseExchangeRatesReturn => {
           source: 'fixed' | 'binance' | 'manual';
         }) => {
           const sellRate = rate.sell_rate || 0;
+          const buyRate = rate.buy_rate || 0;
           const baseRate = rate.binance_rate || sellRate;
           const percentage = baseRate > 0 ? ((sellRate - baseRate) / baseRate * 100) : 0;
           
@@ -129,10 +130,12 @@ const useExchangeRates = (): UseExchangeRatesReturn => {
           if (rate.pair === 'USD-ARS') {
             displayPair = 'USD/ARS';
             flag = '🇺🇸🇦🇷';
+            // Para USD-ARS, mostrar el sell_rate que es el precio de venta de EcuCondor
             formattedRate = `$${sellRate.toFixed(2)}`;
           } else if (rate.pair === 'USD-BRL') {
             displayPair = 'USD/BRL';
             flag = '🇺🇸🇧🇷';
+            // Para USD-BRL, mostrar el sell_rate que es el precio de venta de EcuCondor
             formattedRate = `R$ ${sellRate.toFixed(2)}`;
           } else if (rate.pair === 'ARS-BRL') {
             displayPair = 'BRL/ARS';
