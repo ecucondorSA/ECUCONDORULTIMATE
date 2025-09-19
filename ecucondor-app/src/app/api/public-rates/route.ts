@@ -27,26 +27,38 @@ async function getDynamicRates() {
     
     // Fallback a Binance directo si el servicio falla - SIN CACHE para tiempo real
     try {
-      const binanceResponse = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["USDTARS","USDTBRL"]', {
-        cache: 'no-store', // Sin cache para actualizaciones en tiempo real
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      });
+      // Obtener tasas individuales de Binance
+      const [usdtArsResponse, usdtBrlResponse] = await Promise.all([
+        fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTARS', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        }),
+        fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTBRL', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        })
+      ]);
       
-      if (binanceResponse.ok) {
-        const binanceData = await binanceResponse.json();
-        const usdtArs = binanceData.find((item: any) => item.symbol === 'USDTARS');
-        const usdtBrl = binanceData.find((item: any) => item.symbol === 'USDTBRL');
+      if (usdtArsResponse.ok && usdtBrlResponse.ok) {
+        const usdtArsData = await usdtArsResponse.json();
+        const usdtBrlData = await usdtBrlResponse.json();
         
-        const usdArsRate = usdtArs ? parseFloat(usdtArs.price) : 1474.7;
-        const usdBrlRate = usdtBrl ? parseFloat(usdtBrl.price) : 5.31;
+        const usdArsRate = parseFloat(usdtArsData.price) || 1542.70;
+        const usdBrlRate = parseFloat(usdtBrlData.price) || 5.31;
+        
+        logger.info(`🔄 Binance rates: USD/ARS=${usdArsRate}, USD/BRL=${usdBrlRate}`);
         
         // Aplicar la lógica de negocio de EcuCondor (corregida)
         const usdArsSellRate = usdArsRate - 20; // EcuCondor vende USD más barato
-        const usdArsBuyRate = usdArsRate + 50;  // EcuCondor compra USD (corregido de 117 a 50)
+        const usdArsBuyRate = usdArsRate + 50;  // EcuCondor compra USD
         
         const usdBrlSellRate = usdBrlRate - 0.05;
         const usdBrlBuyRate = usdBrlRate + 0.10;
