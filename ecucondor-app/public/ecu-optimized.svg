@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Gradientes para el círculo dinámico -->
+    <radialGradient id="circleGradient" cx="30%" cy="30%">
+      <stop offset="0%" style="stop-color:#00BFFF;stop-opacity:1" />
+      <stop offset="25%" style="stop-color:#1E90FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF4500;stop-opacity:1" />
+      <stop offset="75%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DC143C;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Gradiente para el cóndor -->
+    <linearGradient id="condorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#DAA520;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#2F4F4F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#191970;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradiente para el pico -->
+    <linearGradient id="beakGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFE4B5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DDD;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Sombra para profundidad -->
+    <filter id="dropShadow">
+      <feDropShadow dx="2" dy="2" stdDeviation="1" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Fondo circular dinámico con efecto de movimiento -->
+  <circle cx="100" cy="100" r="95" fill="url(#circleGradient)" filter="url(#dropShadow)"/>
+  
+  <!-- Anillos concéntricos para dar dinamismo -->
+  <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <circle cx="100" cy="100" r="65" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  
+  <!-- Cóndor estilizado en el centro -->
+  <g transform="translate(100,100)" filter="url(#dropShadow)">
+    <!-- Cuerpo principal -->
+    <ellipse cx="0" cy="10" rx="15" ry="25" fill="url(#condorGradient)" />
+    
+    <!-- Cabeza más definida -->
+    <ellipse cx="0" cy="-15" rx="12" ry="12" fill="url(#condorGradient)" />
+    
+    <!-- Pico prominente -->
+    <path d="M 0,-25 L -6,-20 L -2,-18 L 0,-20 Z" fill="url(#beakGradient)" />
+    
+    <!-- Alas extendidas con movimiento -->
+    <path d="M -15,5 Q -45,-10 -55,10 Q -50,25 -40,20 Q -25,15 -15,15 Z" 
+          fill="url(#condorGradient)" opacity="0.9" />
+    <path d="M 15,5 Q 45,-10 55,10 Q 50,25 40,20 Q 25,15 15,15 Z" 
+          fill="url(#condorGradient)" opacity="0.9" />
+    
+    <!-- Detalles de plumas -->
+    <path d="M -35,10 Q -40,5 -45,12 Q -40,18 -30,15" fill="rgba(255,215,0,0.6)" />
+    <path d="M 35,10 Q 40,5 45,12 Q 40,18 30,15" fill="rgba(255,215,0,0.6)" />
+    
+    <!-- Cola -->
+    <path d="M -8,35 Q 0,45 8,35 Q 6,28 3,25 L -3,25 Q -6,28 -8,35 Z" 
+          fill="url(#condorGradient)" />
+    
+    <!-- Ojo expresivo -->
+    <circle cx="-4" cy="-15" r="3" fill="#000" />
+    <circle cx="-4" cy="-15" r="2" fill="#fff" />
+    <circle cx="-4" cy="-15" r="1" fill="#FFD700" />
+    
+    <!-- Cresta distintiva -->
+    <path d="M -3,-26 Q -1,-32 0,-26 Q 1,-32 3,-26" 
+          stroke="#FFD700" stroke-width="2" fill="none" />
+  </g>
+  
+  <!-- Efectos de luz para mayor dinamismo -->
+  <circle cx="60" cy="60" r="8" fill="rgba(255,255,255,0.4)" opacity="0.6"/>
+  <circle cx="140" cy="140" r="5" fill="rgba(255,255,255,0.3)" opacity="0.5"/>
+</svg>

@@ -38,15 +38,27 @@ export function useCalculator() {
 
   const currencies = useMemo(() => getCurrencies(selectedPair), [selectedPair]);
 
-  // Fetch rates from API
+  // Fetch rates from API - try public endpoint first
   const fetchRates = useCallback(async () => {
     try {
-      const response = await fetch('/api/rates');
-      const data = await response.json();
+      // Try public endpoint first (no authentication required)
+      let response = await fetch('/api/public-rates');
+      let data = await response.json();
       
       if (data.success && data.data) {
         setRates(data.data);
         setLastUpdate(new Date());
+        logger.info('✅ Calculator rates fetched from public endpoint');
+      } else {
+        // Fallback to main API
+        response = await fetch('/api/rates');
+        data = await response.json();
+        
+        if (data.success && data.data) {
+          setRates(data.data);
+          setLastUpdate(new Date());
+          logger.info('✅ Calculator rates fetched from main API');
+        }
       }
     } catch (error) {
       logger.error('Error fetching rates', error);
@@ -128,9 +140,13 @@ export function useCalculator() {
     }
   }, [transactionDetails]);
 
-  // Initial data fetch
+  // Initial data fetch with auto-refresh
   useEffect(() => {
     fetchRates();
+    
+    // Auto-refresh every 30 seconds for real-time updates
+    const interval = setInterval(fetchRates, 30000);
+    return () => clearInterval(interval);
   }, [fetchRates]);
 
   return {
