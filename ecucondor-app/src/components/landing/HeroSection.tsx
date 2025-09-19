@@ -7,14 +7,8 @@ import { useOptimizedExchangeRates } from '@/hooks/useOptimizedExchangeRates';
 import { ExchangeRatesSkeleton } from '@/components/common/LoadingSkeleton';
 import InlineCalculator from '@/components/landing/InlineCalculator';
 
-interface ExchangeRateDisplay {
-  pair: string;
-  flag: string;
-  rate: string;
-  change: string;
-  trend: string;
-  changePercent: number;
-}
+// Use the interface from the hook
+import type { DisplayExchangeRate } from '@/hooks/useOptimizedExchangeRates';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -50,30 +44,11 @@ function HeroSection() {
     lastUpdate 
   });
 
-  // Transformar datos del hook a formato de display con validación
-  const displayRates: ExchangeRateDisplay[] = rates.map((rate, index) => {
-    const percentage = rate.percentage ?? 0;
-    const transformedRate = {
-      pair: rate.pair || 'N/A',
-      flag: rate.pair === 'USD/ARS' ? '🇺🇸🇦🇷' : 
-            rate.pair === 'USD/BRL' ? '🇺🇸🇧🇷' : 
-            rate.pair === 'BRL/ARS' ? '🇧🇷🇦🇷' : '💱',
-      rate: rate.rate || 'N/A',
-      change: percentage > 0 ? `+${percentage.toFixed(1)}%` : `${percentage.toFixed(1)}%`,
-      trend: percentage > 0 ? '↗️' : percentage < 0 ? '↘️' : '➡️',
-      changePercent: percentage
-    };
-    
-    // Debug each transformation
-    if (index === 0) {
-      console.log('🔍 Rate Transformation:', { 
-        input: rate, 
-        output: transformedRate 
-      });
-    }
-    
-    return transformedRate;
-  });
+  // Hook already returns properly formatted rates - no transformation needed
+  const displayRates: DisplayExchangeRate[] = rates;
+  
+  // Debug the rates we receive
+  console.log('🔍 HeroSection displayRates:', displayRates.slice(0, 2));
 
   return (
     <section className="relative py-16 overflow-hidden bg-black">
@@ -194,9 +169,9 @@ function HeroSection() {
                   <motion.div
                     key={rate.pair}
                     className={`bg-white/10 backdrop-blur-sm rounded-lg p-4 border-2 transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 ${
-                      rate.changePercent > 0 
+                      rate.percentage > 0 
                         ? 'border-green-500/30 hover:border-green-400' 
-                        : rate.changePercent < 0 
+                        : rate.percentage < 0 
                         ? 'border-red-500/30 hover:border-red-400'
                         : 'border-yellow-500/30 hover:border-yellow-400'
                     }`}
@@ -223,9 +198,9 @@ function HeroSection() {
                         <div>
                           <h4 className="text-base font-bold text-white">{rate.pair}</h4>
                           <p className={`text-xs ${
-                            rate.changePercent > 0 
+                            rate.percentage > 0 
                               ? 'text-green-400' 
-                              : rate.changePercent < 0 
+                              : rate.percentage < 0 
                               ? 'text-red-400'
                               : 'text-gray-300'
                           }`}>
