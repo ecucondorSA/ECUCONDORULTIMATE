@@ -8,10 +8,11 @@ async function getDynamicRates() {
     logger.info('🔄 Using direct Binance API for real-time rates');
     
     // Obtener tasas directamente desde Binance - SIN CACHE para tiempo real
-    // Obtener tasas individuales de Binance
+    // Obtener tasas individuales de Binance con timeout aumentado a 10 segundos
     const [usdtArsResponse, usdtBrlResponse] = await Promise.all([
       fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTARS', {
         cache: 'no-store',
+        signal: AbortSignal.timeout(10000), // 10 segundos timeout
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
@@ -20,6 +21,7 @@ async function getDynamicRates() {
       }),
       fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTBRL', {
         cache: 'no-store',
+        signal: AbortSignal.timeout(10000), // 10 segundos timeout
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
@@ -81,35 +83,51 @@ async function getDynamicRates() {
     logger.error('Binance API failed:', error);
   }
   
-  // Fallback con valores base actualizados (pequeña fluctuación)
-  const baseUsdArs = 1542.70; // Valor actual de Binance
-  const fluctuation = (Math.random() - 0.5) * 0.02; // ±1%
-  const dynamicRate = baseUsdArs * (1 + fluctuation);
+  // Fallback con valores base más actualizados (sep 2025)
+  logger.warn('⚠️ Using fallback rates - Binance API failed');
   
+  // Usar valores más actuales basados en datos reales recientes
+  const baseUsdArs = 1547.90; // Valor más actual de Binance (actualizado sep 2025)
+  const baseUsdBrl = 5.318; // Valor más actual de Binance
+  
+  // Reducir fluctuación para mayor estabilidad
+  const fluctuation = (Math.random() - 0.5) * 0.01; // ±0.5% (reducido de ±1%)
+  const dynamicUsdArsRate = baseUsdArs * (1 + fluctuation);
+  const dynamicUsdBrlRate = baseUsdBrl * (1 + fluctuation);
+  
+  // Calcular ARS-BRL basado en las tasas dinámicas del fallback
+  const fallbackArsSellRate = dynamicUsdArsRate - 20;
+  const fallbackArsBuyRate = dynamicUsdArsRate + 50;
+  const fallbackBrlSellRate = dynamicUsdBrlRate - 0.05;
+  const fallbackBrlBuyRate = dynamicUsdBrlRate + 0.10;
+  
+  const arsBrlSellRate = fallbackBrlSellRate / fallbackArsSellRate;
+  const arsBrlBuyRate = fallbackBrlBuyRate / fallbackArsBuyRate;
+
   return [
     {
       pair: 'USD-ARS',
-      sell_rate: Math.round((dynamicRate - 20) * 100) / 100,
-      buy_rate: Math.round((dynamicRate + 50) * 100) / 100, // Usar +50 como en la lógica correcta
-      binance_rate: Math.round(dynamicRate * 100) / 100,
+      sell_rate: Math.round((dynamicUsdArsRate - 20) * 100) / 100,
+      buy_rate: Math.round((dynamicUsdArsRate + 50) * 100) / 100,
+      binance_rate: Math.round(dynamicUsdArsRate * 100) / 100,
       spread: 70,
       last_updated: new Date().toISOString(),
       source: 'fallback'
     },
     {
       pair: 'USD-BRL',
-      sell_rate: 5.26,
-      buy_rate: 5.41,
-      binance_rate: 5.31,
-      spread: 0.15,
+      sell_rate: Math.round((dynamicUsdBrlRate - 0.05) * 100) / 100,
+      buy_rate: Math.round((dynamicUsdBrlRate + 0.10) * 100) / 100,
+      binance_rate: Math.round(dynamicUsdBrlRate * 100) / 100,
+      spread: Math.round(((dynamicUsdBrlRate + 0.10) - (dynamicUsdBrlRate - 0.05)) * 100) / 100,
       last_updated: new Date().toISOString(),
       source: 'fallback'
     },
     {
       pair: 'ARS-BRL',
-      sell_rate: 0.0036,
-      buy_rate: 0.0035,
-      spread: -0.0001,
+      sell_rate: Math.round(arsBrlSellRate * 10000) / 10000,
+      buy_rate: Math.round(arsBrlBuyRate * 10000) / 10000,
+      spread: Math.round((arsBrlBuyRate - arsBrlSellRate) * 10000) / 10000,
       last_updated: new Date().toISOString(),
       source: 'fallback'
     }
