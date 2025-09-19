@@ -287,7 +287,7 @@ export async function GET(request: NextRequest) {
       logger.info(`📈 SSE connection added - ${activeConnections.size} total connections`);
     },
     
-    cancel() {
+    cancel(controller) {
       // Remover de conexiones activas cuando se cierre
       activeConnections.delete(controller);
       logger.info(`📉 SSE connection removed - ${activeConnections.size} remaining connections`);
