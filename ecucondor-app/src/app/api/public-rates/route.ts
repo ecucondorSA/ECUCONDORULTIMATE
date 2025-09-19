@@ -34,30 +34,29 @@ function saveLastKnownRate(symbol: string, price: number) {
 async function getDynamicRates() {
   // SIEMPRE usar Binance directo para garantizar tasas correctas en tiempo real
   try {
-    logger.info('🔄 Using direct Binance API for real-time rates');
+    logger.info('🔄 Starting Binance API requests for real-time rates');
+    
+    const startTime = Date.now();
     
     // Obtener tasas directamente desde Binance - SIN CACHE para tiempo real
-    // Obtener tasas individuales de Binance con timeout aumentado a 10 segundos
+    // Usar timeout más corto pero sin headers complejos para evitar problemas en Vercel
     const [usdtArsResponse, usdtBrlResponse] = await Promise.all([
       fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTARS', {
-        cache: 'no-store',
-        signal: AbortSignal.timeout(10000), // 10 segundos timeout
+        signal: AbortSignal.timeout(8000), // 8 segundos timeout
         headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+          'User-Agent': 'ecucondor-app/1.0'
         }
       }),
       fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTBRL', {
-        cache: 'no-store',
-        signal: AbortSignal.timeout(10000), // 10 segundos timeout
+        signal: AbortSignal.timeout(8000), // 8 segundos timeout  
         headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+          'User-Agent': 'ecucondor-app/1.0'
         }
       })
     ]);
+    
+    const fetchDuration = Date.now() - startTime;
+    logger.info(`📡 Binance API responses received in ${fetchDuration}ms - ARS: ${usdtArsResponse.status}, BRL: ${usdtBrlResponse.status}`);
     
     if (usdtArsResponse.ok && usdtBrlResponse.ok) {
       const usdtArsData = await usdtArsResponse.json();
@@ -114,9 +113,15 @@ async function getDynamicRates() {
           }
         ];
       }
+    } else {
+      logger.error(`❌ Binance API HTTP errors - ARS: ${usdtArsResponse.status} ${usdtArsResponse.statusText}, BRL: ${usdtBrlResponse.status} ${usdtBrlResponse.statusText}`);
     }
   } catch (error) {
-    logger.error('Binance API failed:', error);
+    logger.error('💥 Binance API failed with exception:', {
+      error: error instanceof Error ? error.message : String(error),
+      type: error instanceof Error ? error.constructor.name : typeof error,
+      stack: error instanceof Error ? error.stack : undefined
+    });
   }
   
   // Fallback: usar última tasa conocida exitosa

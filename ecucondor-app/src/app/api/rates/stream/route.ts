@@ -32,21 +32,15 @@ async function fetchBinanceRates() {
   try {
     const [usdtArsResponse, usdtBrlResponse] = await Promise.all([
       fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTARS', {
-        cache: 'no-store',
-        signal: AbortSignal.timeout(10000),
+        signal: AbortSignal.timeout(8000),
         headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+          'User-Agent': 'ecucondor-app/1.0'
         }
       }),
       fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTBRL', {
-        cache: 'no-store',
-        signal: AbortSignal.timeout(10000),
+        signal: AbortSignal.timeout(8000),
         headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+          'User-Agent': 'ecucondor-app/1.0'
         }
       })
     ]);
