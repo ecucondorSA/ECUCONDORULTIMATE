@@ -19,12 +19,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
+    // Get initial session with error handling for build time
     const getInitialSession = async () => {
-      const { session } = await authService.getCurrentSession();
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      try {
+        const { session } = await authService.getCurrentSession();
+        setSession(session);
+        setUser(session?.user ?? null);
+      } catch (error) {
+        console.warn('Auth initialization failed during build:', error);
+        setSession(null);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     };
 
     getInitialSession();

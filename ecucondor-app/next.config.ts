@@ -20,6 +20,9 @@ const nextConfig: NextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
+  // Skip middleware URL normalization for better performance
+  skipMiddlewareUrlNormalize: true,
+
   // Configuración experimental para Next.js 15
   experimental: {
     // Optimized package imports (compatible con Next.js 15 stable)
