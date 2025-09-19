@@ -3,7 +3,7 @@
 import { memo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import useExchangeRates from '@/hooks/useExchangeRates';
+import { useOptimizedExchangeRates } from '@/hooks/useOptimizedExchangeRates';
 import { ExchangeRatesSkeleton } from '@/components/common/LoadingSkeleton';
 import InlineCalculator from '@/components/landing/InlineCalculator';
 
@@ -39,7 +39,7 @@ const itemVariants = {
 };
 
 function HeroSection() {
-  const { rates, loading, error, lastUpdate } = useExchangeRates();
+  const { rates, loading, error, lastUpdate, connectionStatus, isUsingSSE } = useOptimizedExchangeRates();
 
   // Transformar datos del hook a formato de display con validación
   const displayRates: ExchangeRateDisplay[] = rates.map(rate => {
@@ -121,8 +121,12 @@ function HeroSection() {
                     Tasas de Cambio en Tiempo Real
                   </h3>
                   <motion.div
-                    className="w-3 h-3 bg-green-500 rounded-full"
-                    animate={{ 
+                    className={`w-3 h-3 rounded-full ${
+                      connectionStatus === 'connected' ? 'bg-green-500' : 
+                      connectionStatus === 'connecting' ? 'bg-yellow-500' : 
+                      'bg-red-500'
+                    }`}
+                    animate={connectionStatus === 'connected' ? { 
                       opacity: [0.5, 1, 0.5],
                       scale: [0.8, 1.2, 0.8],
                       transition: { 
@@ -130,9 +134,12 @@ function HeroSection() {
                         duration: 2,
                         ease: "easeInOut"
                       }
-                    }}
-                    title="Actualizando en tiempo real"
+                    } : {}}
+                    title={`${isUsingSSE ? 'SSE' : 'Polling'} - ${connectionStatus}`}
                   />
+                  {isUsingSSE && (
+                    <span className="text-xs text-green-400 font-semibold">SSE</span>
+                  )}
                 </div>
                 {lastUpdate && (
                   <motion.p 

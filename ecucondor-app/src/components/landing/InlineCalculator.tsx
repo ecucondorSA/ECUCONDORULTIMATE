@@ -2,6 +2,7 @@
 import { logger } from '@/lib/utils/logger';
 
 import { useState, useEffect, useMemo, memo, useCallback } from 'react';
+import { useOptimizedExchangeRates } from '@/hooks/useOptimizedExchangeRates';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ExchangeRate, CURRENCY_FLAGS, CurrencyPair } from '@/lib/types/calculator';
@@ -12,11 +13,34 @@ interface InlineCalculatorProps {
 }
 
 function InlineCalculator({ className = '' }: InlineCalculatorProps) {
-  const [rates, setRates] = useState<ExchangeRate[]>([]);
+  // Use SSE optimized hook for real-time rates
+  const { rates: sseRates, loading: ratesLoading, connectionStatus } = useOptimizedExchangeRates();
   const [selectedPair, setSelectedPair] = useState<CurrencyPair>('USD-ARS');
   const [sendAmount, setSendAmount] = useState('100');
   const [receiveAmount, setReceiveAmount] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
+  
+  // Transform SSE rates to calculator format
+  const rates: ExchangeRate[] = useMemo(() => {
+    return sseRates.map((rate, index) => {
+      const baseRate = parseFloat(rate.rate.replace(/[^0-9.]/g, ''));
+      const currencies = getCurrencies(rate.pair as CurrencyPair);
+      
+      return {
+        id: `${rate.pair}-${index}`,
+        pair: rate.pair as CurrencyPair,
+        base_currency: currencies.from,
+        target_currency: currencies.to,
+        binance_rate: baseRate,
+        sell_rate: baseRate,
+        buy_rate: baseRate + (baseRate * 0.02), // 2% margin
+        spread: baseRate * 0.02,
+        commission_rate: 0.005, // 0.5% commission
+        last_updated: rate.lastUpdate.toISOString(),
+        source: (rate.source === 'binance' || rate.source === 'calculated') ? rate.source : 'binance' as const
+      };
+    });
+  }, [sseRates]);
 
   // Get current rate and currencies
   const selectedRate = useMemo(() => {
@@ -24,39 +48,6 @@ function InlineCalculator({ className = '' }: InlineCalculatorProps) {
   }, [rates, selectedPair]);
 
   const currencies = useMemo(() => getCurrencies(selectedPair), [selectedPair]);
-
-  // Fetch rates from public endpoint
-  useEffect(() => {
-    const fetchRates = async () => {
-      try {
-        // Try public endpoint first (no authentication required)
-        const response = await fetch('/api/public-rates');
-        const data = await response.json();
-        
-        if (data.success && data.data) {
-          setRates(data.data);
-          logger.info('✅ Rates fetched from public endpoint');
-        } else {
-          // Fallback to main API
-          const fallbackResponse = await fetch('/api/rates');
-          const fallbackData = await fallbackResponse.json();
-          
-          if (fallbackData.success && fallbackData.data) {
-            setRates(fallbackData.data);
-            logger.info('✅ Rates fetched from main API');
-          }
-        }
-      } catch (error) {
-        logger.error('Error fetching rates:', error);
-      }
-    };
-
-    fetchRates();
-    
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchRates, 30000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Calculate conversion when amount or pair changes
   useEffect(() => {
@@ -120,7 +111,12 @@ function InlineCalculator({ className = '' }: InlineCalculatorProps) {
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
           💱 Calculadora Rápida
         </h3>
-        <div className="text-sm text-ecucondor-yellow">
+        <div className="flex items-center gap-2 text-sm text-ecucondor-yellow">
+          <div className={`w-2 h-2 rounded-full ${
+            connectionStatus === 'connected' ? 'bg-green-500' : 
+            connectionStatus === 'connecting' ? 'bg-yellow-500' : 
+            'bg-red-500'
+          }`} />
           En Tiempo Real
         </div>
       </div>
