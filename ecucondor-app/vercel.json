@@ -2,6 +2,9 @@
   "functions": {
     "src/app/api/rates/route.ts": {
       "maxDuration": 30
+    },
+    "src/app/api/public-rates/route.ts": {
+      "maxDuration": 30
     }
   },
   "headers": [
@@ -25,12 +28,37 @@
           "value": "public, max-age=30"
         }
       ]
+    },
+    {
+      "source": "/api/public-rates",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
     }
   ],
   "rewrites": [
     {
       "source": "/api/rates",
       "destination": "/api/rates"
+    },
+    {
+      "source": "/api/public-rates",
+      "destination": "/api/public-rates"
     }
   ]
 }
