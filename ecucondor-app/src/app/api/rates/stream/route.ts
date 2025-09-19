@@ -1,194 +1,306 @@
+import { NextRequest } from 'next/server';
 import { logger } from '@/lib/utils/logger';
-import { NextRequest } from 'next/server'
-import { ExchangeRateService } from '@/lib/services/exchange-rates'
 
-// Global service and connection management
-let exchangeService: ExchangeRateService | null = null
-const activeConnections = new Set<ReadableStreamDefaultController>()
+// Cache en memoria para última tasa conocida
+let lastKnownRates = {
+  USDTARS: { price: null as number | null, timestamp: null as number | null },
+  USDTBRL: { price: null as number | null, timestamp: null as number | null }
+};
 
-function getExchangeService(): ExchangeRateService {
-  if (!exchangeService) {
-    exchangeService = ExchangeRateService.getInstance()
-  }
-  return exchangeService
-}
-
-// Broadcast to all connected clients
-function broadcastToClients(data: string) {
-  const disconnectedControllers: ReadableStreamDefaultController[] = []
-  
-  for (const controller of activeConnections) {
-    try {
-      controller.enqueue(`data: ${data}\n\n`)
-    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      logger.info('Client disconnected, removing from active connections')
-      disconnectedControllers.push(controller)
+// Función para obtener última tasa conocida válida
+function getLastKnownRate(symbol: string): number | null {
+  const cached = lastKnownRates[symbol as keyof typeof lastKnownRates];
+  if (cached?.price && cached?.timestamp) {
+    const hoursOld = (Date.now() - cached.timestamp) / (1000 * 60 * 60);
+    if (hoursOld < 24) {
+      return cached.price;
     }
   }
-  
-  // Clean up disconnected controllers
-  disconnectedControllers.forEach(controller => {
-    activeConnections.delete(controller)
-  })
+  return null;
 }
 
-// Update rates and broadcast to all clients
-async function updateAndBroadcast() {
+// Función para guardar última tasa exitosa
+function saveLastKnownRate(symbol: string, price: number) {
+  lastKnownRates[symbol as keyof typeof lastKnownRates] = {
+    price,
+    timestamp: Date.now()
+  };
+}
+
+// Función para obtener tasas desde Binance
+async function fetchBinanceRates() {
   try {
-    const service = getExchangeService()
-    const rates = await service.updateRates()
+    const [usdtArsResponse, usdtBrlResponse] = await Promise.all([
+      fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTARS', {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(10000),
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      }),
+      fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTBRL', {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(10000),
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
+    ]);
     
-    const ratesArray = Array.from(rates.values())
-    const message = JSON.stringify({
-      type: 'rates_update',
-      data: ratesArray,
-      timestamp: new Date().toISOString(),
-      count: ratesArray.length
-    })
-    
-    broadcastToClients(message)
-    logger.info(`📡 Broadcasted rates to ${activeConnections.size} clients`)
+    if (usdtArsResponse.ok && usdtBrlResponse.ok) {
+      const usdtArsData = await usdtArsResponse.json();
+      const usdtBrlData = await usdtBrlResponse.json();
+      
+      const usdArsPrice = parseFloat(usdtArsData.price);
+      const usdBrlPrice = parseFloat(usdtBrlData.price);
+      
+      if (usdArsPrice > 0 && usdBrlPrice > 0) {
+        saveLastKnownRate('USDTARS', usdArsPrice);
+        saveLastKnownRate('USDTBRL', usdBrlPrice);
+        
+        // Calcular tasas de EcuCondor
+        const usdArsSellRate = usdArsPrice - 20;
+        const usdArsBuyRate = usdArsPrice + 50;
+        const usdBrlSellRate = usdBrlPrice - 0.05;
+        const usdBrlBuyRate = usdBrlPrice + 0.10;
+        const arsBrlSellRate = usdBrlSellRate / usdArsSellRate;
+        const arsBrlBuyRate = usdBrlBuyRate / usdArsBuyRate;
+        
+        return [
+          {
+            pair: 'USD-ARS',
+            sell_rate: Math.round(usdArsSellRate * 100) / 100,
+            buy_rate: Math.round(usdArsBuyRate * 100) / 100,
+            binance_rate: usdArsPrice,
+            spread: Math.round((usdArsBuyRate - usdArsSellRate) * 100) / 100,
+            last_updated: new Date().toISOString(),
+            source: 'binance'
+          },
+          {
+            pair: 'USD-BRL',
+            sell_rate: Math.round(usdBrlSellRate * 100) / 100,
+            buy_rate: Math.round(usdBrlBuyRate * 100) / 100,
+            binance_rate: usdBrlPrice,
+            spread: Math.round((usdBrlBuyRate - usdBrlSellRate) * 100) / 100,
+            last_updated: new Date().toISOString(),
+            source: 'binance'
+          },
+          {
+            pair: 'ARS-BRL',
+            sell_rate: Math.round(arsBrlSellRate * 10000) / 10000,
+            buy_rate: Math.round(arsBrlBuyRate * 10000) / 10000,
+            spread: Math.round((arsBrlBuyRate - arsBrlSellRate) * 10000) / 10000,
+            last_updated: new Date().toISOString(),
+            source: 'calculated'
+          }
+        ];
+      }
+    }
   } catch (error) {
-    logger.error('❌ Error updating rates for broadcast:', error)
-    
-    // Broadcast error to clients
-    const errorMessage = JSON.stringify({
-      type: 'error',
-      error: 'Failed to update rates',
-      timestamp: new Date().toISOString()
-    })
-    broadcastToClients(errorMessage)
+    logger.error('Binance API failed in SSE:', error);
   }
+  
+  // Fallback usando cache
+  const lastUsdArs = getLastKnownRate('USDTARS');
+  const lastUsdBrl = getLastKnownRate('USDTBRL');
+  
+  if (lastUsdArs && lastUsdBrl) {
+    const usdArsSellRate = lastUsdArs - 20;
+    const usdArsBuyRate = lastUsdArs + 50;
+    const usdBrlSellRate = lastUsdBrl - 0.05;
+    const usdBrlBuyRate = lastUsdBrl + 0.10;
+    const arsBrlSellRate = usdBrlSellRate / usdArsSellRate;
+    const arsBrlBuyRate = usdBrlBuyRate / usdArsBuyRate;
+
+    return [
+      {
+        pair: 'USD-ARS',
+        sell_rate: Math.round(usdArsSellRate * 100) / 100,
+        buy_rate: Math.round(usdArsBuyRate * 100) / 100,
+        binance_rate: Math.round(lastUsdArs * 100) / 100,
+        spread: 70,
+        last_updated: new Date().toISOString(),
+        source: 'cache'
+      },
+      {
+        pair: 'USD-BRL',
+        sell_rate: Math.round(usdBrlSellRate * 100) / 100,
+        buy_rate: Math.round(usdBrlBuyRate * 100) / 100,
+        binance_rate: Math.round(lastUsdBrl * 100) / 100,
+        spread: 0.15,
+        last_updated: new Date().toISOString(),
+        source: 'cache'
+      },
+      {
+        pair: 'ARS-BRL',
+        sell_rate: Math.round(arsBrlSellRate * 10000) / 10000,
+        buy_rate: Math.round(arsBrlBuyRate * 10000) / 10000,
+        spread: Math.round((arsBrlBuyRate - arsBrlSellRate) * 10000) / 10000,
+        last_updated: new Date().toISOString(),
+        source: 'cache'
+      }
+    ];
+  }
+
+  // Emergency fallback
+  return [
+    {
+      pair: 'USD-ARS',
+      sell_rate: 1527.90,
+      buy_rate: 1597.90,
+      binance_rate: 1547.90,
+      spread: 70,
+      last_updated: new Date().toISOString(),
+      source: 'emergency'
+    },
+    {
+      pair: 'USD-BRL',
+      sell_rate: 5.27,
+      buy_rate: 5.42,
+      binance_rate: 5.318,
+      spread: 0.15,
+      last_updated: new Date().toISOString(),
+      source: 'emergency'
+    },
+    {
+      pair: 'ARS-BRL',
+      sell_rate: 0.0034,
+      buy_rate: 0.0034,
+      spread: -0.0001,
+      last_updated: new Date().toISOString(),
+      source: 'emergency'
+    }
+  ];
 }
 
-// Global update interval
-let updateInterval: NodeJS.Timeout | null = null
-const UPDATE_INTERVAL = 30000 // 30 seconds
+// Conjunto de conexiones activas
+const activeConnections = new Set<ReadableStreamDefaultController>();
 
-function startGlobalUpdates() {
-  if (!updateInterval) {
-    logger.info('🚀 Starting global rate updates every 30 seconds')
-    
-    // Initial update
-    updateAndBroadcast()
-    
-    // Set interval for regular updates
-    updateInterval = setInterval(updateAndBroadcast, UPDATE_INTERVAL)
-  }
+// Función para limpiar conexiones cerradas
+function cleanupConnections() {
+  activeConnections.forEach(controller => {
+    try {
+      // Intentar enviar un ping para verificar si la conexión está activa
+      controller.enqueue(`data: ${JSON.stringify({ type: 'ping', timestamp: Date.now() })}\n\n`);
+    } catch (error) {
+      // Si falla, remover de la lista
+      activeConnections.delete(controller);
+    }
+  });
 }
 
-function stopGlobalUpdates() {
-  if (updateInterval && activeConnections.size === 0) {
-    logger.info('⏹️  Stopping global rate updates (no active connections)')
-    clearInterval(updateInterval)
-    updateInterval = null
-  }
+// Función para enviar datos a todas las conexiones
+function broadcastToAllConnections(data: any) {
+  const message = `data: ${JSON.stringify(data)}\n\n`;
+  const closedConnections: ReadableStreamDefaultController[] = [];
+  
+  activeConnections.forEach(controller => {
+    try {
+      controller.enqueue(message);
+    } catch (error) {
+      // Marcar para remoción si la conexión está cerrada
+      closedConnections.push(controller);
+    }
+  });
+  
+  // Limpiar conexiones cerradas
+  closedConnections.forEach(controller => {
+    activeConnections.delete(controller);
+  });
+  
+  logger.info(`📡 Broadcasted to ${activeConnections.size} active connections`);
+}
+
+// Configurar actualizaciones automáticas (solo una vez)
+let updateInterval: NodeJS.Timeout | null = null;
+
+function startBroadcastUpdates() {
+  if (updateInterval) return; // Ya está configurado
+  
+  logger.info('🚀 Starting SSE broadcast service...');
+  
+  const sendUpdates = async () => {
+    try {
+      const rates = await fetchBinanceRates();
+      const data = {
+        type: 'rates_update',
+        data: rates,
+        timestamp: new Date().toISOString(),
+        connections: activeConnections.size
+      };
+      
+      if (activeConnections.size > 0) {
+        broadcastToAllConnections(data);
+      }
+    } catch (error) {
+      logger.error('❌ Error in SSE broadcast:', error);
+    }
+  };
+  
+  // Primera actualización inmediata
+  sendUpdates();
+  
+  // Configurar actualizaciones cada 30 segundos
+  updateInterval = setInterval(sendUpdates, 30000);
+  
+  // Limpiar conexiones cada 5 minutos
+  setInterval(cleanupConnections, 300000);
 }
 
 export async function GET(request: NextRequest) {
-  logger.info('🔄 New SSE connection established')
+  logger.info('🔗 New SSE connection established');
   
-  // Parse query parameters
-  const searchParams = request.nextUrl.searchParams
-  const pair = searchParams.get('pair')?.toUpperCase()
+  // Iniciar el servicio de broadcast si no está activo
+  startBroadcastUpdates();
   
+  // Crear stream para Server-Sent Events
   const stream = new ReadableStream({
     start(controller) {
-      activeConnections.add(controller)
+      // Agregar a conexiones activas
+      activeConnections.add(controller);
       
-      // Start global updates if this is the first connection
-      startGlobalUpdates()
-      
-      // Send initial connection confirmation
-      const welcomeMessage = JSON.stringify({
+      // Enviar mensaje inicial
+      const initialMessage = `data: ${JSON.stringify({
         type: 'connected',
-        message: 'Connected to Ecucondor exchange rates stream',
-        pair_filter: pair || 'all',
+        message: 'SSE connection established',
         timestamp: new Date().toISOString()
-      })
-      controller.enqueue(`data: ${welcomeMessage}\n\n`)
+      })}\n\n`;
       
-      // Send current rates immediately
-      const service = getExchangeService()
-      const currentRates = service.getAllRates()
+      controller.enqueue(initialMessage);
       
-      const filteredRates = pair 
-        ? currentRates.filter(rate => rate.pair === pair)
-        : currentRates
-      
-      if (filteredRates.length > 0) {
-        const initialMessage = JSON.stringify({
-          type: 'initial_rates',
-          data: filteredRates,
+      // Enviar tasas iniciales inmediatamente
+      fetchBinanceRates().then(rates => {
+        const initialData = {
+          type: 'rates_update',
+          data: rates,
           timestamp: new Date().toISOString(),
-          count: filteredRates.length
-        })
-        controller.enqueue(`data: ${initialMessage}\n\n`)
-      }
+          connections: activeConnections.size
+        };
+        
+        controller.enqueue(`data: ${JSON.stringify(initialData)}\n\n`);
+      });
       
-      // Send heartbeat every 15 seconds
-      const heartbeatInterval = setInterval(() => {
-        try {
-          const heartbeat = JSON.stringify({
-            type: 'heartbeat',
-            timestamp: new Date().toISOString(),
-            active_connections: activeConnections.size
-          })
-          controller.enqueue(`data: ${heartbeat}\n\n`)
-        } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
-          clearInterval(heartbeatInterval)
-        }
-      }, 15000)
-      
-      // Store cleanup function
-      ;(controller as { cleanup?: () => void }).cleanup = () => {
-        clearInterval(heartbeatInterval)
-        activeConnections.delete(controller)
-        stopGlobalUpdates()
-      }
+      logger.info(`📈 SSE connection added - ${activeConnections.size} total connections`);
     },
     
     cancel() {
-      logger.info('🔌 SSE connection cancelled')
-      // Cleanup will be handled by the controller cleanup function
+      // Remover de conexiones activas cuando se cierre
+      activeConnections.delete(controller);
+      logger.info(`📉 SSE connection removed - ${activeConnections.size} remaining connections`);
     }
-  })
+  });
   
   return new Response(stream, {
     headers: {
       'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Connection': 'keep-alive',
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET',
       'Access-Control-Allow-Headers': 'Cache-Control'
     }
-  })
-}
-
-// Handle CORS preflight
-export async function OPTIONS() {
-  return new Response(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Cache-Control',
-    },
-  })
-}
-
-// Cleanup on process termination
-if (typeof process !== 'undefined') {
-  process.on('SIGTERM', () => {
-    if (updateInterval) {
-      clearInterval(updateInterval)
-    }
-  })
-  
-  process.on('SIGINT', () => {
-    if (updateInterval) {
-      clearInterval(updateInterval)
-    }
-  })
+  });
 }
